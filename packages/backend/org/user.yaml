@@ -1,0 +1,28 @@
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: le.caothihoang
+  annotations:
+    github.com/user-login: le.caothihoang
+spec:
+  profile:
+    displayName: Le Cao
+    email: le.caothihoang@gmail.com
+    picture: https://avatars.githubusercontent.com/hoanglecao
+  memberOf: [platform-engineering]
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: lecao_nashtechglobal.com
+  annotations:
+    microsoft.com/email: lecao@nashtechglobal.com
+    backstage.io/normalized-identity: lecao_nashtechglobal.com#ext#
+spec:
+  profile:
+    displayName: Le Cao Thi Hoang
+    email: lecao@nashtechglobal.com
+  memberOf: [cloud-architects]

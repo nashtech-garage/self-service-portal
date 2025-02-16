@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    newrelic.com/dashboard-guid: NDc5NDk1NnxWSVp8REFTSEJPQVJEfGRhOjcxMzEwNzA
+    grafana/alert-label-selector: "rule=cpu,rule=disk-space,rule=kube-monitoring,rule=cpu_allocation"
+    grafana/dashboard-selector: "(tags @> 'grafanacloud' || tags @> 'cardinality-management')"
+    prometheus.io/rule: 'demoprometheus'
+    prometheus.io/alert: "demoprometheus-01"
+  name: monitoring
+  description: Easily view your New Relic Dashboards, Grafana Dashboards in Backstage, via real-time snapshots of your dashboards
+spec:
+  type: monitoring
+  owner: user:default/le.caothihoang
+  lifecycle: development
+  system: nashtech-idp

@@ -1,0 +1,150 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: react-app
+  title: New Microservice React App
+  description: Deploy a New Microservice React App on cluster
+  tags: 
+    - deployment
+spec:
+  owner: user:le.caothihoang
+  type: application
+  parameters:
+    - title: Choose A Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository location for your new  React application
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+              - dev.azure.com
+    - title: Basic React Configuration
+      required:
+        - appName
+        - backendName
+        - backendImageName
+        - frontendName
+        - frontendImageName
+      properties:
+        appName:
+          title: Application Name
+          type: string
+          description: The name of the msa react application
+          ui:autofocus: true
+        backendName:
+          title: Backend Name
+          type: string
+          description: The name of the backend service
+          ui:autofocus: true
+        backendImageName:
+          title: Backend Container Image Name
+          type: string
+          description: The name of your backend container image
+        frontendName:
+          title: Frontend Name
+          type: string
+          description: The name of the frontend service
+          ui:autofocus: true
+        frontendImageName:
+          title: Fronent Container Image Name
+          type: string
+          description: The name of your frontent container image
+    
+    - title: Choose UserName of Docker Hub
+      required:
+        - dockerHubUserName
+      properties:
+        dockerHubUserName:
+          title: Username of Docker Hub
+          type: string
+          description: Username of Docker Hub
+          ui:autofocus: true
+  steps:
+    - id: fetch-base
+      name: Fetch template for Github repository
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: fetch:template
+      input:
+        url: 'https://github.com/nashtech-garage/scaffold-msa-react'
+        targetPath: .
+        values:
+          appName: ${{ parameters.appName }}
+          backendName: ${{ parameters.backendName }}
+          backendImageName: ${{ parameters.backendImageName }}                 
+          frontendName: ${{ parameters.frontendName }}
+          frontendImageName: ${{ parameters.frontendImageName }}       
+          dockerHubUserName: ${{ parameters.dockerHubUserName }}    
+          repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('host') }}/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+
+    - id: fetch-base
+      name: Fetch template for Azure DevOps repository
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: fetch:template
+      input:
+        url: 'https://github.com/nashtech-garage/scaffold-msa-react'
+        targetPath: .
+        values:
+          appName: ${{ parameters.appName }}
+          backendName: ${{ parameters.backendName }}
+          backendImageName: ${{ parameters.backendImageName }}                 
+          frontendName: ${{ parameters.frontendName }}
+          frontendImageName: ${{ parameters.frontendImageName }}       
+          dockerHubUserName: ${{ parameters.dockerHubUserName }}    
+          repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+          
+  
+    # This step publishes the contents of the working directory to GitHub.
+    - id: publish
+      name: Publish to Github
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is msa reactjs ${{ parameters.appName }} app
+        repoUrl: ${{ parameters.repoUrl }}
+
+    # This step publishes to Azure DevOps
+    - id: publish
+      name: Publish to Azure DevOps
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: publish:azure
+      input:
+        allowedHosts: ['dev.azure.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+
+    # Start a GitHub Action to build our API
+    - id: github-action
+      name: Trigger GitHub Action
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_msa_react_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
+        branchOrTagName: 'main'
+        workflowInputs:
+          appName: ${{ parameters.appName }}
+          backendName: ${{ parameters.backendName }}
+          backendImageName: ${{ parameters.backendImageName }}                 
+          frontendName: ${{ parameters.frontendName }}
+          frontendImageName: ${{ parameters.frontendImageName }}       
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }}
+          repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}}   
+          owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}    
+          orgProject: '{"organization": "${{ parameters.repoUrl | parseRepoUrl | pick(''organization'') }}", "project": "${{ parameters.repoUrl | parseRepoUrl | pick(''project'') }}"}'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}     
+      
