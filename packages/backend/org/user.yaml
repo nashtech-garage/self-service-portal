@@ -12,7 +12,18 @@ spec:
     email: le.caothihoang@gmail.com
     picture: https://avatars.githubusercontent.com/hoanglecao
   memberOf: [platform-engineering]
-
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: devplatform225
+  annotations:
+    github.com/user-login: devplatform225
+spec:
+  profile:
+    displayName: DevOps Platform
+    email: devplatform225@gmail.com
+  memberOf: [platform-engineering, cloud-architects]
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User

@@ -1,5 +1,13 @@
 # [Backstage](https://backstage.io)
 
+Install node using nvm 
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+nvm install 18 --lts
+nvm use 18
+```
+
 This is your newly scaffolded Backstage App, Good Luck!
 
 To start the app, run:

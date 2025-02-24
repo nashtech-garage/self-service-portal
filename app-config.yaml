@@ -11,17 +11,18 @@ permission:
     conditionalPoliciesFile: ../../packages/backend/org/conditional-policies.yaml
     policyFileReload: true
 
-# kubernetes:
-#   serviceLocatorMethod:
-#     type: 'multiTenant'
-#   clusterLocatorMethods:
-#     - type: 'config'
-#       clusters:
-#         - url: https://idp-dns-fuigvi8y.hcp.centralus.azmk8s.io:443
-#           name: idp
-#           title: 'Individual developer portal'
-#           authProvider: azure
-#           skipTLSVerify: true
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: https://idp-dns-fuigvi8y.hcp.centralus.azmk8s.io:443
+          name: idp
+          title: 'Individual developer portal'
+          authProvider: azure
+          skipTLSVerify: true
+          
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
@@ -71,13 +72,13 @@ proxy:
       secure: false
       headers:
         Cookie:
-          $env: ${ARGOCD_AUTH_TOKEN}
+          $env: ARGOCD_AUTH_TOKEN
     
-    # '/grafana/api':
-    # # May be a public or an internal DNS
-    #   target: ${GRAFANA_URL}
-    #   headers:
-    #     Authorization: Bearer ${GRAFANA_TOKEN}
+    '/grafana/api':
+    # May be a public or an internal DNS
+      target: ${GRAFANA_URL}
+      headers:
+        Authorization: Bearer ${GRAFANA_TOKEN}
     
     # '/prometheus/api':
     #   # url to the api and path of your hosted prometheus instance
@@ -91,14 +92,14 @@ proxy:
     #   headers:
     #     X-Api-Key: ${NEW_RELIC_USER_KEY}
 
-# grafana:
-#   # Publicly accessible domain
-#   domain: ${GRAFANA_URL}
+grafana:
+  # Publicly accessible domain
+  domain: ${GRAFANA_URL}
 
-#   # Is unified alerting enabled in Grafana?
-#   # See: https://grafana.com/blog/2021/06/14/the-new-unified-alerting-system-for-grafana-everything-you-need-to-know/
-#   # Optional. Default: false
-#   unifiedAlerting: true    
+  # Is unified alerting enabled in Grafana?
+  # See: https://grafana.com/blog/2021/06/14/the-new-unified-alerting-system-for-grafana-everything-you-need-to-know/
+  # Optional. Default: false
+  unifiedAlerting: true    
 
 
 

@@ -5,6 +5,7 @@ g, user:default/le.caothihoang, role:default/scaffolder-admin
 g, user:default/le.caothihoang, role:default/plugin-admin
 g, user:default/lecao_nashtechglobal.com, role:default/developer
 g, user:default/duc.nguyenhoang, role:default/catalog-admin
+g, user:default/devplatform225, role:default/catalog-admin
 
 # Assigning groups to roles
 g, group:default/platform-engineering, role:default/admin-catalog
