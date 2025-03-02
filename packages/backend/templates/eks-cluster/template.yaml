@@ -92,7 +92,7 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId: deploy_eks_with_argocd.yaml
-        repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
         branchOrTagName: 'main'
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}

@@ -12,3 +12,5 @@ conditions:
   params:
     claims:
       - 'user:default/le.caothihoang'
+      - 'user:default/duc.nguyenhoang'
+      - 'user:default/devplatform225'

@@ -29,6 +29,9 @@ export GITHUB_CLIENT_SECRET=''
 export GOOGLE_CLIENT_ID=""
 export GOOGLE_CLIENT_SECRET=""
 
+export GRAFANA_URL=''
+export GRAFANA_TOKEN=''
+
 yarn install
 yarn dev
 
@@ -48,7 +51,22 @@ export GITHUB_CLIENT_SECRET=''
 
 export GOOGLE_CLIENT_ID=""
 export GOOGLE_CLIENT_SECRET=""
+
+export GRAFANA_URL=''
+export GRAFANA_TOKEN=''
+
 cd package/backend
-yarn install
+yarn install 
 yarn start
+```
+
+
+# Build and publish
+
+```bash
+yarn install --frozen-lockfile
+yarn tsc
+yarn build:backend
+
+docker build . -f packages/backend/Dockerfile --tag backstage:1.0.0
 ```
