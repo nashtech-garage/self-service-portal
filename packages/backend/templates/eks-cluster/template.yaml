@@ -1,0 +1,114 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: eks-cluster
+  title: New ESK Cluster
+  description: An  template for the scaffolder that provision a EKS cluster using Crossplane and ArgoCD
+  tags: 
+    - infrastructure
+spec:
+  owner: user:le.caothihoang
+  type: infrastructure
+
+  parameters:  
+    - title: Choose a Repo location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location for ArgoCD to Deploy
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+              - dev.azure.com
+    - title: Basic EKS Cluster Configuration
+      required:
+        - clusterName
+        - region
+      properties:
+        clusterName:
+          title: EKS Cluster Name
+          type: string
+          description: The name of the EKS cluster to create
+          ui:autofocus: true
+        region:
+          title: Region
+          type: string
+          description: The region where the EKS cluster will be deployed
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+            - ap-east-1
+            - ap-south-2
+            - ap-south-1
+            - ap-northeast-3
+        customKyvernoPolicies:
+          title: Custom Policy Repository Location
+          type: string
+          description: The source repository of the custome Kyverno policies specific to the cluster
+  steps:
+    - id: fetch-base-eks-skeleton
+      name: Fetch EKS Cluster skeleton
+      action: fetch:template
+      input:
+        url: 'https://github.com/nashtech-garage/crossplane-eks-skeleton'
+        targetPath: .
+        values:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}                 
+          owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
+    
+    # This step publishes to Azure DevOps
+    - id: publish
+      name: Publish to Github
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+    # This step publishes to Azure DevOps
+    - id: publish
+      name: Publish to Azure DevOps
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: publish:azure
+      input:
+        allowedHosts: ['dev.azure.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+
+
+    - id: github-action
+      name: Trigger GitHub Action
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_eks_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
+        branchOrTagName: 'main'
+        workflowInputs:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}    
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
+          customKyvernoPolicies: ${{ parameters.customKyvernoPolicies }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: A new repository created
+        url: ${{ steps['publish'].output.remoteUrl }}

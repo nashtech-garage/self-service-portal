@@ -1,0 +1,129 @@
+app:
+  # Should be the same as backend.baseUrl when using the `app-backend` plugin.
+  #baseUrl: http://backstage.nashtech.platformengineering.com
+  baseUrl: ${APP_BASEURL}
+
+permission:
+  enabled: true  
+  rbac:
+    policies-csv-file: ./packages/backend/org/rbac-policy.csv
+    conditionalPoliciesFile: ./packages/backend/org/conditional-policies.yaml
+    policyFileReload: true
+
+backend:
+  # Note that the baseUrl should be the URL that the browser and other clients
+  # should use when communicating with the backend, i.e. it needs to be
+  # reachable not just from within the backend host, but from all of your
+  # callers. When its value is "http://localhost:7007", it's strictly private
+  # and can't be reached by others.
+  baseUrl: ${BACKEND_BASEURL}
+  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  listen:
+    port: ${BACKEND_PORT}
+  cors:
+    origin: ${APP_BASEURL}
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+
+  # config options: https://node-postgres.com/apis/client
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: 5432
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      database: ${POSTGRES_DB}
+      # https://node-postgres.com/features/ssl
+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      # ssl:
+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
+      #     $file: <file-path>/ca/server.crt
+
+
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  providers:
+    microsoft:
+      development:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+        signIn:
+          resolvers:
+            # typically you would pick one of these
+            # - resolver: usernameMatchingUserEntityName
+            # - resolver: emailMatchingUserEntityProfileEmail
+          - resolver: emailMatchingUserEntityProfileEmail
+    github:
+      development:
+        clientId: ${GITHUB_CLIENT_ID}
+        clientSecret: ${GITHUB_CLIENT_SECRET} 
+    google:
+      development:
+        clientId: ${GOOGLE_CLIENT_ID}
+        clientSecret: ${GOOGLE_CLIENT_SECRET}
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location, Template]
+  locations:
+    # Local example data, file locations are relative to the backend process, typically `packages/backend`
+    - type: file
+      target: ./packages/backend/org/org.yaml
+      rules:
+        - allow: [User, Group]
+
+    # gke template
+    - type: file
+      target: ./packages/backend/templates/gke-cluster/template.yaml
+      rules:
+        - allow: [Template]
+     # aks template
+    - type: file
+      target: ./packages/backend/templates/aks-cluster/template.yaml
+      rules:
+        - allow: [Template]
+
+    # eks template
+    - type: file
+      target: ./packages/backend/templates/eks-cluster/template.yaml
+      rules:
+        - allow: [Template]
+
+    # msa reactjs template
+    - type: file
+      target: ./packages/backend/templates/msa-react-app/template.yaml
+      rules:
+        - allow: [Template]
+
+      # microsoft dev box template
+    - type: file
+      target: ./packages/backend/templates/dev-box/template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: ./packages/backend/system/system.yaml
+
+      # back-stack component
+    - type: file
+      target: ./packages/backend/component/back-stack-component.yaml
+      rules:
+        - allow: [Component]
+    # github component
+    - type: file
+      target: ./packages/backend/component/github-action-component.yaml
+      rules:
+        - allow: [Component]        
+        
+    - type: file
+      target: ./packages/backend/component/monitoring-component.yaml
+      rules:
+        - allow: [Component]
+

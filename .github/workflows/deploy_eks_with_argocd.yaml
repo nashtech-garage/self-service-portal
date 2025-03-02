@@ -1,0 +1,385 @@
+name: Manage EKS Cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      clusterName:
+        description: 'Cluster Name'
+        required: true
+      region:
+        description: 'Region'
+        required: true     
+      repoURLforArgo: 
+        description: 'The URL of the repository for Argo CD to deploy EKS'
+        required: true
+      host:
+        description: 'github.com or azure.dev.com'
+        required: true
+      customKyvernoPolicies:
+        description: 'Custom Policy Repository Location'
+        required: false
+jobs:
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Install kubectl
+      run: |
+        if [[ -n "${{ github.event.inputs.customKyvernoPolicies }}" ]]; then
+          sudo apt-get update
+          sudo apt-get install -y kubectl
+        else
+          echo "No custom Kyverno Policies provided."
+        fi
+
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ github.event.inputs.region }}
+
+            
+    - name: Install Argo CD CLI
+      run: |
+        sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo chmod +x /usr/local/bin/argocd
+
+    - name: Login to Argo CD 
+      run: argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASS }} --insecure --grpc-web 
+
+    - name: Register Repository in Argo CD
+      run: |
+          if [[ ${{ github.event.inputs.host }} == "github.com" ]]; then
+            echo "Registering GitHub repository in ArgoCD..."
+            argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username hoanglecao --password ${{ secrets.MYGITHUB_TOKEN }}
+          
+          elif [[ ${{ github.event.inputs.host }} == "dev.azure.com" ]]; then
+            echo "Registering Azure DevOps repository in ArgoCD..."
+            argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username lecao --password ${{ secrets.MYAZURE_TOKEN }}
+          
+          else
+            echo "Unsupported repository host: $REPO_HOST"
+            exit 1
+          fi
+
+    - name: Create ArgoCD app for AWS provider
+      run: |
+          # Check if the ArgoCD app exists
+          if argocd app get aws-provider-app > /dev/null 2>&1; then
+            echo "aws-provider-app already exists"
+          else
+            argocd app create aws-provider-app \
+              --repo ${{ github.event.inputs.repoURLforArgo }} \
+              --path aws \
+              --dest-server https://kubernetes.default.svc \
+              --dest-namespace aws-provider \
+              --project default \
+              --sync-policy automated \
+              --sync-option CreateNamespace=true \
+              --sync-retry-limit 5 \
+              --upsert \
+              --grpc-web
+          fi
+
+    - name: Wait for aws-provider-app to become synced
+      run: |
+            # Initialize time
+            TIMEOUT=660
+            INTERVAL=60
+            ELAPSED=0
+
+            # Loop until the app becomes healthy and synced or we hit the timeout
+            while [[ $ELAPSED -lt $TIMEOUT ]]; do
+              # Get the health status and sync status of the application
+              APP_STATUS=$(argocd app get aws-provider-app --output json)
+              HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+              SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+              echo "Application health status: $HEALTH_STATUS"
+              echo "Application sync status: $SYNC_STATUS"
+
+              # If the app is both healthy and synced, break out of the loop
+              if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+                echo "aws-provider-app is healthy and synced. Proceeding..."
+                break
+              fi
+
+              # Wait for the interval duration before checking again
+              echo "Waiting for aws-provider-app to become healthy and synced..."
+              sleep $INTERVAL
+
+              # Increment the elapsed time
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+
+            # If the app is still not healthy or synced after the timeout, exit with an error
+            if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+              echo "aws-provider-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+              exit 1
+            fi
+
+    - name: Create ArgoCD app for VPC
+      run: |
+          argocd app create vpc-${{ github.event.inputs.clusterName }}-app \
+              --repo ${{ github.event.inputs.repoURLforArgo }} \
+              --path vpc \
+              --dest-server https://kubernetes.default.svc \
+              --dest-namespace aws-provider \
+              --project default \
+              --sync-policy automated \
+              --sync-retry-limit 5 \
+              --upsert \
+              --grpc-web
+
+    - name: Wait for vpc-${{ github.event.inputs.clusterName }}-app to become synced
+      run: |
+            # Initialize time
+            TIMEOUT=660
+            INTERVAL=60
+            ELAPSED=0
+
+            # Loop until the app becomes healthy and synced or we hit the timeout
+            while [[ $ELAPSED -lt $TIMEOUT ]]; do
+              # Get the health status and sync status of the application
+              APP_STATUS=$(argocd app get vpc-${{ github.event.inputs.clusterName }}-app --output json)
+              HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+              SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+              echo "Application health status: $HEALTH_STATUS"
+              echo "Application sync status: $SYNC_STATUS"
+
+              # If the app is both healthy and synced, break out of the loop
+              if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+                echo "vpc-${{ github.event.inputs.clusterName }}-app is healthy and synced. Proceeding..."
+                break
+              fi
+
+              # Wait for the interval duration before checking again
+              echo "Waiting for vpc-${{ github.event.inputs.clusterName }}-app to become healthy and synced..."
+              sleep $INTERVAL
+
+              # Increment the elapsed time
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+
+            # If the app is still not healthy or synced after the timeout, exit with an error
+            if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+              echo "vpc-${{ github.event.inputs.clusterName }}-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+              exit 1
+            fi
+    - name: Create ArgoCD app for EKS cluster
+      run: |
+          argocd app create eks-${{ github.event.inputs.clusterName }}-app \
+            --repo ${{ github.event.inputs.repoURLforArgo }} \
+            --path eks-cluster \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace aws-provider \
+            --project default \
+            --sync-policy automated \
+            --sync-retry-limit 5 \
+            --upsert \
+            --grpc-web
+
+    - name: Wait for eks-${{ github.event.inputs.clusterName }}-app to become synced
+      run: |
+        # Initialize time
+        TIMEOUT=660
+        INTERVAL=60
+        ELAPSED=0
+        # Loop until the app becomes healthy and synced or we hit the timeout
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          # Get the health status and sync status of the application
+          APP_STATUS=$(argocd app get eks-${{ github.event.inputs.clusterName }}-app --output json)
+          HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+          SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+          echo "Application health status: $HEALTH_STATUS"
+          echo "Application sync status: $SYNC_STATUS"
+
+          # If the app is both healthy and synced, break out of the loop
+          if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+            echo "eks-${{ github.event.inputs.clusterName }}-app is healthy and synced. Proceeding..."
+            break
+          fi
+
+          # Wait for the interval duration before checking again
+          echo "Waiting for eks-${{ github.event.inputs.clusterName }}-app to become healthy and synced..."
+          sleep $INTERVAL
+
+          # Increment the elapsed time
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        # If the app is still not healthy or synced after the timeout, exit with an error
+        if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+          echo "eks-${{ github.event.inputs.clusterName }}-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Wait for EKS Cluster to become ACTIVE
+      run: |
+        TIMEOUT=3600
+        INTERVAL=60
+        ELAPSED=0
+        STATUS=""
+
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          STATUS=$(aws eks describe-cluster --name ${{ github.event.inputs.clusterName }} --query "cluster.status" --region ${{ github.event.inputs.region }} --output text)
+          echo "Cluster status: $STATUS"
+
+          if [[ "$STATUS" == "ACTIVE" ]]; then
+            echo "EKS Cluster is ACTIVE."
+            break
+          fi
+
+          echo "Waiting for EKS cluster to become ACTIVE..."
+          sleep $INTERVAL
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        if [[ "$STATUS" != "ACTIVE" ]]; then
+          echo "EKS Cluster did not become ACTIVE within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Create ArgoCD app for EKS NodeGroup
+      run: |
+          argocd app create ${{ github.event.inputs.clusterName }}-node-group-app \
+            --repo ${{ github.event.inputs.repoURLforArgo }} \
+            --path eks-node-group \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace aws-provider \
+            --project default \
+            --sync-policy automated \
+            --sync-retry-limit 5 \
+            --upsert \
+            --grpc-web
+
+    - name: Wait for ${{ github.event.inputs.clusterName }}-node-group-app to become synced
+      run: |
+        # Initialize time
+        TIMEOUT=660
+        INTERVAL=30
+        ELAPSED=0
+        # Loop until the app becomes healthy and synced or we hit the timeout
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          # Get the health status and sync status of the application
+          APP_STATUS=$(argocd app get ${{ github.event.inputs.clusterName }}-node-group-app --output json)
+          HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+          SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+          echo "Application health status: $HEALTH_STATUS"
+          echo "Application sync status: $SYNC_STATUS"
+
+          # If the app is both healthy and synced, break out of the loop
+          if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+            echo "${{ github.event.inputs.clusterName }}-node-group-app is healthy and synced. Proceeding..."
+            break
+          fi
+
+          # Wait for the interval duration before checking again
+          echo "Waiting for ${{ github.event.inputs.clusterName }}-node-group-app to become healthy and synced..."
+          sleep $INTERVAL
+
+          # Increment the elapsed time
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        # If the app is still not healthy or synced after the timeout, exit with an error
+        if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+          echo "${{ github.event.inputs.clusterName }}-node-group-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Wait for NodeGroup to be Created and Active
+      run: |
+        TIMEOUT=1800      # Total timeout for NodeGroup creation (30 minutes)
+        EXIST_TIMEOUT=600  # Time to wait for NodeGroup existence (10 minutes)
+        INTERVAL=30        # Interval to check (in seconds)
+        ELAPSED_EXIST=0    # Elapsed time for existence check
+        ELAPSED_ACTIVE=0   # Elapsed time for active check
+        STATUS=""
+
+        # Loop to check if the NodeGroup exists
+        while [[ $ELAPSED_EXIST -lt $EXIST_TIMEOUT ]]; do
+          NODEGROUP_EXISTS=$(aws eks list-nodegroups --cluster-name "${{ github.event.inputs.clusterName }}" --region "${{ github.event.inputs.region }}" --query "nodegroups[?(@=='nodegroup-${{ github.event.inputs.clusterName }}')] | length(@)" --output text)
+          
+          if [[ "$NODEGROUP_EXISTS" == "1" ]]; then
+            echo "NodeGroup nodegroup-${{ github.event.inputs.clusterName }} exists. Proceeding to check if it becomes ACTIVE."
+            break
+          fi
+          
+          echo "Waiting for NodeGroup nodegroup-${{ github.event.inputs.clusterName }} to be created..."
+          sleep $INTERVAL
+          ELAPSED_EXIST=$((ELAPSED_EXIST + INTERVAL))
+        done
+
+        # If NodeGroup doesn't exist after 10 minutes, exit with error
+        if [[ "$NODEGROUP_EXISTS" != "1" ]]; then
+          echo "NodeGroup nodegroup-${{ github.event.inputs.clusterName }} did not appear within $EXIST_TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+        # Loop to check if the NodeGroup becomes ACTIVE
+        while [[ $ELAPSED_ACTIVE -lt $TIMEOUT ]]; do
+          STATUS=$(aws eks describe-nodegroup --cluster-name ${{ github.event.inputs.clusterName }} --nodegroup-name nodegroup-${{ github.event.inputs.clusterName }} --query "nodegroup.status" --output text)
+          echo "NodeGroup status: $STATUS"
+          
+          if [[ "$STATUS" == "ACTIVE" ]]; then
+            echo "NodeGroup is ACTIVE."
+            break
+          fi
+          
+          echo "Waiting for NodeGroup to become ACTIVE..."
+          sleep $INTERVAL
+          ELAPSED_ACTIVE=$((ELAPSED_ACTIVE + INTERVAL))
+        done
+        
+        # If NodeGroup is not ACTIVE after TIMEOUT, exit with error
+        if [[ "$STATUS" != "ACTIVE" ]]; then
+          echo "NodeGroup did not become ACTIVE within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Configure kubectl for EKS
+      run: |
+          aws eks --region "${{ github.event.inputs.region }}" update-kubeconfig --name "${{ github.event.inputs.clusterName }}"
+
+    - name: Install Kyverno in the Kubernetes cluster
+      run: |
+        if helm ls -n kyverno | grep kyverno; then
+          echo "Kyverno is installed."
+        else
+          helm repo add kyverno https://kyverno.github.io/kyverno/
+          helm repo update
+          helm install kyverno kyverno/kyverno -n kyverno --create-namespace
+        fi
+
+    - name: Clone Kyverno Policy Repository
+      run: |
+        if [[ -n "${{ github.event.inputs.customKyvernoPolicies }}" ]]; then
+          rm -rf kyverno || true  # Clean previous clone if it exists
+          git clone https://github.com/nashtech-garage/kyverno.git
+        fi
+
+    - name: Apply Kyverno Policies
+      run: |
+        if [[ -n "${{ github.event.inputs.customKyvernoPolicies }}" ]]; then
+          if [ -d "kyverno/policies/pod-security/" ]; then
+            kubectl apply -f kyverno/policies/pod-security/
+          else
+            echo "Policy directory not found."
+            exit 1
+          fi
+        fi

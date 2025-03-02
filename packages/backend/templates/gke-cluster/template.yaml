@@ -1,0 +1,144 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gke-cluster
+  title: New GKE Cluster
+  description: An  template for the scaffolder that provision a GKE cluster using Crossplane and ArgoCD
+  tags: 
+    - infrastructure
+spec:
+  owner: group:platform-engineering
+  type: infrastructure
+
+  parameters:  
+    - title: Choose a Repo location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location for ArgoCD to Deploy
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+              - dev.azure.com
+    - title: Basic GKE Cluster Configuration
+      required:
+        - clusterName
+        - region
+        - machineType
+        - nodeCount
+        - projectID
+      properties:
+        clusterName:
+          title: GKE Cluster Name
+          type: string
+          description: The name of the GKE cluster to create
+          ui:autofocus: true
+        region:
+          title: Region
+          type: string
+          description: The region where the GKE cluster will be deployed
+          enum:
+            - us-central1
+            - us-east1
+            - us-east4
+            - us-west1
+            - europe-west1
+            - europe-west2
+            - asia-east1
+            - asia-southeast1
+        machineType:
+          title: Machine Type
+          type: string
+          description: The type of machine to deploy the cluster nodes
+          enum:
+            - e2-small
+            - e2-standard-2
+            - e2-standard-4
+            - e2-standard-8
+            - e2-highcpu-8
+            - e2-highmem-4
+            - n1-standard-1
+            - n1-standard-2
+            - n1-standard-4
+            - n1-standard-8
+            - n1-standard-16
+            - e2-medium
+            - custom-1-2048
+            - custom-4-8192
+        nodeCount:
+          title: Node Group Size
+          type: number
+          description: Desired node count, from 1 to 100.
+        projectID:
+          title: projectID
+          type: string
+          description: ProjectID is the project name (not numerical ID)
+  steps:
+    - id: fetch-base-gke-skeleton
+      name: Fetch GKE Cluster skeleton
+      action: fetch:template
+      input:
+        url: 'https://github.com/nashtech-garage/crossplane-gke-skeleton'
+        targetPath: .
+        values:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}
+          machineType: ${{ parameters.machineType }}
+          nodeCount: ${{ parameters.nodeCount | string}}
+          projectID: ${{ parameters.projectID | string}}
+          owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
+
+    # This step publishes to Azure DevOps
+    - id: publish
+      name: Publish to Github
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+    
+    # This step publishes to Azure DevOps
+    - id: publish
+      name: Publish to Azure DevOps
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: publish:azure
+      input:
+        allowedHosts: ['dev.azure.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+    
+    # Start a GitHub Action to build an GKE cluster with Crossplane
+    - id: github-action
+      name: Trigger GitHub Action
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_gke_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
+        branchOrTagName: 'main'
+        workflowInputs:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}
+          machineType: ${{ parameters.machineType }}
+          nodeCount: ${{ parameters.nodeCount | string}}
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
+
+     # The final step is to register argocd application component in the catalog.
+    - id: register-argocd
+      name: Register Argo CD Application Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+  output:
+    links:
+      - title: A new repository created
+        url: ${{ steps['publish'].output.remoteUrl }}

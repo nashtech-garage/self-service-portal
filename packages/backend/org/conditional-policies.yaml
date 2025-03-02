@@ -1,0 +1,16 @@
+---
+result: CONDITIONAL
+roleEntityRef: 'role:default/admin-catalog'
+pluginId: catalog
+resourceType: catalog-entity
+permissionMapping:
+  - delete
+  - update
+conditions:
+  rule: IS_ENTITY_OWNER
+  resourceType: catalog-entity
+  params:
+    claims:
+      - 'user:default/le.caothihoang'
+      - 'user:default/duc.nguyenhoang'
+      - 'user:default/devplatform225'

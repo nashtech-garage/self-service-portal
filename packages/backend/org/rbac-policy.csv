@@ -1,0 +1,47 @@
+# Assigning users to roles
+g, user:default/le.caothihoang, role:default/catalog-admin
+g, user:default/le.caothihoang, role:default/admin-rbac
+g, user:default/le.caothihoang, role:default/scaffolder-admin
+g, user:default/le.caothihoang, role:default/plugin-admin
+g, user:default/lecao_nashtechglobal.com, role:default/developer
+g, user:default/devplatform225, role:default/catalog-admin
+g, user:default/devplatform225, role:default/scaffolder-admin
+g, user:default/duc.nguyenhoang, role:default/catalog-admin
+g, user:default/duc.nguyenhoang, role:default/scaffolder-admin
+
+# Assigning groups to roles
+g, group:default/platform-engineering, role:default/admin-catalog
+g, group:default/cloud-architects, role:default/developer
+
+# Defining permissions for developer role
+p, role:default/developer, catalog.entity.read, read, allow
+p, role:default/developer, catalog.entity.create, create, allow
+
+# Catalog entity permissions
+p, role:default/catalog-admin, catalog.entity.read, read, allow
+p, role:default/catalog-admin, catalog.entity.create, create, allow
+p, role:default/catalog-admin, catalog.entity.refresh, update, allow
+p, role:default/catalog-admin, catalog.entity.delete, delete, allow
+
+# Catalog location permissions
+p, role:default/catalog-admin, catalog.location.read, read, allow
+p, role:default/catalog-admin, catalog.location.create, create, allow
+p, role:default/catalog-admin, catalog.location.delete, delete, allow
+
+# RBAC (Role-Based Access Control)
+p, role:default/admin-rbac, policy.entity.create, create, allow
+p, role:default/admin-rbac, policy.entity.read, read, allow
+p, role:default/admin-rbac, policy.entity.update, update, allow
+p, role:default/admin-rbac, policy.entity.delete, delete, allow
+
+# Scaffolder permissions
+p, role:default/scaffolder-admin, scaffolder.template, read, allow
+p, role:default/scaffolder-admin, scaffolder.action.execute, use, allow
+p, role:default/scaffolder-admin, scaffolder.task.create, create, allow
+p, role:default/scaffolder-admin, scaffolder.task.read, read, allow
+p, role:default/scaffolder-admin, scaffolder.task.cancel, use, allow
+p, role:default/scaffolder-admin, scaffolder.template.parameter.read, read, allow
+p, role:default/scaffolder-admin, scaffolder.template.step.read, read, allow
+
+# Plugins
+p, role:default/plugin-admin, argocd.view.read, read, allow

@@ -1,0 +1,73 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Software Catalog
+  annotations:
+    'backstage.io/kubernetes-id': idp
+  links:
+    - url: https://backstage.io/
+      title: Backstage
+      icon: dashboard
+spec:
+  type: library
+  lifecycle: development
+  owner: user:default/le.caothihoang
+  system: back-stack
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: crossplane
+  description: Universal Control Plane
+  annotations:
+    'backstage.io/kubernetes-id': idp
+  links:
+    - url: https://www.crossplane.io/
+      title: Crossplane 
+      icon: dashboard 
+spec:
+  type: infrastructure-as-code
+  lifecycle: development
+  system: back-stack
+  owner: user:default/le.caothihoang
+--- 
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argocd
+  description: Gitops Platform
+  annotations:
+    'backstage.io/kubernetes-id': idp
+  links:
+    - url: https://argocd-7f000001.nip.io
+      title: ArgoCD Dashboard
+      icon: dashboard
+spec:
+  type: gitops
+  lifecycle: development
+  owner: group:default/platform-engineering
+  system: back-stack
+--- 
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kyverno
+  description: Policy as Code
+  annotations:
+    'backstage.io/kubernetes-id': idp
+  links:
+    - url: https://kyverno.io/
+      title: Kyverno 
+      icon: dashboard 
+spec:
+  type: policy-as-code
+  lifecycle: development
+  owner: group:default/platform-engineering
+  system: back-stack
+
+
+

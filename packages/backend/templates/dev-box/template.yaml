@@ -1,0 +1,85 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: microsoft-dev-box
+  title: New a Microsoft Dev Box 
+  description: An template for provision Microsoft Dev Box using Bicep
+  tags: 
+    - infrastructure
+spec:
+  owner: user:le.caothihoang
+  type: infrastructure
+
+  parameters:  
+    - title: Dev Box Configuration
+      required:
+        - devCenterName
+        - devBoxName
+        - projectName
+        - region
+        - resourceGroupName
+        - imageId
+      properties:
+        devCenterName:
+          title: Dev Center Name
+          type: string
+          description: A dev center contains the collection of projects and the shared resources for these projects, such as dev box definitions and network connections.
+          ui:autofocus: true
+        projectName:
+          title: Project Name
+          type: string
+          description: A dev box project is the point of access for development teams
+        devBoxName:
+          title: Dev Box Name
+          type: string
+          description: A pre-configured virtual machine (VM)
+        region:
+          title: Region
+          type: string
+          description: The region where the dev box will be deployed
+          enum:
+            - eastus
+            - eastus2
+            - centralus
+            - northeurope
+            - westeurope
+            - europe-west2
+            - eastasia
+            - southeastasia
+        resourceGroupName:
+          type: string
+          title: Resource Group Name
+          description: Name of the Azure Resource Group to be used
+        imageId:
+          title: Image
+          type: string
+          description:  When Image is provided, its latest version will be used
+          enum:
+            - microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2
+          
+  steps:
+    - id: github-action
+      name: Trigger GitHub Action
+      action: github:actions:dispatch
+      input:
+        workflowId: provision_microsoft_dev_box.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
+        branchOrTagName: 'main'
+        workflowInputs:
+          devCenterName: ${{ parameters.devCenterName }}
+          projectName: ${{ parameters.projectName }}
+          devBoxName: ${{ parameters.devBoxName }}
+          region: ${{ parameters.region }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          imageId: ${{ parameters.imageId}}
+          repo: microsoft-dev-box
+          owner: nashtech-garage
+        
+
+     # The final step is to register our new component in the catalog.
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: 'github.com/nashtech-garage/microsoft-dev-box'
+        catalogInfoPath: '/catalog-info.yaml'

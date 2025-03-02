@@ -1,0 +1,206 @@
+app:
+  title: Scaffolded Backstage App
+  baseUrl: http://localhost:3000
+organization:
+  name: NashTech Backstage
+
+permission:
+  enabled: true  
+  rbac:
+    policies-csv-file: ../../packages/backend/org/rbac-policy.csv
+    conditionalPoliciesFile: ../../packages/backend/org/conditional-policies.yaml
+    policyFileReload: true
+
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: https://idp-dns-fuigvi8y.hcp.centralus.azmk8s.io:443
+          name: idp
+          title: 'Individual developer portal'
+          authProvider: azure
+          skipTLSVerify: true
+          
+backend:
+  # Used for enabling authentication, secret is shared by all backend plugins
+  # See https://backstage.io/docs/auth/service-to-service-auth for
+  # information on the format
+  # auth:
+  #   keys:
+  #     - secret: ${BACKEND_SECRET}
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+    # Uncomment the following host directive to bind to specific interfaces
+    # host: 127.0.0.1
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+    # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
+    # Default Helmet Content-Security-Policy values can be removed by setting the key to false
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  # This is for local development only, it is not recommended to use this in production
+  # The production database configuration is stored in app-config.production.yaml
+  database:
+    client: better-sqlite3
+    connection: ':memory:'
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
+
+integrations:
+  github:
+    - host: github.com
+      # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
+      # about setting up the GitHub integration here: https://backstage.io/docs/integrations/github/locations#configuration
+      token: ${GITHUB_TOKEN}
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token: ${GHE_TOKEN}
+  azure:
+    - host: dev.azure.com
+      token: ${AZURE_TOKEN}
+proxy:
+  endpoints:
+    '/argocd/api':
+      target: ${ARGOCD_URL}
+      changeOrigin: true
+      # only if your argocd api has self-signed cert
+      secure: false
+      headers:
+        Cookie:
+          $env: ARGOCD_AUTH_TOKEN
+    
+    '/grafana/api':
+    # May be a public or an internal DNS
+      target: ${GRAFANA_URL}
+      headers:
+        Authorization: Bearer ${GRAFANA_TOKEN}
+    
+    # '/prometheus/api':
+    #   # url to the api and path of your hosted prometheus instance
+    #   target: ${PROMETHEUS_URL}
+    #   credentials: dangerously-allow-unauthenticated
+    #   headers:
+    #     Authorization: Basic ${PROMETHEUS_TOKEN}
+
+    # '/newrelic/api':
+    #   target: ${NEW_RELIC_URL}
+    #   headers:
+    #     X-Api-Key: ${NEW_RELIC_USER_KEY}
+
+grafana:
+  # Publicly accessible domain
+  domain: ${GRAFANA_URL}
+
+  # Is unified alerting enabled in Grafana?
+  # See: https://grafana.com/blog/2021/06/14/the-new-unified-alerting-system-for-grafana-everything-you-need-to-know/
+  # Optional. Default: false
+  unifiedAlerting: true    
+
+
+
+# https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
+techdocs:
+  builder: 'local' # Alternatives - 'external'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  providers:
+    microsoft:
+      development:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+       # signIn:
+       #   resolvers:
+          # typically you would pick one of these
+           # - resolver: usernameMatchingUserEntityName
+           # - resolver: emailMatchingUserEntityProfileEmail
+          #- resolver: emailLocalPartMatchingUserEntityName
+    github:
+      development:
+        clientId: ${GITHUB_CLIENT_ID}
+        clientSecret: ${GITHUB_CLIENT_SECRET}
+       # signIn:
+         # resolvers:
+          # typically you would pick one of these
+           # - resolver: usernameMatchingUserEntityName
+         #   - resolver: emailMatchingUserEntityProfileEmail
+          #- resolver: emailLocalPartMatchingUserEntityName
+    google:
+      development:
+        clientId: ${GOOGLE_CLIENT_ID}
+        clientSecret: ${GOOGLE_CLIENT_SECRET}
+          
+scaffolder:
+  # see https://backstage.io/docs/features/software-templates/configuration for software template options
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location, Template]
+  locations:
+    - type: file
+      target: ../../packages/backend/org/org.yaml
+      rules:
+        - allow: [User, Group]
+
+    # gke template
+    - type: file
+      target: ../../packages/backend/templates/gke-cluster/template.yaml
+      rules:
+        - allow: [Template]
+     # aks template
+    - type: file
+      target: ../../packages/backend/templates/aks-cluster/template.yaml
+      rules:
+        - allow: [Template]
+
+    # eks template
+    - type: file
+      target: ../../packages/backend/templates/eks-cluster/template.yaml
+      rules:
+        - allow: [Template]
+
+    # msa reactjs template
+    - type: file
+      target: ../../packages/backend/templates/msa-react-app/template.yaml
+      rules:
+        - allow: [Template]
+
+      # microsoft dev box template
+    - type: file
+      target: ../../packages/backend/templates/dev-box/template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: ../../packages/backend/system/system.yaml
+
+      # back-stack component
+    - type: file
+      target: ../../packages/backend/component/back-stack-component.yaml
+      rules:
+        - allow: [Component]
+    # github component
+    - type: file
+      target: ../../packages/backend/component/github-action-component.yaml
+      rules:
+        - allow: [Component]        
+        
+    - type: file
+      target: ../../packages/backend/component/monitoring-component.yaml
+      rules:
+        - allow: [Component]
+
+

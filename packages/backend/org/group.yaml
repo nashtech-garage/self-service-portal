@@ -1,0 +1,75 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  namespace: default
+  name: platform-engineering
+  description: The platform engineering team - A platform engineering team often includes roles such as platform engineers, site reliability engineers, cloud architects, and security engineers. Other roles might include DevOps engineers, automation engineers, and quality assurance engineers
+spec:
+  type: team
+  profile:
+    displayName: Platform Engineering Team 
+    email: platform-engineering@nashtechglobal.com
+  children: []
+  members: [user:default/le.caothihoang]
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  namespace: default
+  name: platform-engineers
+  description: The platform engineers Team - Platform engineers are responsible for designing, building, and maintaining the platform infrastructure.
+spec:
+  type: team
+  profile:
+    displayName: Platform engineers Team
+    email: platform-engineers@nashtechglobal.com
+  children: []
+  parent: platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  namespace: default
+  name: site-reliability-engineers
+  description: Site reliability engineers (SREs) Team - Site reliability engineers (SREs) handle deployments to superior environments, are experienced in incident management and response, and have strong problem-solving skills.
+spec:
+  type: team
+  profile:
+    displayName: Site reliability engineers (SREs) Team
+    email: site-reliability-engineers@nashtechglobal.com
+  children: []
+  parent: platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  namespace: default
+  name: cloud-architects
+  description: Cloud architects Team -  should be experts in designing platforms and ensuring the platform architecture is resilient and satisfies all the organization’s needs.
+spec:
+  type: team
+  profile:
+    displayName: Cloud architects Team
+    email: cloud-architects@nashtechglobal.com
+  children: []
+  parent: platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  namespace: default
+  name: security-engineers
+  description: Security engineers Team -  Security engineers work hand in hand with platform engineers and cloud architects to implement and maintain the security best practices for the platform.
+spec:
+  type: team
+  profile:
+    displayName: Security engineers Team
+    email: security-engineers@nashtechglobal.com
+  children: []
+  parent: platform-engineering

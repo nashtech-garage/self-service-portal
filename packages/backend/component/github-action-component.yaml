@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-action
+  description: GitHub Action to deploy cluster using Github Action
+  links:
+    - url: https://github.com/nashtech-garage/how-to-devops/actions
+      title: GitHub Actions
+  annotations:
+    github.com/project-slug: nashtech-garage/how-to-devops
+spec:
+  type: github
+  owner: user:default/le.caothihoang
+  lifecycle: experimental
+  system: nashtech-idp

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: my-org
+  description: Organization structure for NashTech
+spec:
+  targets:
+    - ./user.yaml
+    - ./group.yaml
