@@ -25,42 +25,43 @@ jobs:
   install:
     runs-on: ubuntu-latest
     # runs-on: arc-runner-set
-    container: node:20
+    # container: node:20
     
     name: Install package
     steps:
       - uses: actions/checkout@v4 # v4
 
-      # - name: Use Node.js ${{ env.NODE_VERSION }}
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: ${{ env.NODE_VERSION }}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install build-essential
-        run: apt update && apt install -y build-essential
+      # - name: Install build-essential
+      #   run: apt update && apt install -y build-essential
       
       - name: Install modules
         run: yarn install
 
-      - uses: actions/cache@v4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${GITHUB_WORKSPACE}/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ hashFiles('yarn.lock') }}
+      # - uses: actions/cache@v4
+      #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: ${GITHUB_WORKSPACE}/node_modules
+      #     key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ hashFiles('yarn.lock') }}
 
   # The verify jobs runs all the verification that doesn't require a
   # diff towards master, since it takes some time to fetch that.
   lint:
     runs-on: ubuntu-latest
     # runs-on: arc-runner-set
-    container: node:20
+    # container: node:20
     needs: install
 
     name: Verify package
@@ -71,19 +72,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install modules
+        run: yarn install
 
-      - uses: actions/cache@v4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${GITHUB_WORKSPACE}/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ hashFiles('yarn.lock') }}
+      # - uses: actions/cache@v4
+      #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: ${GITHUB_WORKSPACE}/node_modules
+      #     key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ hashFiles('yarn.lock') }}
 
       - name: check for missing repo fixes
         run: yarn fix --check
@@ -113,7 +118,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # runs-on: arc-runner-set
-    container: node:20
+    # container: node:20
     needs:
       - install
       - lint
@@ -131,13 +136,16 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - uses: actions/cache@v4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${GITHUB_WORKSPACE}/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ hashFiles('yarn.lock') }}
+      - name: Install modules
+        run: yarn install
+
+      # - uses: actions/cache@v4
+      #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: ${GITHUB_WORKSPACE}/node_modules
+      #     key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ hashFiles('yarn.lock') }}
       
       - name: build all packages
         run: yarn build:all
@@ -223,19 +231,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - uses: actions/cache@v4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${GITHUB_WORKSPACE}/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ hashFiles('yarn.lock') }}
+      - name: Install modules
+        run: yarn install
+
+      # - uses: actions/cache@v4
+      #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: ${GITHUB_WORKSPACE}/node_modules
+      #     key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ hashFiles('yarn.lock') }}
       # This check is done here since it needs git history
       - name: verify release
         run: node scripts/verify-release.js
