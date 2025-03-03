@@ -168,12 +168,14 @@ jobs:
         with:
           name: package-app-dist
           path: packages/app/dist
+          retention-days: 1
 
       - name: Upload package/backend build artifact
         uses: actions/upload-artifact@v4
         with:
           name: package-backend-dist
           path: packages/backend/dist
+          retention-days: 1
 
   # The test job runs all tests as well as any verification step that
   # requires a diff towards master.
@@ -182,8 +184,7 @@ jobs:
     # runs-on: arc-runner-set
     # container: node:20
     needs: 
-      - install
-      - lint
+      - build
     name: Test build
     services:
       postgres16:
