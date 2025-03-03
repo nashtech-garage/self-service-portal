@@ -25,16 +25,16 @@ jobs:
   install:
     runs-on: ubuntu-latest
     # runs-on: arc-runner-set
-    # container: node:20
+    container: node:20
     
     name: Install package
     steps:
       - uses: actions/checkout@v4 # v4
 
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      # - name: Use Node.js ${{ env.NODE_VERSION }}
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
