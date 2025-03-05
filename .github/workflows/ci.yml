@@ -284,7 +284,7 @@ jobs:
         run: yarn lint
 
       - name: test changed packages
-        run: yarn test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master
+        run: yarn test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/main
         # env:
         #   BACKSTAGE_TEST_DISABLE_DOCKER: 1
         #   BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
