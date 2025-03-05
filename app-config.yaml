@@ -109,7 +109,13 @@ auth:
       development:
         clientId: ${GOOGLE_CLIENT_ID}
         clientSecret: ${GOOGLE_CLIENT_SECRET}
-          
+    
+    cognito:
+      development:
+        clientId: ${COGNITO_CLIENT_ID}
+        clientSecret: ${COGNITO_CLIENT_SECRET}
+        domain: ${COGNITO_DOMAIN}
+        
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
 

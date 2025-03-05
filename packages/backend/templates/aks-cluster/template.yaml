@@ -23,14 +23,14 @@ spec:
             requestUserCredentials:
               secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
-                #github:
-                #  - repo  # Allows creating repositories
-                 # - workflow  # Allows managing GitHub Actions
+                github:
+                - repo  # Allows creating repositories
+                - workflow  # Allows managing GitHub Actions
                 azure:
                 - email
                 - openid
             allowedHosts:
-             # - github.com
+              - github.com
               - dev.azure.com
     - title: Basic AKS Cluster Configuration
       required:
@@ -124,8 +124,8 @@ spec:
       input:
         workflowId: deploy_aks_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
-        branchOrTagName: 'main'
         token: ${{ secrets.USER_OAUTH_TOKEN }}
+        branchOrTagName: 'main'
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}

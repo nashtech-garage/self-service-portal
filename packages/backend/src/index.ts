@@ -12,6 +12,7 @@ import {
 
 import { stringifyEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
+import { cognitoAuthenticator, } from './auth/cognito';
 
 const customAuth = createBackendModule({
   // This ID must be exactly "auth" because that's the plugin it targets
@@ -36,6 +37,10 @@ const customAuth = createBackendModule({
           {
             providerId: 'google',
             authenticator: googleAuthenticator
+          },
+          {
+            providerId: 'cognito',
+            authenticator: cognitoAuthenticator
           }
         ];
 

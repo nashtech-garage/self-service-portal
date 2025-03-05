@@ -1,4 +1,8 @@
-import { microsoftAuthApiRef , githubAuthApiRef , googleAuthApiRef } from '@backstage/core-plugin-api';
+import { microsoftAuthApiRef , githubAuthApiRef , googleAuthApiRef , createApiRef } from '@backstage/core-plugin-api';
+
+export const cognitoAuthApiRef = createApiRef({
+  id: 'cognito-auth-provider',
+});
 
 export const providers = [
   {
@@ -18,5 +22,11 @@ export const providers = [
     title: 'Google',
     message: 'Sign in using Google',
     apiRef: googleAuthApiRef
+  },
+  {
+    id: 'cognito-auth-provider', 
+    title: 'AWS Cognito',
+    message: 'Sign in using AWS Cognito',
+    apiRef: cognitoAuthApiRef
   }
 ];
