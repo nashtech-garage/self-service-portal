@@ -22,12 +22,13 @@ spec:
           ui:options:
             requestUserCredentials:
               secretsKey: USER_OAUTH_TOKEN
-              #additionalScopes:
+              additionalScopes:
                 #github:
                 #  - repo  # Allows creating repositories
                  # - workflow  # Allows managing GitHub Actions
-               # azure:
-                #- user_impersonation 
+                azure:
+                - email
+                - openid
             allowedHosts:
              # - github.com
               - dev.azure.com
