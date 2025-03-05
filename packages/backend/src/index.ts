@@ -46,13 +46,16 @@ const customAuth = createBackendModule({
               authenticator,
               async signInResolver({ profile }, ctx) {
                 console.log(`start signInResolver`);
+                const values = Object.values(profile);
+                console.log(`profile: ${values}`);   
                 if (!profile.email) {
                   throw new Error(
                     'Login failed, user profile does not contain an email',
                   );
                 }
                 // Split the email into the local part and the domain.
-                const [localPart] = profile.email.split('@');          
+                const [localPart] = profile.email.split('@');   
+                console.log(`Email: ${localPart.toLowerCase()}`);   
                 // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
                 const userEntityRef = stringifyEntityRef({
                   kind: 'User',
@@ -60,6 +63,7 @@ const customAuth = createBackendModule({
                   namespace: DEFAULT_NAMESPACE,
                 });                                               
                                         
+                console.log(`userEntityRef: ${userEntityRef}`); 
                 return ctx.issueToken({
                   claims: {
                     sub: userEntityRef,

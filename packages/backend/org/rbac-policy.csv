@@ -3,11 +3,24 @@ g, user:default/le.caothihoang, role:default/catalog-admin
 g, user:default/le.caothihoang, role:default/admin-rbac
 g, user:default/le.caothihoang, role:default/scaffolder-admin
 g, user:default/le.caothihoang, role:default/plugin-admin
-g, user:default/lecao_nashtechglobal.com, role:default/developer
+
 g, user:default/devplatform225, role:default/catalog-admin
 g, user:default/devplatform225, role:default/scaffolder-admin
 g, user:default/duc.nguyenhoang, role:default/catalog-admin
 g, user:default/duc.nguyenhoang, role:default/scaffolder-admin
+g, user:default/platformengineering126, role:default/catalog-admin
+g, user:default/platformengineering126, role:default/admin-rbac
+g, user:default/platformengineering126, role:default/scaffolder-admin
+g, user:default/platformengineering126, role:default/plugin-admin
+g, user:default/lecao_nashtechglobal.com#ext#, role:default/catalog-admin
+g, user:default/lecao_nashtechglobal.com#ext#, role:default/admin-rbac
+g, user:default/lecao_nashtechglobal.com#ext#, role:default/scaffolder-admin
+g, user:default/lecao_nashtechglobal.com#ext#, role:default/plugin-admin
+
+g, user:default/lecao_azure, role:default/catalog-admin
+g, user:default/lecao_azure, role:default/admin-rbac
+g, user:default/lecao_azure, role:default/scaffolder-admin
+g, user:default/lecao_azure, role:default/plugin-admin
 
 # Assigning groups to roles
 g, group:default/platform-engineering, role:default/admin-catalog

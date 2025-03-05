@@ -1,35 +1,18 @@
 app:
-  title: Scaffolded Backstage App
+  title: Self Service Portal
   baseUrl: http://localhost:3000
 organization:
-  name: NashTech Backstage
+  name: NashTech Vietnam
 
 permission:
-  enabled: true  
+  enabled: false  
   rbac:
     policies-csv-file: ../../packages/backend/org/rbac-policy.csv
     conditionalPoliciesFile: ../../packages/backend/org/conditional-policies.yaml
     policyFileReload: true
 
-kubernetes:
-  serviceLocatorMethod:
-    type: 'multiTenant'
-  clusterLocatorMethods:
-    - type: 'config'
-      clusters:
-        - url: https://idp-dns-fuigvi8y.hcp.centralus.azmk8s.io:443
-          name: idp
-          title: 'Individual developer portal'
-          authProvider: azure
-          skipTLSVerify: true
-          
 backend:
-  # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/auth/service-to-service-auth for
-  # information on the format
-  # auth:
-  #   keys:
-  #     - secret: ${BACKEND_SECRET}
+
   baseUrl: http://localhost:7007
   listen:
     port: 7007
@@ -37,8 +20,6 @@ backend:
     # host: 127.0.0.1
   csp:
     connect-src: ["'self'", 'http:', 'https:']
-    # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
-    # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -50,19 +31,7 @@ backend:
     connection: ':memory:'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
-integrations:
-  github:
-    - host: github.com
-      # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
-      # about setting up the GitHub integration here: https://backstage.io/docs/integrations/github/locations#configuration
-      token: ${GITHUB_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using the API:
-    # - host: ghe.example.net
-    #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token: ${GHE_TOKEN}
-  azure:
-    - host: dev.azure.com
-      token: ${AZURE_TOKEN}
+
 proxy:
   endpoints:
     '/argocd/api':
@@ -119,6 +88,7 @@ auth:
         clientId: ${AZURE_CLIENT_ID}
         clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
+      
        # signIn:
        #   resolvers:
           # typically you would pick one of these

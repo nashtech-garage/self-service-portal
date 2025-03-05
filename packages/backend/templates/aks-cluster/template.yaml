@@ -16,12 +16,20 @@ spec:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository Location for ArgoCD to Deploy
+          title: Repository Location for ArgoCD to Deploy ( Owner is username)
           type: string
           ui:field: RepoUrlPicker
           ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              #additionalScopes:
+                #github:
+                #  - repo  # Allows creating repositories
+                 # - workflow  # Allows managing GitHub Actions
+               # azure:
+                #- user_impersonation 
             allowedHosts:
-              - github.com
+             # - github.com
               - dev.azure.com
     - title: Basic AKS Cluster Configuration
       required:
@@ -83,7 +91,7 @@ spec:
           dnsPrefix: ${{ parameters.dnsPrefix }}        
           owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
           repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
-    # This step publishes to Azure DevOps
+    # This step publishes to github
     - id: publish
       name: Publish to Github
       if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
@@ -92,6 +100,8 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.clusterName }}
         repoUrl: ${{ parameters.repoUrl }}
+        # here's where the secret can be used
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
         # This step publishes to Azure DevOps
     - id: publish
       name: Publish to Azure DevOps
@@ -104,7 +114,9 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
-    # Start a GitHub Action to build an GKE cluster with Crossplane
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    # Start a GitHub Action to build an AKS cluster with Crossplane
     - id: github-action
       name: Trigger GitHub Action
       action: github:actions:dispatch
@@ -112,6 +124,7 @@ spec:
         workflowId: deploy_aks_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
         branchOrTagName: 'main'
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}
@@ -120,15 +133,5 @@ spec:
           dnsPrefix: ${{ parameters.dnsPrefix }}          
           repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
           host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
-
-     # The final step is to register our new component in the catalog.
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
-  output:
-    links:
-      - title: A new repository created
-        url: ${{ steps['publish'].output.remoteUrl }}
+          username: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          token: ${{ secrets.USER_OAUTH_TOKEN }} 
