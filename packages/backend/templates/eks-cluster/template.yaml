@@ -20,6 +20,15 @@ spec:
           type: string
           ui:field: RepoUrlPicker
           ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                - repo  # Allows creating repositories
+                - workflow  # Allows managing GitHub Actions
+                azure:
+                - email
+                - openid
             allowedHosts:
               - github.com
               - dev.azure.com
@@ -72,6 +81,7 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.clusterName }}
         repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
 
     # This step publishes to Azure DevOps
     - id: publish
@@ -85,6 +95,7 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
 
 
     - id: github-action
@@ -94,6 +105,7 @@ spec:
         workflowId: deploy_eks_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
         branchOrTagName: 'main'
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}    
@@ -101,12 +113,6 @@ spec:
           host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
           customKyvernoPolicies: ${{ parameters.customKyvernoPolicies }}
 
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
 
   output:
     links:

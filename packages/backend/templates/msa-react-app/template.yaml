@@ -2,10 +2,10 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: react-app
-  title: New Microservice React App
-  description: Deploy a New Microservice React App on cluster
+  title: Creates and initializes a new React SPA
+  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts: Frontend, Backend, and Database.
   tags: 
-    - deployment
+    - application
 spec:
   owner: user:le.caothihoang
   type: application
@@ -19,6 +19,15 @@ spec:
           type: string
           ui:field: RepoUrlPicker
           ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                - repo  # Allows creating repositories
+                - workflow  # Allows managing GitHub Actions
+                azure:
+                - email
+                - openid
             allowedHosts:
               - github.com
               - dev.azure.com
@@ -106,6 +115,8 @@ spec:
         allowedHosts: ['github.com']
         description: This is msa reactjs ${{ parameters.appName }} app
         repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
 
     # This step publishes to Azure DevOps
     - id: publish
@@ -119,6 +130,8 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
 
     # Start a GitHub Action to build our API
     - id: github-action
@@ -128,6 +141,8 @@ spec:
         workflowId: deploy_msa_react_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
         branchOrTagName: 'main'
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
         workflowInputs:
           appName: ${{ parameters.appName }}
           backendName: ${{ parameters.backendName }}
