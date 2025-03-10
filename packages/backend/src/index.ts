@@ -13,6 +13,9 @@ import {
 import { stringifyEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 import { cognitoAuthenticator, } from './auth/cognito';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createGetSecretAction } from '../../../plugins/scaffolder-backend-module-scaffolder/src/actions/getSecret';
+
 
 const customAuth = createBackendModule({
   // This ID must be exactly "auth" because that's the plugin it targets
@@ -88,6 +91,24 @@ const customAuth = createBackendModule({
   },
 });
 
+const scaffolderModuleCustomExtensions = createBackendModule({
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderActionsExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      async init({ scaffolder /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        scaffolder.addActions(createGetSecretAction()); 
+      },
+    });
+  },
+});
+
 const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
@@ -142,5 +163,6 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 // scaffolder plugin
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'))
 backend.add(import('@backstage/plugin-scaffolder-backend-module-azure'));
+backend.add(scaffolderModuleCustomExtensions);
 
 backend.start();
