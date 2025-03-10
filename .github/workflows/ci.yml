@@ -29,16 +29,26 @@ jobs:
     
     name: Install package
     steps:
-      - uses: actions/checkout@v4 # v4
+      - name: Check package.json changes
+        id: package-json-change
+        uses: tj-actions/changed-files@v45
+        with:
+          files: package.json
+
+      - name: Checkout
+        uses: actions/checkout@v4 # v4
+        if: steps.package-json-change.outputs.any_changed == 'true'
 
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
+        if: steps.package-json-change.outputs.any_changed == 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
+        if: steps.package-json-change.outputs.any_changed == 'true'
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -47,6 +57,7 @@ jobs:
       
       - name: Install modules
         run: yarn install
+        if: steps.package-json-change.outputs.any_changed == 'true'
 
       # - uses: actions/cache@v4
       #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
