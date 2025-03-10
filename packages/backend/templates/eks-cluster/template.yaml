@@ -60,6 +60,11 @@ spec:
           type: string
           description: The source repository of the custome Kyverno policies specific to the cluster
   steps:
+    - id: validate-github-token
+      name: Validate Token
+      action: custom:get-secret
+      input:
+        secretKey: PORTAL_SECRET_GITHUB_TOKEN
     - id: fetch-base-eks-skeleton
       name: Fetch EKS Cluster skeleton
       action: fetch:template
@@ -98,19 +103,42 @@ spec:
 
 
     - id: github-action
-      name: Trigger GitHub Action
+      name: Trigger GitHub Action for github host
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
       action: github:actions:dispatch
       input:
         workflowId: deploy_eks_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
         branchOrTagName: 'main'
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        token:  ${{ steps['validate-github-token'].output.value }}
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}    
           repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
           host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
           customKyvernoPolicies: ${{ parameters.customKyvernoPolicies }}
+          username: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          repoURLToken: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    - id: github-action
+      name: Trigger GitHub Action for azure host
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_aks_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
+        token:  ${{ steps['validate-github-token'].output.value }}
+        branchOrTagName: 'main'
+        workflowInputs:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          kubernetesVersion: ${{ parameters.kubernetesVersion}}
+          dnsPrefix: ${{ parameters.dnsPrefix }}          
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
+          username: ${{ parameters.repoUrl | parseRepoUrl | pick('organization')}} 
+          repoURLToken: ${{ secrets.USER_OAUTH_TOKEN }}
 
 
   output:

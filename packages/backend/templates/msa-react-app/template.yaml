@@ -73,6 +73,11 @@ spec:
           description: Username of Docker Hub
           ui:autofocus: true
   steps:
+    - id: validate-github-token
+      name: Validate Token
+      action: custom:get-secret
+      input:
+        secretKey: PORTAL_SECRET_GITHUB_TOKEN
     - id: fetch-base
       name: Fetch template for Github repository
       if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
@@ -130,35 +135,3 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: ${{ secrets.USER_OAUTH_TOKEN }}
-
-
-    # Start a GitHub Action to build our API
-    - id: github-action
-      name: Trigger GitHub Action
-      action: github:actions:dispatch
-      input:
-        workflowId: deploy_msa_react_with_argocd.yaml
-        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
-        branchOrTagName: 'main'
-       # token: ${{ secrets.USER_OAUTH_TOKEN }}
-
-        workflowInputs:
-          appName: ${{ parameters.appName }}
-          backendName: ${{ parameters.backendName }}
-          backendImageName: ${{ parameters.backendImageName }}                 
-          frontendName: ${{ parameters.frontendName }}
-          frontendImageName: ${{ parameters.frontendImageName }}       
-          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }}
-          repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}}   
-          owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
-          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}    
-          orgProject: '{"organization": "${{ parameters.repoUrl | parseRepoUrl | pick(''organization'') }}", "project": "${{ parameters.repoUrl | parseRepoUrl | pick(''project'') }}"}'
-
-  output:
-    links:
-      - title: Repository
-        url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Open in catalog
-        icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}     
-      

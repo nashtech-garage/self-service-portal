@@ -24,7 +24,7 @@ on:
       username:
         description: 'Username of host'
         required: true
-      token:
+      repoURLToken:
         description: 'OAUTH token'
         required: true
 
@@ -47,10 +47,10 @@ jobs:
       run: |
         if [[ ${{ github.event.inputs.host }} == "github.com" ]]; then
           echo "Registering GitHub repository in ArgoCD..."
-          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.token }}
+          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.repoURLToken }}
         elif [[ ${{ github.event.inputs.host }} == "dev.azure.com" ]]; then
           echo "Registering Azure DevOps repository in ArgoCD..."
-          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.token }}
+          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.repoURLToken }}
         else
           echo "Unsupported repository host: $REPO_HOST"
           exit 1
