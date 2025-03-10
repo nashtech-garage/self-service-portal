@@ -31,7 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4 # v4
-        if: steps.package-json-change.outputs.any_changed == 'true'
 
       - name: Check package.json changes
         id: package-json-change
