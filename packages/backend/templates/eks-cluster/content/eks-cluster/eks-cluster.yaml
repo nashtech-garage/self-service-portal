@@ -1,0 +1,23 @@
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    region: ${{ values.region }}
+    roleArnRef:
+      name: eks-ex-cluster-role
+    vpcConfig:
+      - endpointPrivateAccess: false
+        endpointPublicAccess: true
+        subnetIdRefs:
+          - name: private-subnet-${{ values.region }}a
+          - name: public-subnet-${{ values.region }}b
+  writeConnectionSecretToRef:
+    name: ${{ values.clusterName }}-aws-connection-secret
+    namespace: upbound-system

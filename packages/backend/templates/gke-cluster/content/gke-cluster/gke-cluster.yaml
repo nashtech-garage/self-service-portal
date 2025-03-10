@@ -1,0 +1,20 @@
+apiVersion: container.gcp.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  labels:
+    cluster_name: ${{ values.clusterName }}
+  name: ${{ values.clusterName }}
+spec:
+  providerConfigRef:
+    name: gcp-provider-config
+  forProvider:
+    enableAutopilot: false
+    enableIntranodeVisibility: true
+    ipAllocationPolicy:
+      - {}
+    initialNodeCount: 1
+    location:  ${{ values.region }}
+    removeDefaultNodePool: true
+  writeConnectionSecretToRef:
+    name: ${{ values.clusterName }}-gcp-connection-secret
+    namespace: upbound-system

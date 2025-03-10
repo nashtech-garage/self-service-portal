@@ -1,0 +1,154 @@
+name: Manage GKE Cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      clusterName:
+        description: 'Cluster Name'
+        required: true
+      region:
+        description: 'Region'
+        required: true
+      machineType:
+        description: 'Machine Type'
+        required: true
+      nodeCount:
+        description: 'Node Count'
+        required: true
+      repoURLforArgo: 
+        description: 'The URL of the repository for Argo CD to deploy GKE'
+        required: true
+      host:
+        description: 'github.com or azure.dev.com'
+        required: true
+      username:
+        description: 'Username of host'
+        required: true
+      token:
+        description: 'OAUTH token'
+        required: true
+
+jobs:
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Install Argo CD CLI
+      run: |
+        sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo chmod +x /usr/local/bin/argocd
+
+    - name: Login to Argo CD 
+      run: argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASS }} --insecure --grpc-web 
+
+    - name: Register Repository in Argo CD
+      run: |
+        if [[ ${{ github.event.inputs.host }} == "github.com" ]]; then
+          echo "Registering GitHub repository in ArgoCD..."
+          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.token }}
+        elif [[ ${{ github.event.inputs.host }} == "dev.azure.com" ]]; then
+          echo "Registering Azure DevOps repository in ArgoCD..."
+          argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username ${{ github.event.inputs.username }} --password ${{ github.event.inputs.token }}
+        else
+          echo "Unsupported repository host: $REPO_HOST"
+          exit 1
+        fi  # This closes the if-elif-else block
+
+    - name: Create ArgoCD app for GCP provider
+      run: |
+        if argocd app get gcp-provider-app > /dev/null 2>&1; then
+          echo "gcp-provider-app already exists."
+        else
+          argocd app create gcp-provider-app \
+            --repo ${{ github.event.inputs.repoURLforArgo }} \
+            --path gcp \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace gcp-provider \
+            --project default \
+            --sync-policy automated \
+            --sync-option CreateNamespace=true \
+            --sync-retry-limit 5 \
+            --upsert \
+            --grpc-web
+        fi
+
+    - name: Wait for gcp-provider-app to become synced
+      run: |
+        TIMEOUT=660
+        INTERVAL=30
+        ELAPSED=0
+
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          APP_STATUS=$(argocd app get gcp-provider-app --output json)
+          HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+          SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+          echo "Application health status: $HEALTH_STATUS"
+          echo "Application sync status: $SYNC_STATUS"
+
+          if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+            echo "gcp-provider-app is healthy and synced. Proceeding..."
+            break
+          fi
+
+          echo "Waiting for gcp-provider-app to become healthy and synced..."
+          sleep $INTERVAL
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+          echo "gcp-provider-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Create ArgoCD app for GKE cluster
+      run: |
+        argocd app create gke-${{ github.event.inputs.clusterName }}-app \
+          --repo ${{ github.event.inputs.repoURLforArgo }} \
+          --path gke-cluster \
+          --dest-server https://kubernetes.default.svc \
+          --dest-namespace gcp-provider \
+          --project default \
+          --sync-policy automated \
+          --sync-retry-limit 5 \
+          --upsert \
+          --grpc-web
+
+    - name: Wait for gke-${{ github.event.inputs.clusterName }}-app to become synced
+      run: |
+            # Initialize time
+            TIMEOUT=660
+            INTERVAL=30
+            ELAPSED=0
+
+            # Loop until the app becomes healthy and synced or we hit the timeout
+            while [[ $ELAPSED -lt $TIMEOUT ]]; do
+              # Get the health status and sync status of the application
+              APP_STATUS=$(argocd app get gke-${{ github.event.inputs.clusterName }}-app --output json)
+              HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+              SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+              echo "Application health status: $HEALTH_STATUS"
+              echo "Application sync status: $SYNC_STATUS"
+
+              # If the app is both healthy and synced, break out of the loop
+              if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+                echo "gke-${{ github.event.inputs.clusterName }}-app is healthy and synced. Proceeding..."
+                break
+              fi
+
+              # Wait for the interval duration before checking again
+              echo "Waiting for gke-${{ github.event.inputs.clusterName }}-app to become healthy and synced..."
+              sleep $INTERVAL
+
+              # Increment the elapsed time
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+
+            # If the app is still not healthy or synced after the timeout, exit with an error
+            if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+              echo "gke-${{ github.event.inputs.clusterName }}-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+              exit 1
+            fi

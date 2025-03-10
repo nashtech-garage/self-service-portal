@@ -78,12 +78,16 @@ spec:
           title: DNS Prefix
           description: The DNS prefix for the AKS cluster
   steps:
+    - id: log-secret
+      name: Debugging Secret Value
+      action: debug:log
+      input:
+        message: "The GitHub Token (hidden for security) is: ${{ config.backend.githubToken }}"
     - id: fetch-base-aks-skeleton
       name: Fetch AKS Cluster skeleton
       action: fetch:template
       input:
-        url: 'https://github.com/nashtech-garage/crossplane-aks-skeleton'
-        targetPath: .
+        url: ./content
         values:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}
@@ -123,8 +127,8 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId: deploy_aks_with_argocd.yaml
-        repoUrl: 'github.com?owner=nashtech-garage&repo=how-to-devops'
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
+        token:  ${{ secrets.USER_OAUTH_TOKEN }}
         branchOrTagName: 'main'
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
@@ -135,4 +139,4 @@ spec:
           repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
           host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
           username: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
-          token: ${{ secrets.USER_OAUTH_TOKEN }} 
+          token:  ${{ secrets.USER_OAUTH_TOKEN }}

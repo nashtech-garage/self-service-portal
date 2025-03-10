@@ -90,8 +90,7 @@ spec:
       name: Fetch GKE Cluster skeleton
       action: fetch:template
       input:
-        url: 'https://github.com/nashtech-garage/crossplane-gke-skeleton'
-        targetPath: .
+        url: ./content
         values:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}

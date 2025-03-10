@@ -1,0 +1,43 @@
+
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: ex-eks-nodes-role-worker-node-policy
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    role: ex-eks-nodes-role
+    policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: ex-eks-nodes-role-eks-cni-policy
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    role: ex-eks-nodes-role
+    policyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: ex-eks-nodes-role-ec2-container-registry-read-only
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    role: ex-eks-nodes-role
+    policyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly

@@ -31,7 +31,9 @@ backend:
     connection: ':memory:'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
-
+  githubToken:
+    $env: PORTAL_SECRET_GITHUB_TOKEN
+    
 proxy:
   endpoints:
     '/argocd/api':
@@ -118,6 +120,8 @@ auth:
         
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
+  secrets:
+    GITHUB_TOKEN: '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'
 
 catalog:
   import:

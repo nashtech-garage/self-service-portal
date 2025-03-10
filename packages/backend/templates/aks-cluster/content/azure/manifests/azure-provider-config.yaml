@@ -1,0 +1,15 @@
+apiVersion: azure.upbound.io/v1beta1
+metadata:
+  name: azure-provider-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/depends-on: provider-azure-management
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+kind: ProviderConfig
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: upbound-system
+      name: azure-secret
+      key: creds

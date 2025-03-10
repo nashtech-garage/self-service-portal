@@ -1,0 +1,13 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: InternetGateway
+metadata:
+  name: igw-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  providerConfigRef:
+    name: aws-provider-config   # This line points to your specific ProviderConfig
+  forProvider:
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}

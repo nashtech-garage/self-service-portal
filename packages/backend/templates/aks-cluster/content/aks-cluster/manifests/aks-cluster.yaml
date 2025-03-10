@@ -1,0 +1,25 @@
+apiVersion: containerservice.azure.upbound.io/v1beta1
+kind: KubernetesCluster
+metadata:
+  name: ${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/depends-on: sub-${{ values.clusterName }}
+    argocd.argoproj.io/depends-on: ${{ values.resourceGroupName }}
+spec:
+  providerConfigRef:
+    name: azure-provider-config
+  forProvider:    
+    defaultNodePool:
+      - name: default
+        nodeCount: 1
+        vmSize: Standard_D2_v2
+        vnetSubnetIdRef:
+          name: sub-${{ values.clusterName }}
+    dnsPrefix: ${{ values.dnsPrefix }}
+    kubernetesVersion: ${{ values.kubernetesVersion }}
+    identity:
+      - type: SystemAssigned
+    location: ${{ values.region }}
+    resourceGroupNameRef:
+      name: ${{ values.resourceGroupName }}

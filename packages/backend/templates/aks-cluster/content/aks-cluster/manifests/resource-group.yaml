@@ -1,0 +1,12 @@
+apiVersion: azure.upbound.io/v1beta1
+kind: ResourceGroup
+metadata:
+  name: ${{ values.resourceGroupName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  providerConfigRef:
+    name: azure-provider-config  # This line points to your specific ProviderConfig
+  forProvider:
+    location: ${{ values.region }}
+

@@ -64,8 +64,7 @@ spec:
       name: Fetch EKS Cluster skeleton
       action: fetch:template
       input:
-        url: 'https://github.com/nashtech-garage/crossplane-eks-skeleton'
-        targetPath: .
+        url: ./content
         values:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}                 

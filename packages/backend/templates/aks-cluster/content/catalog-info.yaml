@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.clusterName }}
+  description: AKS cluster for ${{ values.clusterName }}
+  annotations:
+    argocd/app-name:  ${{ values.clusterName }}-app
+spec:
+  type: resource
+  lifecycle: development
+  system: back-stack
+  owner: user:le.caothihoang

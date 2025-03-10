@@ -1,0 +1,35 @@
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: private-subnet-${{ values.region }}a
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  providerConfigRef:
+    name: aws-provider-config  # This line points to your specific ProviderConfig
+  forProvider:
+    availabilityZone: ${{ values.region }}a
+    cidrBlock: 10.0.0.0/19
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+---
+
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: public-subnet-${{ values.region }}b
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  providerConfigRef:
+    name: aws-provider-config  # This line points to your specific ProviderConfig
+  forProvider:
+    availabilityZone: ${{ values.region }}b
+    cidrBlock: 10.0.32.0/19
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+    mapPublicIpOnLaunch: true
+---

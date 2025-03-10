@@ -1,0 +1,18 @@
+apiVersion: network.azure.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: sub-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/depends-on: ${{ values.resourceGroupName }}
+    argocd.argoproj.io/depends-on: vn-${{ values.clusterName }}
+spec:
+  providerConfigRef:
+    name: azure-provider-config
+  forProvider:
+    addressPrefixes:
+      - 10.2.0.0/24
+    resourceGroupNameRef:
+      name: ${{ values.resourceGroupName }}
+    virtualNetworkNameRef:
+      name: vn-${{ values.clusterName }}

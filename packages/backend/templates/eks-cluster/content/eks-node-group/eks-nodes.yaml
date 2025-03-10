@@ -1,0 +1,29 @@
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: nodegroup-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    clusterNameRef:
+      name: ${{ values.clusterName }}
+    nodeRoleArnRef:
+      name: ex-eks-nodes-role
+    region: ${{ values.region }}
+    capacityType: ON_DEMAND
+    instanceTypes: ["t3.medium"]
+    diskSize: 20
+    labels:
+      role: nodegroup-${{ values.clusterName }}
+    scalingConfig:
+      - desiredSize: 1
+        minSize: 1
+        maxSize: 1
+    subnetIdRefs:
+      - name: private-subnet-${{ values.region }}a
+      - name: public-subnet-${{ values.region }}b
+---

@@ -1,0 +1,174 @@
+name: Deploy a MSA React App
+
+on:
+  workflow_dispatch:
+    inputs:
+      appName: 
+        description: 'Application Name'
+        required: true
+      backendName:
+        description: 'Backend Name'
+        required: true
+      backendImageName:
+        description: 'Backend Container Image Name'
+        required: true
+      frontendName:
+        description: 'Frontend Name'
+        required: true
+      frontendImageName:
+        description: 'Frontend Container Image Name'
+        required: true
+      repoURLforArgo: 
+        description: 'The URL of the repository for Argo CD to deploy the MSA App'
+        required: true
+      repo:
+        description: 'Repo name'
+        required: true
+      owner:
+        description: 'owner of repo'
+        required: true
+      host:
+        description: 'github.com or azure.dev.com'
+        required: true
+      orgProject:
+        description: 'Azure DevOps organization, project'
+        required: true
+jobs:
+  deploy-msa-react:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+
+    - name: Install kubectl
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y kubectl
+
+    - name: Install NGINX
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y nginx
+    
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Install git
+      run: sudo apt install git
+
+    - name: Checkout external repository for Dockerfile
+      if: ${{ github.event.inputs.host == 'github.com' }}
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }}  # External repo with Dockerfile
+        path: ${{ github.event.inputs.repo }} # Where to check out the external repo
+        token: ${{ secrets.MYGITHUB_TOKEN }}
+
+
+    - name: Checkout Azure DevOps repository for Dockerfile
+      if: ${{ github.event.inputs.host == 'dev.azure.com' }}
+      run: |
+        orgProject='${{ github.event.inputs.orgProject }}'
+        organization=$(echo "$orgProject" | jq -r '.organization')
+        project=$(echo "$orgProject" | jq -r '.project')
+        repo_name="${{ github.event.inputs.repo }}"
+        echo "organization: $organization"
+        echo "project: $project"
+        echo "repo_name: $repo_name"
+        git clone https://${{ secrets.MYAZURE_TOKEN }}@dev.azure.com/$organization/$project/_git/$repo_name
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    - name: Build and Push Backend Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./${{ github.event.inputs.repo }}/src/backend  # Path to Dockerfile in external repo
+        file: ./${{ github.event.inputs.repo }}/src/backend/Dockerfile  # Explicit path to Dockerfile
+        push: true  # Push to Docker Hub
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.inputs.backendImageName }}:latest  # Change your-image-name
+    
+    - name: Build and Push FrontEnd Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./${{ github.event.inputs.repo }}/src/frontend  # Path to Dockerfile in external repo
+        file: ./${{ github.event.inputs.repo }}/src/frontend/Dockerfile  # Explicit path to Dockerfile
+        push: true  # Push to Docker Hub
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.inputs.frontendImageName }}:latest  # Change your-image-name
+
+    - name: Install Argo CD CLI
+      run: |
+        sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo chmod +x /usr/local/bin/argocd
+
+    - name: Login to Argo CD 
+      run: argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASS }} --insecure --grpc-web 
+
+    - name: Register Repository in Argo CD
+      run: |
+          if [[ ${{ github.event.inputs.host }} == "github.com" ]]; then
+            echo "Registering GitHub repository in ArgoCD..."
+            argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username hoanglecao --password ${{ secrets.MYGITHUB_TOKEN }}
+          
+          elif [[ ${{ github.event.inputs.host }} == "dev.azure.com" ]]; then
+            echo "Registering Azure DevOps repository in ArgoCD..."
+            argocd repo add ${{ github.event.inputs.repoURLforArgo }} --username lecao --password ${{ secrets.MYAZURE_TOKEN }}        
+          else
+            echo "Unsupported repository host: ${{ github.event.inputs.host }}"
+            exit 1
+          fi
+
+    - name: Deploy MSA React Application
+      run: |
+        argocd app create ${{ github.event.inputs.appName }} \
+          --repo ${{ github.event.inputs.repoURLforArgo }} \
+          --path deployment \
+          --dest-server https://kubernetes.default.svc \
+          --dest-namespace ${{ github.event.inputs.appName }} \
+          --project default \
+          --sync-policy automated \
+          --sync-option CreateNamespace=true \
+          --upsert \
+          --grpc-web
+    - name: Wait for ${{ github.event.inputs.appName }} to become synced
+      run: |
+        # Initialize time
+        TIMEOUT=660
+        INTERVAL=30
+        ELAPSED=0
+
+        # Loop until the app becomes healthy and synced or we hit the timeout
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          # Get the health status and sync status of the application
+          APP_STATUS=$(argocd app get ${{ github.event.inputs.appName }} --output json)
+          HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+          SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+          echo "Application health status: $HEALTH_STATUS"
+          echo "Application sync status: $SYNC_STATUS"
+
+          # If the app is both healthy and synced, break out of the loop
+          if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+            echo "${{ github.event.inputs.appName }} is healthy and synced. Proceeding..."
+            break
+          fi
+
+          # Wait for the interval duration before checking again
+          echo "Waiting for ${{ github.event.inputs.appName }}to become healthy and synced..."
+          sleep $INTERVAL
+
+          # Increment the elapsed time
+          ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          # If the app is still not healthy or synced after the timeout, exit with an error
+          if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+            echo "${{ github.event.inputs.appName }} did not become healthy and synced within $TIMEOUT seconds. Exiting..."
+            exit 1
+          fi

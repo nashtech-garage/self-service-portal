@@ -76,10 +76,3 @@ spec:
           owner: nashtech-garage
         
 
-     # The final step is to register our new component in the catalog.
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: 'github.com/nashtech-garage/microsoft-dev-box'
-        catalogInfoPath: '/catalog-info.yaml'

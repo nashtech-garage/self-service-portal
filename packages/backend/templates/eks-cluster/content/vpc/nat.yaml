@@ -1,0 +1,17 @@
+
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: NATGateway
+metadata:
+  name: nat-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  providerConfigRef:
+    name: aws-provider-config  # This line points to your specific ProviderConfig
+  forProvider:
+    region: ${{ values.region }}
+    connectivityType: public
+    allocationIdRef:
+      name: eip-${{ values.clusterName }}
+    subnetIdRef:
+        name: public-subnet-${{ values.region }}b

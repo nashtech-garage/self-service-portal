@@ -1,0 +1,21 @@
+---
+apiVersion: container.gcp.upbound.io/v1beta1
+kind: NodePool
+metadata:
+  labels:
+    cluster_name: ${{ values.clusterName }}-nodepool
+  name: ${{ values.clusterName }}-nodepool
+spec:
+  providerConfigRef:
+    name: gcp-provider-config
+  forProvider:
+    clusterSelector:
+      matchLabels:
+        cluster_name: ${{ values.clusterName }}
+    nodeConfig:
+      - machineType: ${{ values.machineType }}
+        diskSizeGb: 5
+        oauthScopes:
+          - https://www.googleapis.com/auth/cloud-platform
+        preemptible: true
+    nodeCount: ${{ values.nodeCount }}

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - aws-provider.yaml
+  - aws-provider-config.yaml
+  - provider-aws-ec2.yaml
+  - provider-aws-eks.yaml
+  - provider-aws-iam.yaml
+  - eks-iam-role.yaml
+  - eks-iam-role-attachment.yaml
+  - nodes-iam-role.yaml
+  - nodes-iam-role-attachment.yaml
+
+  

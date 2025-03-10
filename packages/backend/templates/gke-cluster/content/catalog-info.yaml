@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.clusterName }}
+  description: GKE cluster for ${{ values.clusterName }}
+  annotations:
+    argocd/app-name:  ${{ values.clusterName }}-app
+  links:
+    - url: https://console.cloud.google.com/kubernetes/clusters/details/${{ values.region }}/${{ values.clusterName }}
+      title: GKE Console
+spec:
+  type: service
+  lifecycle: development
+  system: NashTech
+  owner: user:le.caothihoang

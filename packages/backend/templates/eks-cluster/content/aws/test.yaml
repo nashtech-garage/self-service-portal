@@ -1,0 +1,25 @@
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: nodegroup-my-cluster-5
+spec:
+  providerConfigRef:
+    name: aws-provider-config 
+  forProvider:
+    clusterNameRef:
+      name: my-cluster-3
+    nodeRoleArnRef:
+      name: ex-eks-nodes-role
+    region: us-east-1
+    capacityType: ON_DEMAND
+    instanceTypes: ["t3.medium"]
+    diskSize: 20
+    labels:
+      role: nodegroup-my-cluster-3
+    scalingConfig:
+      - desiredSize: 1
+        minSize: 1
+        maxSize: 1
+    subnetIdRefs:
+      - name: private-subnet-us-east-1a
+      - name: public-subnet-us-east-1b

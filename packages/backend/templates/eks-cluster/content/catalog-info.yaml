@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.clusterName }}
+  description: EKS cluster for ${{ values.clusterName }}
+  annotations:
+    github.com/project-slug: value
+spec:
+  type: resource
+  lifecycle: development
+  system: back-stack
+  owner: user:le.caothihoang
+  links:
+    - url: https://${{ values.region }}.console.aws.amazon.com/eks/home?region=${{ values.region }}#/clusters/${{ values.clusterName }}
+      title: EKS Console
