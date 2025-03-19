@@ -1,0 +1,40 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: SecurityGroup
+metadata:
+  name: elasticache-sg
+spec:
+  forProvider:
+    description: "Security group for ElastiCache"
+    groupName: elasticache-sg
+    vpcId: YOUR_VPC_ID
+  providerConfigRef:
+    name: aws-provider
+---
+apiVersion: cache.aws.crossplane.io/v1beta1
+kind: CacheSubnetGroup
+metadata:
+  name: elasticache-subnet-group
+spec:
+  forProvider:
+    description: "Subnet group for ElastiCache"
+    subnetIds:
+      - SUBNET_ID_1
+      - SUBNET_ID_2
+  providerConfigRef:
+    name: aws-provider
+---
+apiVersion: cache.aws.crossplane.io/v1beta1
+kind: ReplicationGroup
+metadata:
+  name: my-elasticache-cluster
+spec:
+  forProvider:
+    replicationGroupDescription: "My ElastiCache Cluster"
+    engine: "redis"
+    cacheNodeType: "cache.t3.micro"
+    numCacheClusters: 1
+    cacheSubnetGroupName: elasticache-subnet-group
+    securityGroupIds:
+      - elasticache-sg
+  providerConfigRef:
+    name: aws-provider
