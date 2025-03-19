@@ -1,0 +1,29 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: private-subnet-a
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: my-eks-vpc
+    cidrBlock: 10.0.1.0/24
+    availabilityZone: us-east-1a
+    mapPublicIpOnLaunch: false
+  providerConfigRef:
+    name: aws-provider
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: private-subnet-b
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: my-eks-vpc
+    cidrBlock: 10.0.2.0/24
+    availabilityZone: us-east-1b
+    mapPublicIpOnLaunch: false
+  providerConfigRef:
+    name: aws-provider

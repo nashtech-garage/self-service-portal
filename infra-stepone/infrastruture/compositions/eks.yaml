@@ -1,0 +1,34 @@
+apiVersion: eks.aws.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-crossplane-eks
+spec:
+  forProvider:
+    region: us-east-1
+    roleArnRef:
+      name: eks-cluster-role
+    resourcesVpcConfig:
+      subnetIds:
+        - subnet-12345678  # Replace with actual subnet IDs
+        - subnet-87654321
+  providerConfigRef:
+    name: aws-provider
+
+---
+apiVersion: eks.aws.crossplane.io/v1alpha1
+kind: NodeGroup
+metadata:
+  name: my-eks-node-group
+spec:
+  forProvider:
+    region: us-east-1
+    clusterName: my-crossplane-eks
+    nodeRoleArnRef:
+      name: eks-node-role
+    scalingConfig:
+      minSize: 2
+      maxSize: 5
+      desiredSize: 3
+  providerConfigRef:
+    name: aws-provider
+

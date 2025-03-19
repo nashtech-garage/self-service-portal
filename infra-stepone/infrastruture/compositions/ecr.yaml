@@ -1,0 +1,11 @@
+apiVersion: ecr.aws.crossplane.io/v1alpha1
+kind: Repository
+metadata:
+  name: my-crossplane-repo
+spec:
+  forProvider:
+    region: ap-southeast-2
+    imageTagMutability: MUTABLE
+    scanOnPush: true
+  providerConfigRef:
+    name: aws-provider
