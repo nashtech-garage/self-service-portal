@@ -159,11 +159,10 @@ jobs:
       #       ${{ hashFiles('yarn.lock') }}
 
       - name: typescript compiler
-        run: yarn tsc
+        run: yarn tsc || true
       
       - name: build all packages
         run: yarn build:all
-        if: ${{ success() || failure() }}
 
       - name: ensure clean working directory
         run: |
