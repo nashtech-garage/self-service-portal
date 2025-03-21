@@ -55,7 +55,7 @@ jobs:
       #   run: apt update && apt install -y build-essential
       
       - name: Install modules
-        run: yarn install
+        run: yarn install --frozen-lockfile
         if: steps.package-json-change.outputs.any_changed == 'true'
 
       # - uses: actions/cache@v4
@@ -90,7 +90,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       
       - name: Install modules
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       # - uses: actions/cache@v4
       #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -148,7 +148,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install modules
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       # - uses: actions/cache@v4
       #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -266,7 +266,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install modules
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Download package/app build artifact
         uses: actions/download-artifact@v4
