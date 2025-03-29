@@ -4,11 +4,11 @@ metadata:
   name: my-rds-subnet-group
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     description: "Subnet group for private RDS"
-    subnetIds:
-      - private-subnet-a
-      - private-subnet-b
+    subnetIdRefs: 
+      - name: private-subnet-a
+      - name: private-subnet-b
   providerConfigRef:
     name: aws-provider
 ---
@@ -18,7 +18,7 @@ metadata:
   name: rds-security-group
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     vpcIdRef:
       name: my-eks-vpc
     description: "Allow EKS nodes to connect to RDS"
@@ -31,15 +31,15 @@ metadata:
   name: rds-ingress-rule
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     securityGroupIdRef:
       name: rds-security-group
     type: ingress
     protocol: tcp
-    fromPort: 5432  # PostgreSQL (Use 3306 for MySQL)
+    fromPort: 5432
     toPort: 5432
     sourceSecurityGroupIdRef:
-      name: eks-node-security-group  # Allow EKS nodes to connect
+      name: eks-node-security-group
   providerConfigRef:
     name: aws-provider
 ---
@@ -49,17 +49,17 @@ metadata:
   name: my-private-rds
 spec:
   forProvider:
-    region: us-east-1
-    dbInstanceClass: db.t3.medium  # Choose instance size
+    region: ap-southeast-2
+    dbInstanceClass: db.t3.medium
     allocatedStorage: 20
     engine: postgres
-    engineVersion: "16"  # Change to "8.0" for MySQL
+    engineVersion: "16"
     masterUsername: admin
     masterUserPasswordSecretRef:
       namespace: crossplane-system
       name: my-rds-secret
       key: password
-    publiclyAccessible: false  # Ensures private subnet usage
+    publiclyAccessible: false
     vpcSecurityGroupIds:
       - rds-security-group
     dbSubnetGroupNameRef:
@@ -73,7 +73,7 @@ metadata:
   name: eks-to-rds
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     securityGroupIdRef:
       name: eks-node-security-group
     type: egress
@@ -91,7 +91,7 @@ metadata:
   name: my-rds-secret
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     name: my-db-secret
     secretString: |
       {
@@ -100,6 +100,3 @@ spec:
       }
   providerConfigRef:
     name: aws-provider
-
-
-

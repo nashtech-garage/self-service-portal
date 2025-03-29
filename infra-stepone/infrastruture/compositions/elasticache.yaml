@@ -6,7 +6,8 @@ spec:
   forProvider:
     description: "Security group for ElastiCache"
     groupName: elasticache-sg
-    vpcId: YOUR_VPC_ID
+    vpcIdRef: 
+      name: my-eks-vpc
   providerConfigRef:
     name: aws-provider
 ---
@@ -17,9 +18,9 @@ metadata:
 spec:
   forProvider:
     description: "Subnet group for ElastiCache"
-    subnetIds:
-      - SUBNET_ID_1
-      - SUBNET_ID_2
+    subnetIdRefs: 
+      - name: private-subnet-a
+      - name: private-subnet-b
   providerConfigRef:
     name: aws-provider
 ---

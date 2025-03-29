@@ -1,16 +1,16 @@
 apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: Cluster
 metadata:
-  name: my-crossplane-eks
+  name: stepone-eks
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     roleArnRef:
       name: eks-cluster-role
     resourcesVpcConfig:
-      subnetIds:
-        - subnet-12345678  # Replace with actual subnet IDs
-        - subnet-87654321
+      subnetIdRefs:  # Sử dụng subnetIdRefs để tham chiếu đến các Subnet
+        - name: private-subnet-a  # Tên của Subnet trong subnet.yaml
+        - name: private-subnet-b
   providerConfigRef:
     name: aws-provider
 
@@ -18,17 +18,16 @@ spec:
 apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: NodeGroup
 metadata:
-  name: my-eks-node-group
+  name: stepone-node-group
 spec:
   forProvider:
-    region: us-east-1
-    clusterName: my-crossplane-eks
+    region: ap-southeast-2
+    clusterName: stepone-eks
     nodeRoleArnRef:
       name: eks-node-role
     scalingConfig:
-      minSize: 2
-      maxSize: 5
-      desiredSize: 3
+      minSize: 1
+      maxSize: 2
+      desiredSize: 1
   providerConfigRef:
     name: aws-provider
-

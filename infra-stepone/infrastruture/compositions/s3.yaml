@@ -1,7 +1,7 @@
 apiVersion: s3.aws.crossplane.io/v1beta1
 kind: Bucket
 metadata:
-  name: infra-stepone
+  name: s3-infra-stepone
 spec:
   forProvider:
     locationConstraint: ap-southeast-2

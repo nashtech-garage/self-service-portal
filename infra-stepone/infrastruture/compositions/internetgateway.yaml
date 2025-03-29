@@ -4,7 +4,7 @@ metadata:
   name: my-eks-igw
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     vpcIdRef:
       name: my-eks-vpc
   providerConfigRef:
@@ -16,7 +16,7 @@ metadata:
   name: my-eks-natgw
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     subnetIdRef:
       name: public-subnet  # You need a public subnet for the NAT Gateway
   providerConfigRef:
@@ -28,7 +28,7 @@ metadata:
   name: private-subnet-route
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     vpcIdRef:
       name: my-eks-vpc
   providerConfigRef:
@@ -40,7 +40,7 @@ metadata:
   name: nat-route
 spec:
   forProvider:
-    region: us-east-1
+    region: ap-southeast-2
     routeTableIdRef:
       name: private-subnet-route
     destinationCidrBlock: 0.0.0.0/0
@@ -48,26 +48,7 @@ spec:
       name: my-eks-natgw
   providerConfigRef:
     name: aws-provider
----
-apiVersion: eks.aws.crossplane.io/v1alpha1
-kind: NodeGroup
-metadata:
-  name: my-private-nodegroup
-spec:
-  forProvider:
-    region: us-east-1
-    clusterName: my-private-eks
-    nodeRoleArnRef:
-      name: eks-node-role
-    subnetIds:
-      - private-subnet-a
-      - private-subnet-b
-    scalingConfig:
-      minSize: 2
-      maxSize: 5
-      desiredSize: 3
-  providerConfigRef:
-    name: aws-provider
+
 
 
 
