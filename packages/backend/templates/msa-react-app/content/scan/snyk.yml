@@ -1,0 +1,18 @@
+parameters:
+  enabled: boolean
+
+jobs:
+  - job: Job1
+    displayName: Job 1 - Snyk Scan
+    condition: eq('${{ parameters.enabled }}', true)
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - script: |
+          echo "Running Snyk Scan..."
+          npm install -g snyk
+          snyk auth $SNYK_TOKEN
+          snyk test
+        displayName: "Run Snyk Scan"
+        env:
+          SNYK_TOKEN: $(SNYK_TOKEN)

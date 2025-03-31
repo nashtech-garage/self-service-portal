@@ -1,0 +1,17 @@
+parameters:
+  enabled: boolean
+
+jobs:
+  - job: Job3
+    displayName: Job 3 - Trivy Scan
+    condition: eq('${{ parameters.enabled }}', true)
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - script: |
+          echo "Running Trivy Scan..."
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+          ./trivy image --exit-code 1 --severity HIGH $(TRIVY_IMAGE)
+        displayName: "Run Trivy Scan"
+        env:
+          TRIVY_IMAGE: $(TRIVY_IMAGE)

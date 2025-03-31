@@ -1,0 +1,21 @@
+parameters:
+  enabled: boolean
+
+jobs:
+  - job: Job2
+    displayName: Job 2 - SonarQube Analysis
+    condition: eq('${{ parameters.enabled }}', true)
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: SonarQubePrepare@5
+        inputs:
+          SonarQube: 'SonarQubeServiceEndpoint'
+          scannerMode: 'CLI'
+          configMode: 'manual'
+          cliProjectKey: $(SONAR_PROJECT_KEY)
+          cliSources: '.'
+      - task: SonarQubeAnalyze@5
+      - task: SonarQubePublish@5
+        inputs:
+          pollingTimeoutSec: '300'
