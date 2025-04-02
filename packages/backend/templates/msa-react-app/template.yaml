@@ -34,22 +34,15 @@ spec:
 
     - title: Pipeline Configuration
       required:
-        - pipelineName
         - repoUrl
         - branchName
         - project
         - folder
         - name
         - repositoryId
-        - repositoryName
+        - scanRepositoryName
+        - scanPipelineName
       properties:
-        pipelineName:
-          title: Azure DevOps Pipeline Name
-          type: string
-          description: Provide a unique name for your pipeline.
-          minLength: 3
-          maxLength: 50
-          pattern: "^[a-zA-Z0-9-_]+$" # Letters, numbers, dashes, underscores only
         repoUrl:
           title: Repository URL
           type: string
@@ -62,73 +55,73 @@ spec:
           type: string
           title: Project
           description: Azure DevOps project name
-          default: my-devops-project
+          default: azure-devops-project
         folder:
           type: string
           title: Folder
           description: Pipeline folder path
           default: /
-        name:
+        scanPipelineName:
           type: string
           title: Pipeline Name
           description: Name for the new pipeline
-          default: my-pipeline
+          default: scan
         repositoryId:
           type: string
           title: Repository ID
           description: Repository's unique ID
-          default: 12345abcde
-        repositoryName:
+          default: ${{ secrets.AZURE_DEVOPS_PAT }}
+        scanRepositoryName:
           type: string
           title: Repository Name
           description: Name of the repository
-          default: my-repository
+          default: Scan
         branchName:
           type: string
           title: Branch Name
           description: The name of the branch to be used for the pipeline
           default: main
-    # - title: Basic React Configuration
-    #   required:
-    #     - appName
-    #     - backendName
-    #     - backendImageName
-    #     - frontendName
-    #     - frontendImageName
-    #   properties:
-    #     appName:
-    #       title: Application Name
-    #       type: string
-    #       description: The name of the msa react application
-    #       ui:autofocus: true
-    #     backendName:
-    #       title: Backend Name
-    #       type: string
-    #       description: The name of the backend service
-    #       ui:autofocus: true
-    #     backendImageName:
-    #       title: Backend Container Image Name
-    #       type: string
-    #       description: The name of your backend container image
-    #     frontendName:
-    #       title: Frontend Name
-    #       type: string
-    #       description: The name of the frontend service
-    #       ui:autofocus: true
-    #     frontendImageName:
-    #       title: Fronent Container Image Name
-    #       type: string
-    #       description: The name of your frontent container image
+    - title: Basic React Configuration
+      required:
+        - appName
+        - backendName
+        - backendImageName
+        - frontendName
+        - frontendImageName
+      properties:
+        appName:
+          title: Application Name
+          type: string
+          description: The name of the msa react application
+          ui:autofocus: true
+        backendName:
+          title: Backend Name
+          type: string
+          description: The name of the backend service
+          ui:autofocus: true
+        backendImageName:
+          title: Backend Container Image Name
+          type: string
+          description: The name of your backend container image
+        frontendName:
+          title: Frontend Name
+          type: string
+          description: The name of the frontend service
+          ui:autofocus: true
+        frontendImageName:
+          title: Fronent Container Image Name
+          type: string
+          description: The name of your frontent container image
     
-    # - title: Choose UserName of Docker Hub
-    #   required:
-    #     - dockerHubUserName
-    #   properties:
-    #     dockerHubUserName:
-    #       title: Username of Docker Hub
-    #       type: string
-    #       description: Username of Docker Hub
-    #       ui:autofocus: true
+    - title: Choose UserName of Docker Hub
+      required:
+        - dockerHubUserName
+      properties:
+        dockerHubUserName:
+          title: Username of Docker Hub
+          type: string
+          description: Username of Docker Hub
+          ui:autofocus: true
     - title: Scan
       properties:
         Tools:
@@ -161,26 +154,26 @@ spec:
 
     
   steps:
-    # - id: validate-github-token
-    #   name: Validate Token
-    #   action: custom:get-secret
-    #   input:
-    #     secretKey: PORTAL_SECRET_GITHUB_TOKEN
-    # - id: fetch-base
-    #   name: Fetch template for Github repository
-    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
-    #   action: fetch:template
-    #   input:
-    #     url: 'https://github.com/nashtech-garage/scaffold-msa-react'
-    #     targetPath: .
-    #     values:
-    #       appName: ${{ parameters.appName }}
-    #       backendName: ${{ parameters.backendName }}
-    #       backendImageName: ${{ parameters.backendImageName }}                 
-    #       frontendName: ${{ parameters.frontendName }}
-    #       frontendImageName: ${{ parameters.frontendImageName }}       
-    #       dockerHubUserName: ${{ parameters.dockerHubUserName }}    
-    #       repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('host') }}/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+    - id: validate-github-token
+      name: Validate Token
+      action: custom:get-secret
+      input:
+        secretKey: PORTAL_SECRET_GITHUB_TOKEN
+    - id: fetch-base
+      name: Fetch template for Github repository
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: fetch:template
+      input:
+        url: 'https://github.com/nashtech-garage/scaffold-msa-react'
+        targetPath: .
+        values:
+          appName: ${{ parameters.appName }}
+          backendName: ${{ parameters.backendName }}
+          backendImageName: ${{ parameters.backendImageName }}                 
+          frontendName: ${{ parameters.frontendName }}
+          frontendImageName: ${{ parameters.frontendImageName }}       
+          dockerHubUserName: ${{ parameters.dockerHubUserName }}    
+          repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('host') }}/${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
 
     - id: fetch-base
       name: Fetch template for Azure DevOps repository
@@ -199,15 +192,15 @@ spec:
           
   
     # This step publishes the contents of the working directory to GitHub.
-    # - id: publish
-    #   name: Publish to Github
-    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
-    #   action: publish:github
-    #   input:
-    #     allowedHosts: ['github.com']
-    #     description: This is msa reactjs ${{ parameters.appName }} app
-    #     repoUrl: ${{ parameters.repoUrl }}
-    #     token: ${{ secrets.USER_OAUTH_TOKEN }}
+    - id: publish
+      name: Publish to Github
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is msa reactjs ${{ parameters.appName }} app
+        repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
 
 
     # This step publishes to Azure DevOps
@@ -222,7 +215,7 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
-        token: "CEqdyNePuMOSfaUWIv89MnfFyZLxYni2du3GkvqeRG5gaNxKPKmXJQQJ99BCACAAAAAAAAAAAAASAZDO27w6"
+        token: ${{ secrets.AZURE_DEVOPS_PAT }}
         filePath: scan/scan.yaml
     
     # - id: publish
@@ -249,4 +242,4 @@ spec:
         repositoryId: ${{ parameters.repositoryId }}
         repositoryName: ${{ parameters.repositoryName }}
         branchName: ${{ parameters.branchName }}
-        token: "CEqdyNePuMOSfaUWIv89MnfFyZLxYni2du3GkvqeRG5gaNxKPKmXJQQJ99BCACAAAAAAAAAAAAASAZDO27w6"
+        token: ${{ secrets.AZURE_DEVOPS_PAT }}
