@@ -38,7 +38,6 @@ spec:
         - branchName
         - project
         - folder
-        - name
         - repositoryId
         - scanRepositoryName
         - scanPipelineName
@@ -192,15 +191,15 @@ spec:
           
   
     # This step publishes the contents of the working directory to GitHub.
-    - id: publish
-      name: Publish to Github
-      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
-      action: publish:github
-      input:
-        allowedHosts: ['github.com']
-        description: This is msa reactjs ${{ parameters.appName }} app
-        repoUrl: ${{ parameters.repoUrl }}
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
+    # - id: publish
+    #   name: Publish to Github
+    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+    #   action: publish:github
+    #   input:
+    #     allowedHosts: ['github.com']
+    #     description: This is msa reactjs ${{ parameters.appName }} app
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     token: ${{ secrets.USER_OAUTH_TOKEN }}
 
 
     # This step publishes to Azure DevOps
@@ -238,7 +237,7 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         folder: ${{ parameters.folder }}
-        name: ${{ parameters.name }}
+        name: ${{ parameters.scanPipelineName }}
         repositoryId: ${{ parameters.repositoryId }}
         repositoryName: ${{ parameters.repositoryName }}
         branchName: ${{ parameters.branchName }}
