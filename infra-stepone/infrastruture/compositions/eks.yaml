@@ -1,33 +1,48 @@
-apiVersion: eks.aws.crossplane.io/v1alpha1
+apiVersion: eks.aws.upbound.io/v1beta1
 kind: Cluster
 metadata:
   name: stepone-eks
 spec:
   forProvider:
     region: ap-southeast-2
-    roleArnRef:
-      name: eks-cluster-role
+    roleArnSelector:
+      matchControllerRef: true
+      matchLabels:
+        role-name: stepone-eks-role
+    version: "1.29"
     resourcesVpcConfig:
-      subnetIdRefs:  # Sử dụng subnetIdRefs để tham chiếu đến các Subnet
-        - name: private-subnet-a  # Tên của Subnet trong subnet.yaml
-        - name: private-subnet-b
+      subnetIdSelector:
+        matchControllerRef: true
+        matchLabels:
+          vpc-name: stepone-vpc
+      endpointPublicAccess: true
+      endpointPrivateAccess: true
   providerConfigRef:
-    name: aws-provider
+    name: default
 
 ---
-apiVersion: eks.aws.crossplane.io/v1alpha1
+apiVersion: eks.aws.upbound.io/v1beta1
 kind: NodeGroup
 metadata:
   name: stepone-node-group
 spec:
   forProvider:
-    region: ap-southeast-2
-    clusterName: stepone-eks
-    nodeRoleArnRef:
-      name: eks-node-role
+    region: up-southeast-2
+    clusterNameRef:
+      name: stepone-eks
+    nodeRoleArnSelector:
+      matchControllerRef: true
+      matchLabels:
+        role-name: stepone-eks-role
+    subnetIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        vpc-name: stepone-vpc
+    instanceTypes:
+      - t3.medium
     scalingConfig:
       minSize: 1
-      maxSize: 2
-      desiredSize: 1
+      maxSize: 3
+      desiredSize: 2
   providerConfigRef:
-    name: aws-provider
+    name: default

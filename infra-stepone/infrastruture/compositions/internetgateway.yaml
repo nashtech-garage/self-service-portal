@@ -1,54 +1,87 @@
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: public-subnet-a
+  labels:
+    vpc-name: stepone-vpc
+    subnet-type: public
+spec:
+  forProvider:
+    region: ap-southeast-2
+    vpcIdSelector:
+      matchControllerRef: true
+    cidrBlock: 10.0.3.0/24
+    availabilityZone: us-east-1a
+    mapPublicIpOnLaunch: true
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: InternetGateway
 metadata:
-  name: my-eks-igw
+  name: stepone-igw
 spec:
   forProvider:
-    region: ap-southeast-2
-    vpcIdRef:
-      name: my-eks-vpc
+    region: us-east-1
+    vpcIdSelector:
+      matchControllerRef: true
   providerConfigRef:
-    name: aws-provider
+    name: default
 ---
-apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: NatGateway
-metadata:
-  name: my-eks-natgw
-spec:
-  forProvider:
-    region: ap-southeast-2
-    subnetIdRef:
-      name: public-subnet  # You need a public subnet for the NAT Gateway
-  providerConfigRef:
-    name: aws-provider
----
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: RouteTable
 metadata:
-  name: private-subnet-route
+  name: stepone-public-rt
 spec:
   forProvider:
     region: ap-southeast-2
-    vpcIdRef:
-      name: my-eks-vpc
+    vpcIdSelector:
+      matchControllerRef: true
   providerConfigRef:
-    name: aws-provider
+    name: default
 ---
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: Route
 metadata:
-  name: nat-route
+  name: stepone-public-route
 spec:
   forProvider:
     region: ap-southeast-2
-    routeTableIdRef:
-      name: private-subnet-route
+    routeTableIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        rt-type: public
     destinationCidrBlock: 0.0.0.0/0
-    natGatewayIdRef:
-      name: my-eks-natgw
+    gatewayIdSelector:
+      matchControllerRef: true
   providerConfigRef:
-    name: aws-provider
-
-
-
-
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: stepone-public-rt-association
+spec:
+  forProvider:
+    region: ap-southeast-2
+    subnetIdSelector:
+      matchLabels:
+        subnet-type: public
+    routeTableIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        rt-type: public
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: stepone-private-rt
+spec:
+  forProvider:
+    region: ap-southeast-2
+    vpcIdSelector:
+      matchControllerRef: true
+  providerConfigRef:
+    name: default

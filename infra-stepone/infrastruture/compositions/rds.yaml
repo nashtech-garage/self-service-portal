@@ -1,71 +1,62 @@
-apiVersion: rds.aws.crossplane.io/v1beta1
-kind: DBSubnetGroup
+apiVersion: database.aws.upbound.io/v1beta1
+kind: SubnetGroup
 metadata:
-  name: my-rds-subnet-group
+  name: stepone-db-subnet-group
 spec:
   forProvider:
     region: ap-southeast-2
-    description: "Subnet group for private RDS"
-    subnetIdRefs: 
-      - name: private-subnet-a
-      - name: private-subnet-b
+    description: Subnet group for stepone RDS
+    subnetIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        vpc-name: stepone-vpc
   providerConfigRef:
-    name: aws-provider
+    name: default
+
 ---
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: SecurityGroup
 metadata:
-  name: rds-security-group
+  name: stepone-rds-sg
 spec:
   forProvider:
     region: ap-southeast-2
-    vpcIdRef:
-      name: my-eks-vpc
-    description: "Allow EKS nodes to connect to RDS"
+    vpcIdSelector:
+      matchControllerRef: true
+    description: Security group for stepone RDS
+    ingress:
+      - fromPort: 3306
+        toPort: 3306
+        protocol: tcp
+        cidrBlocks:
+          - 10.0.0.0/16
   providerConfigRef:
-    name: aws-provider
+    name: default
 ---
-apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: SecurityGroupRule
-metadata:
-  name: rds-ingress-rule
-spec:
-  forProvider:
-    region: ap-southeast-2
-    securityGroupIdRef:
-      name: rds-security-group
-    type: ingress
-    protocol: tcp
-    fromPort: 5432
-    toPort: 5432
-    sourceSecurityGroupIdRef:
-      name: eks-node-security-group
-  providerConfigRef:
-    name: aws-provider
----
-apiVersion: rds.aws.crossplane.io/v1beta1
+apiVersion: database.aws.upbound.io/v1beta1
 kind: DBInstance
 metadata:
-  name: my-private-rds
+  name: stepone-rds
 spec:
   forProvider:
     region: ap-southeast-2
-    dbInstanceClass: db.t3.medium
+    engine: mysql
+    engineVersion: "8.0"
+    instanceClass: db.t3.micro
     allocatedStorage: 20
-    engine: postgres
-    engineVersion: "16"
-    masterUsername: admin
-    masterUserPasswordSecretRef:
+    dbName: mydatabase
+    username: admin
+    passwordSecretRef:
       namespace: crossplane-system
-      name: my-rds-secret
+      name: rds-password
       key: password
-    publiclyAccessible: false
-    vpcSecurityGroupIds:
-      - rds-security-group
-    dbSubnetGroupNameRef:
-      name: my-rds-subnet-group
+    dbSubnetGroupNameSelector:
+      matchControllerRef: true
+    vpcSecurityGroupIdsSelector:
+      matchControllerRef: true
+    skipFinalSnapshot: true
   providerConfigRef:
-    name: aws-provider
+    name: default
 ---
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: SecurityGroupRule

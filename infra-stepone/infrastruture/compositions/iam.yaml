@@ -1,71 +1,35 @@
-apiVersion: iam.aws.crossplane.io/v1beta1
+apiVersion: iam.aws.upbound.io/v1beta1
 kind: Role
 metadata:
-  name: eks-cluster-role
+  name: stepone-eks-role
 spec:
   forProvider:
-    region: ap-southeast-2
     assumeRolePolicyDocument: |
       {
         "Version": "2012-10-17",
         "Statement": [
           {
             "Effect": "Allow",
-            "Principal": { "Service": "eks.amazonaws.com" },
+            "Principal": {
+              "Service": "eks.amazonaws.com"
+            },
             "Action": "sts:AssumeRole"
           }
         ]
       }
   providerConfigRef:
-    name: aws-provider
+    name: default
+
 ---
-apiVersion: iam.aws.crossplane.io/v1beta1
+apiVersion: iam.aws.upbound.io/v1beta1
 kind: RolePolicyAttachment
 metadata:
-  name: eks-cluster-role-attachment
+  name: stepone-eks-role-policy
 spec:
   forProvider:
-    region: ap-southeast-2
+    roleNameRef:
+      name: stepone-eks-role
     policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
-    roleNameRef:
-      name: eks-cluster-role
   providerConfigRef:
-    name: aws-provider
-
----
-apiVersion: iam.aws.crossplane.io/v1beta1
-kind: Role
-metadata:
-  name: eks-node-role
-spec:
-  forProvider:
-    region: us-east-1
-    assumeRolePolicyDocument: |
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Principal": { "Service": "ec2.amazonaws.com" },
-            "Action": "sts:AssumeRole"
-          }
-        ]
-      }
-  providerConfigRef:
-    name: aws-provider
-
----
-apiVersion: iam.aws.crossplane.io/v1beta1
-kind: RolePolicyAttachment
-metadata:
-  name: eks-node-role-attachment
-spec:
-  forProvider:
-    region: ap-southeast-2
-    policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-    roleNameRef:
-      name: eks-node-role
-  providerConfigRef:
-    name: aws-provider
-
+    name: default
 

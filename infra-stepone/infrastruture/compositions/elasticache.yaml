@@ -1,41 +1,53 @@
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: cache.elasticache.aws.upbound.io/v1beta1
+kind: SubnetGroup
+metadata:
+  name: stepone-elasticache-subnet-group
+spec:
+  forProvider:
+    region: ap-southeast-2
+    description: Subnet group for stepone ElastiCache
+    subnetIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        vpc-name: stepone-vpc
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: SecurityGroup
 metadata:
-  name: elasticache-sg
+  name: stepone-elasticache-sg
 spec:
   forProvider:
-    description: "Security group for ElastiCache"
-    groupName: elasticache-sg
-    vpcIdRef: 
-      name: my-eks-vpc
+    region: ap-southeast-2
+    vpcIdSelector:
+      matchControllerRef: true
+    description: Security group for stepone ElastiCache
+    ingress:
+      - fromPort: 6379
+        toPort: 6379
+        protocol: tcp
+        cidrBlocks:
+          - 10.0.0.0/16  # Allows traffic from within the VPC
   providerConfigRef:
-    name: aws-provider
+    name: default
 ---
-apiVersion: cache.aws.crossplane.io/v1beta1
-kind: CacheSubnetGroup
+apiVersion: cache.elasticache.aws.upbound.io/v1beta1
+kind: CacheCluster
 metadata:
-  name: elasticache-subnet-group
+  name: stepone-elasticache
 spec:
   forProvider:
-    description: "Subnet group for ElastiCache"
-    subnetIdRefs: 
-      - name: private-subnet-a
-      - name: private-subnet-b
+    region: ap-southeast-2
+    engine: redis
+    engineVersion: "7.0"
+    nodeType: cache.t3.micro
+    numCacheNodes: 1
+    cacheSubnetGroupNameSelector:
+      matchControllerRef: true
+    securityGroupIdSelector:
+      matchControllerRef: true
+      matchLabels:
+        sg-name: stepone-elasticache-sg
   providerConfigRef:
-    name: aws-provider
----
-apiVersion: cache.aws.crossplane.io/v1beta1
-kind: ReplicationGroup
-metadata:
-  name: my-elasticache-cluster
-spec:
-  forProvider:
-    replicationGroupDescription: "My ElastiCache Cluster"
-    engine: "redis"
-    cacheNodeType: "cache.t3.micro"
-    numCacheClusters: 1
-    cacheSubnetGroupName: elasticache-subnet-group
-    securityGroupIds:
-      - elasticache-sg
-  providerConfigRef:
-    name: aws-provider
+    name: default
