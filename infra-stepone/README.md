@@ -1,19 +1,4 @@
 # Create EKS cluster
-- create secret to access AWS resources
-```bash
-kubectl create secret generic aws-creds \
-  -n crossplane-system \
-  --from-literal=creds="[default]
-aws_access_key_id=<your-access-key-id>
-aws_secret_access_key=<your-secret-access-key>"
-```
-
-- create secret for RDS
-```bash
-kubectl create secret generic rds-password \
-  -n crossplane-system \
-  --from-literal=password=<your-rds-password>
-```
 # Install Crossplane
 ```bash
 #Enable the Crossplane Helm Chart repository
@@ -34,4 +19,24 @@ crossplane-stable/crossplane \
 --namespace crossplane-system \
 --create-namespace
 
+```
+
+- create secret to access AWS resources
+```bash
+kubectl create secret generic aws-creds \
+  -n crossplane-system \
+  --from-literal=creds="[default]
+aws_access_key_id=<your-access-key-id>
+aws_secret_access_key=<your-secret-access-key>"
+```
+```bash
+kubectl apply -f infra-stepone/infrastruture/provider.yaml
+kubectl apply -f infra-stepone/infrastruture/provider-config.yaml
+```
+
+- create secret for RDS (make sure create this secret before create the dbinstance)
+```bash
+kubectl create secret generic rds-password \
+  -n crossplane-system \
+  --from-literal=password=<your-rds-password>
 ```

@@ -1,18 +1,4 @@
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-aws-s3
-spec:
-  package: xpkg.upbound.io/upbound/provider-aws-s3:v1.2.1
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-aws
-spec:
-  package: xpkg.upbound.io/upbound/provider-aws:v1.2.1
----
-apiVersion: aws.upbound.io/v1beta1
+apiVersion: aws.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default

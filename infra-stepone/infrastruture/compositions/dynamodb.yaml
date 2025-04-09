@@ -1,16 +1,18 @@
-apiVersion: dynamodb.aws.upbound.io/v1beta1
+apiVersion: dynamodb.aws.crossplane.io/v1alpha1
 kind: Table
 metadata:
-  name: stepone-dynamodb
+  name: infra-stepone
 spec:
   forProvider:
     region: ap-southeast-2
-    attribute:
-      - name: id
-        type: S
+    attributeDefinitions:
+      - attributeName: id
+        attributeType: S
     keySchema:
       - attributeName: id
         keyType: HASH
-    billingMode: PAY_PER_REQUEST
+    provisionedThroughput:
+      readCapacityUnits: 5
+      writeCapacityUnits: 5
   providerConfigRef:
     name: default

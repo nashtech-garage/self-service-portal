@@ -1,4 +1,4 @@
-apiVersion: ecr.aws.upbound.io/v1beta1
+apiVersion: ecr.aws.crossplane.io/v1alpha1
 kind: Repository
 metadata:
   name: stepone-ecr
@@ -6,5 +6,6 @@ spec:
   forProvider:
     region: ap-southeast-2
     imageTagMutability: MUTABLE
+    scanOnPush: true
   providerConfigRef:
     name: default

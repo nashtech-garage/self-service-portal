@@ -1,53 +1,60 @@
-apiVersion: cache.elasticache.aws.upbound.io/v1beta1
-kind: SubnetGroup
-metadata:
-  name: stepone-elasticache-subnet-group
-spec:
-  forProvider:
-    region: ap-southeast-2
-    description: Subnet group for stepone ElastiCache
-    subnetIdSelector:
-      matchControllerRef: true
-      matchLabels:
-        vpc-name: stepone-vpc
-  providerConfigRef:
-    name: default
----
-apiVersion: ec2.aws.upbound.io/v1beta1
+apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: SecurityGroup
 metadata:
-  name: stepone-elasticache-sg
+  name: elasticache-sg
 spec:
   forProvider:
     region: ap-southeast-2
-    vpcIdSelector:
-      matchControllerRef: true
-    description: Security group for stepone ElastiCache
+    description: "Security group for ElastiCache"
+    groupName: elasticache-sg
+    vpcIdRef: 
+      name: stepone-vpc
     ingress:
       - fromPort: 6379
         toPort: 6379
-        protocol: tcp
-        cidrBlocks:
-          - 10.0.0.0/16  # Allows traffic from within the VPC
+        ipProtocol: tcp
+        ipRanges:
+          - cidrIp: 10.0.0.0/16
+    egress:
+      - fromPort: 0
+        toPort: 0
+        ipProtocol: "-1"
+        ipRanges:
+          - cidrIp: 0.0.0.0/0
+    tags:
+      - key: Name
+        value: sg-elasticache
   providerConfigRef:
     name: default
 ---
-apiVersion: cache.elasticache.aws.upbound.io/v1beta1
-kind: CacheCluster
+apiVersion: cache.aws.crossplane.io/v1alpha1
+kind: CacheSubnetGroup
 metadata:
-  name: stepone-elasticache
+  name: elasticache-subnet-group
 spec:
   forProvider:
     region: ap-southeast-2
-    engine: redis
-    engineVersion: "7.0"
-    nodeType: cache.t3.micro
-    numCacheNodes: 1
-    cacheSubnetGroupNameSelector:
-      matchControllerRef: true
-    securityGroupIdSelector:
-      matchControllerRef: true
-      matchLabels:
-        sg-name: stepone-elasticache-sg
+    description: "Subnet group for ElastiCache"
+    subnetIdRefs: 
+      - name: private-subnet-a
+      - name: private-subnet-b
+  providerConfigRef:
+    name: default
+---
+apiVersion: cache.aws.crossplane.io/v1beta1
+kind: ReplicationGroup
+metadata:
+  name: my-elasticache-cluster
+spec:
+  forProvider:
+    region: ap-southeast-2
+    applyModificationsImmediately: true
+    replicationGroupDescription: "My ElastiCache Cluster"
+    engine: "redis"
+    cacheNodeType: "cache.t3.micro"
+    numCacheClusters: 1
+    cacheSubnetGroupName: elasticache-subnet-group
+    securityGroupIdRefs:
+      - name: elasticache-sg
   providerConfigRef:
     name: default

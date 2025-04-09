@@ -1,9 +1,10 @@
-apiVersion: s3.aws.upbound.io/v1beta1
+apiVersion: s3.aws.crossplane.io/v1beta1
 kind: Bucket
 metadata:
-  name: stepone-bucket
+  name: s3-infra-stepone
 spec:
   forProvider:
-    region: ap-southeast-2
+    locationConstraint: ap-southeast-2
+    objectOwnership: BucketOwnerEnforced
   providerConfigRef:
     name: default

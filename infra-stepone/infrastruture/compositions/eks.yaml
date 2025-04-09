@@ -1,48 +1,33 @@
-apiVersion: eks.aws.upbound.io/v1beta1
+apiVersion: eks.aws.crossplane.io/v1beta1
 kind: Cluster
 metadata:
   name: stepone-eks
 spec:
   forProvider:
     region: ap-southeast-2
-    roleArnSelector:
-      matchControllerRef: true
-      matchLabels:
-        role-name: stepone-eks-role
-    version: "1.29"
+    roleArnRef:
+      name: eks-cluster-role
     resourcesVpcConfig:
-      subnetIdSelector:
-        matchControllerRef: true
-        matchLabels:
-          vpc-name: stepone-vpc
-      endpointPublicAccess: true
-      endpointPrivateAccess: true
+      subnetIdRefs:
+        - name: private-subnet-a
+        - name: private-subnet-b
   providerConfigRef:
     name: default
 
 ---
-apiVersion: eks.aws.upbound.io/v1beta1
+apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: NodeGroup
 metadata:
   name: stepone-node-group
 spec:
   forProvider:
-    region: up-southeast-2
+    region: ap-southeast-2
+    clusterName: stepone-eks
     clusterNameRef:
-      name: stepone-eks
-    nodeRoleArnSelector:
-      matchControllerRef: true
-      matchLabels:
-        role-name: stepone-eks-role
-    subnetIdSelector:
-      matchControllerRef: true
-      matchLabels:
-        vpc-name: stepone-vpc
-    instanceTypes:
-      - t3.medium
+      name: eks-node-role
     scalingConfig:
       minSize: 1
-      maxSize: 3
-      desiredSize: 2
+      maxSize: 2
+      desiredSize: 1
   providerConfigRef:
     name: default
