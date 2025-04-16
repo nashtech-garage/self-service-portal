@@ -1,16 +1,16 @@
 apiVersion: eks.aws.crossplane.io/v1beta1
 kind: Cluster
 metadata:
-  name: stepone-eks
+  name: ${{ values.clusterName }}
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     roleArnRef:
       name: eks-cluster-role
     resourcesVpcConfig:
       subnetIdRefs:
-        - name: private-subnet-a
-        - name: private-subnet-b
+        - name: private-subnet-${{ values.region }}a
+        - name: public-subnet-${{ values.region }}b
   providerConfigRef:
     name: default
 
@@ -18,16 +18,23 @@ spec:
 apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: NodeGroup
 metadata:
-  name: stepone-node-group
+  name: nodegroup-${{ values.clusterName }}
 spec:
   forProvider:
-    region: ap-southeast-2
-    clusterName: stepone-eks
+    region: ${{ values.region }}
     clusterNameRef:
-      name: eks-node-role
+      name: ${{ values.clusterName }}
+    nodeRoleArnRef:
+      name: ex-eks-nodes-role
     scalingConfig:
       minSize: 1
       maxSize: 2
       desiredSize: 1
+    capacityType: ON_DEMAND
+    instanceTypes: ["t3.medium"]
+    diskSize: 20
+    subnetIdRefs:
+      - name: private-subnet-${{ values.region }}a
+      - name: public-subnet-${{ values.region }}b
   providerConfigRef:
     name: default

@@ -1,10 +1,12 @@
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: VPC
 metadata:
-  name: stepone-vpc
+  name: vpc-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     cidrBlock: 10.0.0.0/16
     enableDnsSupport: true
     enableDnsHostNames: true
