@@ -229,7 +229,15 @@ spec:
     #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
     #     repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
     #     token: ${{ secrets.USER_OAUTH_TOKEN }}
-
+    - id: getRepoId
+      name: Create Azure Pipeline
+      action: azure:get-repo-id
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repositoryId: ${{ parameters.repositoryId }}
+        repositoryName: ${{ parameters.repositoryName }}
+        token: ${{ secrets.AZURE_DEVOPS_PAT }}
     - id: createPipeline
       name: Create Azure Pipeline
       action: azure:pipeline:create
