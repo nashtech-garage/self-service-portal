@@ -275,7 +275,7 @@ jobs:
           name: package-app-dist
           path: packages/app/dist
 
-      - name: Download package/backage build artifact
+      - name: Download package/backend build artifact
         uses: actions/download-artifact@v4
         with:
           name: package-backend-dist
@@ -337,6 +337,11 @@ jobs:
       attestations: write
       id-token: write
     steps:
+      - name: Download package/backend build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: package-backend-dist
+          path: packages/backend/dist
       - name: Login ghcr.io
         uses: docker/login-action@v3
         with:
