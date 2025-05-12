@@ -40,3 +40,40 @@ kubectl create secret generic rds-password \
   -n crossplane-system \
   --from-literal=password=<your-rds-password>
 ```
+
+Var list
+```
+-- Global var ---
+region
+clusterName
+
+--- EKS ---
+cidrVPCBlock
+cidrSubnetBlockA
+cidrSubnetBlockB
+
+--- S3 ---
+bucketName
+
+--- RDS ---
+dbInstanceClass
+storage
+engine
+engineVersion
+ingressFromPort
+ingressToPort
+ingressCIDRBlock
+
+--- ElasticCache ---
+cacheNodeType
+numCacheClusters
+
+--- EKS ---
+instanceTypes
+minSize
+maxSize
+desiredSize
+capacityType
+instanceTypes (array)
+diskSize
+```

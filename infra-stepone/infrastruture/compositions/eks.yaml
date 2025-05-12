@@ -6,7 +6,7 @@ spec:
   forProvider:
     region: ${{ values.region }}
     roleArnRef:
-      name: eks-cluster-role
+      name: eks-${{ values.clusterName }}-role
     resourcesVpcConfig:
       subnetIdRefs:
         - name: private-subnet-${{ values.region }}a
@@ -25,14 +25,14 @@ spec:
     clusterNameRef:
       name: ${{ values.clusterName }}
     nodeRoleArnRef:
-      name: ex-eks-nodes-role
+      name: eks-${{ values.clusterName }}-node-role
     scalingConfig:
-      minSize: 1
-      maxSize: 2
-      desiredSize: 1
-    capacityType: ON_DEMAND
-    instanceTypes: ["t3.medium"]
-    diskSize: 20
+      minSize: ${{ values.minSize }}
+      maxSize: ${{ values.maxSize }}
+      desiredSize: ${{ values.desiredSize }}
+    capacityType: ${{ values.capacityType }}
+    instanceTypes: ${{ values.instanceTypes }}
+    diskSize: ${{ values.diskSize }}
     subnetIdRefs:
       - name: private-subnet-${{ values.region }}a
       - name: public-subnet-${{ values.region }}b

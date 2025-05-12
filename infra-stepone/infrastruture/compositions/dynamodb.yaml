@@ -1,10 +1,10 @@
 apiVersion: dynamodb.aws.crossplane.io/v1alpha1
 kind: Table
 metadata:
-  name: infra-stepone
+  name: dynamodb-${{ values.clusterName }}
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     attributeDefinitions:
       - attributeName: id
         attributeType: S

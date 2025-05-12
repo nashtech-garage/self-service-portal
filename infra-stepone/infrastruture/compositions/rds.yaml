@@ -1,27 +1,27 @@
 apiVersion: database.aws.crossplane.io/v1beta1
 kind: DBSubnetGroup
 metadata:
-  name: my-rds-subnet-group
+  name: rds-subnet-${{ values.clusterName }}
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     description: "Subnet group for private RDS"
     subnetIdRefs: 
-      - name: private-subnet-a
-      - name: private-subnet-b
+      - name: private-subnet-${{ values.clusterName }}-a
+      - name: private-subnet-${{ values.clusterName }}-b
   providerConfigRef:
     name: default
 ---
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: SecurityGroup
 metadata:
-  name: rds-security-group
+  name: sg-rds-${{ values.clusterName }}
 spec:
   forProvider:
     groupName: rds-sg
-    region: ap-southeast-2
+    region: ${{ values.region }}
     vpcIdRef:
-      name: stepone-vpc
+      name: vpc-${{ values.clusterName }}
     description: "Allow EKS nodes to connect to RDS"
     tags:
       - key: Name
@@ -32,17 +32,17 @@ spec:
 apiVersion: ec2.aws.crossplane.io/v1alpha1
 kind: SecurityGroupRule
 metadata:
-  name: rds-ingress-rule
+  name: rds-${{ values.clusterName }}-ingress-rule
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     securityGroupIdRef:
-      name: rds-security-group
+      name: sg-rds-${{ values.clusterName }}
     type: ingress
     protocol: tcp
-    fromPort: 5432
-    toPort: 5432
-    cidrBlock: 10.0.0.0/16
+    fromPort: ${{ values.ingressFromPort }}
+    toPort: ${{ values.ingressToPort }}
+    cidrBlock: ${{ values.ingressCIDRBlock }}
   providerConfigRef:
     name: default
 ---
@@ -52,11 +52,11 @@ metadata:
   name: my-private-rds
 spec:
   forProvider:
-    region: ap-southeast-2
-    dbInstanceClass: db.t3.medium
-    allocatedStorage: 20
-    engine: postgres
-    engineVersion: "16"
+    region: ${{ values.region }}
+    dbInstanceClass: ${{ values.dbInstanceClass }}
+    allocatedStorage: ${{ values.storage }}
+    engine: ${{ values.engine }}
+    engineVersion: ${{ values.engineVersion }}
     masterUsername: root
     masterUserPasswordSecretRef:
       namespace: crossplane-system
@@ -64,9 +64,9 @@ spec:
       key: password
     publiclyAccessible: false
     vpcSecurityGroupIDRefs:
-      - name: rds-security-group
+      - name: sg-rds-${{ values.clusterName }}
     dbSubnetGroupNameRef:
-      name: my-rds-subnet-group
+      name: rds-subnet-${{ values.clusterName }}
   providerConfigRef:
     name: default
 ---
@@ -76,7 +76,7 @@ metadata:
   name: rds-password
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     stringSecretRef:
       key: password
       name: rds-password

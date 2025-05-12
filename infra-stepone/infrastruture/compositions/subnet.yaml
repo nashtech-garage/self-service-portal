@@ -1,12 +1,12 @@
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: Subnet
 metadata:
-  name: private-subnet-a
+  name: private-subnet-${{ values.clusterName }}-a
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     vpcIdRef:
-      name: stepone-vpc
+      name: ${{ values.clusterName }}-vpc
     cidrBlock: 10.0.1.0/24
     availabilityZone: ap-southeast-2a
     mapPublicIPOnLaunch: false
@@ -16,12 +16,12 @@ spec:
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: Subnet
 metadata:
-  name: private-subnet-b
+  name: private-subnet-${{ values.clusterName }}-b
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     vpcIdRef:
-      name: stepone-vpc
+      name: ${{ values.clusterName }}-vpc
     cidrBlock: 10.0.2.0/24
     availabilityZone: ap-southeast-2b
     mapPublicIPOnLaunch: false

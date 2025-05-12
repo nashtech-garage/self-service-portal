@@ -1,12 +1,12 @@
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: SecurityGroup
 metadata:
-  name: elasticache-sg
+  name: elasticache-${{ values.clusterName }}-sg
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     description: "Security group for ElastiCache"
-    groupName: elasticache-sg
+    groupName: elasticache-${{ values.clusterName }}-sg
     vpcIdRef: 
       name: stepone-vpc
     ingress:
@@ -30,31 +30,31 @@ spec:
 apiVersion: cache.aws.crossplane.io/v1alpha1
 kind: CacheSubnetGroup
 metadata:
-  name: elasticache-subnet-group
+  name: elasticache-${{ values.clusterName }}-subnet-group
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     description: "Subnet group for ElastiCache"
     subnetIdRefs: 
-      - name: private-subnet-a
-      - name: private-subnet-b
+      - name: private-subnet-${{ values.clusterName }}-a
+      - name: private-subnet-${{ values.clusterName }}-b
   providerConfigRef:
     name: default
 ---
 apiVersion: cache.aws.crossplane.io/v1beta1
 kind: ReplicationGroup
 metadata:
-  name: my-elasticache-cluster
+  name: elasticache-${{ values.clusterName }}
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     applyModificationsImmediately: true
-    replicationGroupDescription: "My ElastiCache Cluster"
+    replicationGroupDescription: "ElastiCache ${{ values.clusterName }}"
     engine: "redis"
-    cacheNodeType: "cache.t3.micro"
-    numCacheClusters: 1
-    cacheSubnetGroupName: elasticache-subnet-group
+    cacheNodeType: ${{ values.cacheNodeType }}
+    numCacheClusters: ${{ values.numCacheClusters }}
+    cacheSubnetGroupName: elasticache-${{ values.clusterName }}-subnet-group
     securityGroupIdRefs:
-      - name: elasticache-sg
+      - name: elasticache-${{ values.clusterName }}-sg
   providerConfigRef:
     name: default

@@ -1,10 +1,10 @@
 apiVersion: s3.aws.crossplane.io/v1beta1
 kind: Bucket
 metadata:
-  name: s3-infra-stepone
+  name: ${{ values.bucketName }}
 spec:
   forProvider:
-    locationConstraint: ap-southeast-2
+    locationConstraint: ${{ values.region }}
     objectOwnership: BucketOwnerEnforced
   providerConfigRef:
     name: default

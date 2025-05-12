@@ -6,7 +6,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "0"
 spec:
   providerConfigRef:
-    name: aws-provider-config  # This line points to your specific ProviderConfig
+    name: aws-provider-config
   forProvider:
     region: ${{ values.region }}
     cidrBlock: 10.0.0.0/16

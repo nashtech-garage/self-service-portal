@@ -1,10 +1,10 @@
 apiVersion: ecr.aws.crossplane.io/v1alpha1
 kind: Repository
 metadata:
-  name: stepone-ecr
+  name: ${{ values.clusterName }}-ecr
 spec:
   forProvider:
-    region: ap-southeast-2
+    region: ${{ values.region }}
     imageTagMutability: MUTABLE
     scanOnPush: true
   providerConfigRef:

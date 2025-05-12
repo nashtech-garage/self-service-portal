@@ -1,7 +1,7 @@
 apiVersion: iam.aws.crossplane.io/v1beta1
 kind: Role
 metadata:
-  name: eks-cluster-role
+  name: eks-${{ values.clusterName }}-role
 spec:
   forProvider:
     assumeRolePolicyDocument: |
@@ -21,12 +21,12 @@ spec:
 apiVersion: iam.aws.crossplane.io/v1beta1
 kind: RolePolicyAttachment
 metadata:
-  name: eks-cluster-role-attachment
+  name: eks-${{ values.clusterName }}-role-attachment
 spec:
   forProvider:
     policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
     roleNameRef:
-      name: eks-cluster-role
+      name: eks-${{ values.clusterName }}-role
   providerConfigRef:
     name: default
 
@@ -34,7 +34,7 @@ spec:
 apiVersion: iam.aws.crossplane.io/v1beta1
 kind: Role
 metadata:
-  name: eks-node-role
+  name: eks-${{ values.clusterName }}-node-role
 spec:
   forProvider:
     assumeRolePolicyDocument: |
@@ -54,7 +54,7 @@ spec:
 apiVersion: iam.aws.crossplane.io/v1beta1
 kind: RolePolicyAttachment
 metadata:
-  name: eks-node-role-attachment
+  name: eks-${{ values.clusterName }}-node-role-attachment
 spec:
   forProvider:
     policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy

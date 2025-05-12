@@ -7,7 +7,7 @@ metadata:
 spec:
   forProvider:
     region: ${{ values.region }}
-    cidrBlock: 10.0.0.0/16
+    cidrBlock: ${{ values.cidrVPCBlock }}
     enableDnsSupport: true
     enableDnsHostNames: true
     instanceTenancy: default
