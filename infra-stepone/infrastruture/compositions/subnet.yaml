@@ -7,8 +7,8 @@ spec:
     region: ${{ values.region }}
     vpcIdRef:
       name: ${{ values.clusterName }}-vpc
-    cidrBlock: 10.0.1.0/24
-    availabilityZone: ap-southeast-2a
+    cidrBlock: ${{ values.cidrSubnetBlockA }}
+    availabilityZone: ${{ values.region }}a
     mapPublicIPOnLaunch: false
   providerConfigRef:
     name: default
@@ -21,9 +21,9 @@ spec:
   forProvider:
     region: ${{ values.region }}
     vpcIdRef:
-      name: ${{ values.clusterName }}-vpc
-    cidrBlock: 10.0.2.0/24
-    availabilityZone: ap-southeast-2b
+      name: ${{ values.cidrSubnetBlockA }}-vpc
+    cidrBlock: ${{ values.cidrSubnetBlockB }}
+    availabilityZone: ${{ values.region }}b
     mapPublicIPOnLaunch: false
   providerConfigRef:
     name: default
