@@ -38,7 +38,7 @@ spec:
         - branchName
         - project
         - folder
-        - repositoryId
+        # - repository
         - scanRepositoryName
         - scanPipelineName
       properties:
@@ -65,11 +65,11 @@ spec:
           title: Pipeline Name
           description: Name for the new pipeline
           default: scan
-        repositoryId:
-          type: string
-          title: Repository ID
-          description: Repository's unique ID
-          default: ${{ secrets.AZURE_DEVOPS_PAT }}
+        # repositoryId:
+        #   type: string
+        #   title: Repository ID
+        #   description: Repository's unique ID
+        #   default: ${{ secrets.AZURE_DEVOPS_PAT }}
         scanRepositoryName:
           type: string
           title: Repository Name
@@ -80,47 +80,47 @@ spec:
           title: Branch Name
           description: The name of the branch to be used for the pipeline
           default: main
-    - title: Basic React Configuration
-      required:
-        - appName
-        - backendName
-        - backendImageName
-        - frontendName
-        - frontendImageName
-      properties:
-        appName:
-          title: Application Name
-          type: string
-          description: The name of the msa react application
-          ui:autofocus: true
-        backendName:
-          title: Backend Name
-          type: string
-          description: The name of the backend service
-          ui:autofocus: true
-        backendImageName:
-          title: Backend Container Image Name
-          type: string
-          description: The name of your backend container image
-        frontendName:
-          title: Frontend Name
-          type: string
-          description: The name of the frontend service
-          ui:autofocus: true
+    # - title: Basic React Configuration
+    #   required:
+    #     - appName
+    #     - backendName
+    #     - backendImageName
+    #     - frontendName
+    #     - frontendImageName
+    #   properties:
+    #     appName:
+    #       title: Application Name
+    #       type: string
+    #       description: The name of the msa react application
+    #       ui:autofocus: true
+    #     backendName:
+    #       title: Backend Name
+    #       type: string
+    #       description: The name of the backend service
+    #       ui:autofocus: true
+        # backendImageName:
+        #   title: Backend Container Image Name
+        #   type: string
+        #   description: The name of your backend container image
+        # frontendName:
+        #   title: Frontend Name
+        #   type: string
+        #   description: The name of the frontend service
+        #   ui:autofocus: true
         frontendImageName:
           title: Fronent Container Image Name
           type: string
           description: The name of your frontent container image
     
-    - title: Choose UserName of Docker Hub
-      required:
-        - dockerHubUserName
-      properties:
-        dockerHubUserName:
-          title: Username of Docker Hub
-          type: string
-          description: Username of Docker Hub
-          ui:autofocus: true
+    # - title: Choose UserName of Docker Hub
+    #   required:
+    #     - dockerHubUserName
+    #   properties:
+    #     dockerHubUserName:
+    #       title: Username of Docker Hub
+    #       type: string
+    #       description: Username of Docker Hub
+    #       ui:autofocus: true
     - title: Scan
       properties:
         Tools:
@@ -203,19 +203,19 @@ spec:
 
 
     # This step publishes to Azure DevOps
-    - id: publish
-      name: Publish to Azure DevOps
-      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
-      action: publish:azure
-      input:
-        allowedHosts: ['dev.azure.com']
-        description: This is ${{ parameters.clusterName }}
-        repoUrl: ${{ parameters.repoUrl }}
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
-        token: ${{ secrets.AZURE_DEVOPS_PAT }}
-        filePath: scan/scan.yaml
+    # - id: publish
+    #   name: Publish to Azure DevOps
+    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+    #   action: publish:azure
+    #   input:
+    #     allowedHosts: ['dev.azure.com']
+    #     description: This is ${{ parameters.clusterName }}
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+    #     repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+    #     token: 1oIgeeDfHGcpV5Iw2lnqGxbeEepxoOD7ooHbxKl3HJ6CzzmzeQuOJQQJ99BEACAAAAAAAAAAAAASAZDO33Tf
+    #     filePath: scan/scan.yaml
     
     # - id: publish
     #   name: Publish to Azure DevOps
@@ -230,13 +230,12 @@ spec:
     #     repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
     #     token: ${{ secrets.USER_OAUTH_TOKEN }}
     - id: getRepoId
-      name: Create Azure Pipeline
+      name: Get repository ID
       action: azure:get-repo-id
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryId: ${{ parameters.repositoryId }}
-        repositoryName: ${{ parameters.repositoryName }}
+        repositoryName: ${{ parameters.scanRepositoryName }}
         token: ${{ secrets.AZURE_DEVOPS_PAT }}
     - id: createPipeline
       name: Create Azure Pipeline
@@ -246,7 +245,7 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         folder: ${{ parameters.folder }}
         name: ${{ parameters.scanPipelineName }}
-        repositoryId: ${{ parameters.repositoryId }}
-        repositoryName: ${{ parameters.repositoryName }}
+        # repositoryId: ${{ parameters.repositoryId }}
+        repositoryName: ${{ parameters.scanRepositoryName }}
         branchName: ${{ parameters.branchName }}
-        token: ${{ secrets.AZURE_DEVOPS_PAT }}
+        token: ${{ steps.azure:get-repo-id.output.repositoryId }}

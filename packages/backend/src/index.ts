@@ -15,6 +15,9 @@ import { cognitoAuthenticator } from './auth/cognito';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createGetSecretAction } from '../../../plugins/scaffolder-backend-module-scaffolder/src/actions/getSecret';
 // Custom Auth Module
+require('dotenv').config();
+console.log(process.env.AZURE_PAT);
+const AZURE_DEVOPS_PAT = process.env.AZURE_DEVOPS_PAT;
 const customAuth = createBackendModule({
   pluginId: 'auth', // The plugin targeted
   moduleId: 'custom-auth-provider', // Unique module name
@@ -70,7 +73,8 @@ const scaffolderModuleCustomExtensions = createBackendModule({
         scaffolder: scaffolderActionsExtensionPoint,
       },
       async init({ scaffolder }) {
-        scaffolder.addActions([getRepoIdAction(), createGetSecretAction()]);
+        scaffolder.addActions(createGetSecretAction());
+        scaffolder.addActions(getRepoIdAction({ personalAccessToken: AZURE_DEVOPS_PAT } ));
       },
     });
   },
@@ -112,6 +116,7 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.add(import('@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-azure'));
 backend.add(scaffolderModuleCustomExtensions);
+
 
 // Start Backend
 backend.start();

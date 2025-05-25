@@ -5,7 +5,7 @@ export const getRepoIdAction = () =>
   createTemplateAction<{
     organization: string;
     project: string;
-    repository: string;
+    repositoryName: string;
     personalAccessToken: string;
   }>({
     id: 'azure:get-repo-id',
@@ -13,7 +13,7 @@ export const getRepoIdAction = () =>
     schema: {
       input: {
         type: 'object',
-        required: ['organization', 'project', 'repository', 'personalAccessToken'],
+        required: ['organization', 'project', 'repositoryName'],
         properties: {
           organization: {
             type: 'string',
@@ -23,23 +23,24 @@ export const getRepoIdAction = () =>
             type: 'string',
             description: 'Azure DevOps project name',
           },
-          repository: {
+          repositoryName: {
             type: 'string',
             description: 'Azure DevOps repository name',
-          },
-          personalAccessToken: {
-            type: 'string',
-            description: 'Azure DevOps Personal Access Token (PAT)',
           },
         },
       },
     },
     async handler(ctx) {
-      const { organization, project, repository, personalAccessToken } = ctx.input;
-      const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories/${repository}?api-version=7.0`;
+      const { organization, project, repositoryName } = ctx.input;
+      // const personalAccessToken = '1nEwHaOjLYkT0GOohAKnf4orlRpynEwiJIuNp9kRmgdu9NSbiFL2JQQJ99BEACAAAAAAAAAAAAASAZDO205E'
+      const personalAccessToken = process.env.AZURE_DEVOPS_PAT;
+      const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories/${repositoryName}?api-version=7.0`;
+      ctx.logger.info(`Repository Name Being Queried: ${repositoryName}`);
+      ctx.logger.info(`Requesting URL: ${url}`);
+      ctx.logger.info(`Using PAT: ${personalAccessToken ? 'Loaded' : 'Not Found'}`);
 
       try {
-        ctx.logger.info(`Fetching repository ID from Azure DevOps for repository: ${repository}`);
+        ctx.logger.info(`Fetching repository ID from Azure DevOps for repository: ${repositoryName}`);
 
         // Call Azure DevOps API
         const response = await axios.get(url, {
