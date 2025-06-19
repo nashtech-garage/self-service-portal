@@ -32,7 +32,6 @@ export const getRepoIdAction = () =>
     },
     async handler(ctx) {
       const { organization, project, repositoryName } = ctx.input;
-      // const personalAccessToken = '1nEwHaOjLYkT0GOohAKnf4orlRpynEwiJIuNp9kRmgdu9NSbiFL2JQQJ99BEACAAAAAAAAAAAAASAZDO205E'
       const personalAccessToken = process.env.AZURE_DEVOPS_PAT;
       const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories/${repositoryName}?api-version=7.0`;
       ctx.logger.info(`Repository Name Being Queried: ${repositoryName}`);
@@ -52,9 +51,11 @@ export const getRepoIdAction = () =>
         // Extract and log the repository ID
         const repositoryId = response.data.id;
         ctx.logger.info(`Successfully fetched repository ID: ${repositoryId}`);
-
+        ctx.logger.info(`Fetching repository token from Azure DevOps for repository: ${personalAccessToken}`);
         // Output the repository ID for the template
         ctx.output('repositoryId', repositoryId);
+        ctx.output('repositoryToken', personalAccessToken);
+        
       } catch (error) {
         if (error instanceof Error) {
           ctx.logger.error(`Error fetching repository ID: ${error.message}`);
