@@ -17,7 +17,6 @@ import { createGetSecretAction } from '../../../plugins/scaffolder-backend-modul
 // Custom Auth Module
 require('dotenv').config();
 console.log(process.env.AZURE_PAT);
-const AZURE_DEVOPS_PAT = process.env.AZURE_DEVOPS_PAT;
 const customAuth = createBackendModule({
   pluginId: 'auth', // The plugin targeted
   moduleId: 'custom-auth-provider', // Unique module name
@@ -74,7 +73,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
       },
       async init({ scaffolder }) {
         scaffolder.addActions(createGetSecretAction());
-        scaffolder.addActions(getRepoIdAction({ personalAccessToken: AZURE_DEVOPS_PAT } ));
+        scaffolder.addActions(getRepoIdAction());
       },
     });
   },
