@@ -164,13 +164,36 @@ spec:
           type: boolean
           title: Run SonarQube
           default: false
-        sonarToken:
+        
+        configMode:
           type: string
-          title: SonarQube Token
-          description: Only required if SonarQube is selected
+          title: Configuration Mode
+          description: Choose the configuration mode for SonarQube.
+          enum: ['manual', 'file']
+          enumNames: ['Manual', 'From File']
           ui:options:
             visibleIf:
               useSonar: true
+
+        extraProperties:
+          type: string
+          title: Extra SonarQube Properties
+          description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
+
+        projectKey:
+          type: string
+          title: Project Key
+          description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
+
+        projectName:
+          type: string
+          title: Project Name
+          description: Human-readable name of the project as it will appear in the SonarQube dashboard.
+
+        jdkversion:
+          type: string
+          title: JDK Version
+          description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
 
         useTrivy:
           type: boolean
@@ -203,6 +226,7 @@ spec:
     - id: get-secret
       name: Validate Token
       action: custom:get-secret
+      
       input:
         secretKey: AZURE_PAT
     - id: log-token
