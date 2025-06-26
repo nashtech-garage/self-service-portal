@@ -1,17 +1,45 @@
 parameters:
-  enabled: boolean
+  - name: enabled
+    type: boolean
+    default: false
+
+  - name: scanType
+    type: string
+    default: 'filesystem'
+
+  - name: target
+    type: string
+    default: '.'
+
+  - name: scanners
+    type: string
+    default: 'vuln'
+
+  - name: format
+    type: string
+    default: 'json'
+
+  - name: exitCode
+    type: string
+    default: '0'
+
+  - name: severity
+    type: string
+    default: 'LOW'
 
 jobs:
-  - job: Job3
-    displayName: Job 3 - Trivy Scan
+  - job: trivyScan
+    displayName: Trivy Security Scan
     condition: eq('${{ parameters.enabled }}', true)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - script: |
-          echo "Running Trivy Scan..."
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
-          ./trivy image --exit-code 1 --severity HIGH $(TRIVY_IMAGE)
-        displayName: "Run Trivy Scan"
-        env:
-          TRIVY_IMAGE: $(TRIVY_IMAGE)
+      - task: trivy@2
+        displayName: Run Trivy Scan
+        inputs:
+          type: ${{ parameters.scanType }}
+          target: ${{ parameters.target }}
+          scanners: ${{ parameters.scanners }}
+          format: ${{ parameters.format }}
+          exitCode: ${{ parameters.exitCode }}
+          severity: ${{ parameters.severity }}

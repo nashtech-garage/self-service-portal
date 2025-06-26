@@ -242,22 +242,37 @@ spec:
               type: string
               enum: [image, filesystem, repository, sbom]
               default: filesystem
+
             target:
               title: Target Path or Image
               type: string
+              default: '.'
               description: Path to directory, image name, or repo URL
+
             scanners:
               title: Scanners
-              type: array
-              items:
-                type: string
-                enum: [vuln, misconfig, secret, license]
-              uniqueItems: true
+              type: string
+              default: 'vuln'
+              description: Comma-separated list: vuln, misconfig, secret, license
+
             format:
               title: Output Format
               type: string
               enum: [table, json, sarif, cyclonedx]
               default: json
+
+            exitCode:
+              title: Fail Build on Findings
+              type: integer
+              default: 0
+              description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
+
+            severity:
+              title: Severity Threshold
+              type: string
+              enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
+              default: LOW
+              description: Minimum severity level to include in results
 
     - title: Fill in some steps
       properties:

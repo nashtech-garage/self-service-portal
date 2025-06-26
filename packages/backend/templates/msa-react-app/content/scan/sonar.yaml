@@ -1,21 +1,56 @@
 parameters:
-  enabled: boolean
+  - name: enabled
+    type: boolean
+    default: false
+
+  - name: projectKey
+    type: string
+    default: ''
+
+  - name: projectName
+    type: string
+    default: ''
+
+  - name: extraProperties
+    type: string
+    default: ''
+
+  - name: jdkVersion
+    type: string
+    default: '11'
 
 jobs:
-  - job: Job2
-    displayName: Job 2 - SonarQube Analysis
+  - job: sonarScan
+    displayName: SonarQube Scan (Angular)
     condition: eq('${{ parameters.enabled }}', true)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+      - task: UseJavaVersion@1
+        inputs:
+          versionSpec: '${{ parameters.jdkVersion }}'
+          architecture: 'x64'
+        displayName: 'Use Java ${{ parameters.jdkVersion }}'
+
+      - script: |
+          npm install -g @angular/cli
+          npm install
+          npm run build
+        displayName: 'Install and Build Angular App'
+
       - task: SonarQubePrepare@5
         inputs:
-          SonarQube: 'SonarQubeServiceEndpoint'
+          SonarQube: 'SonarQubeServiceConnection'
           scannerMode: 'CLI'
           configMode: 'manual'
-          cliProjectKey: $(SONAR_PROJECT_KEY)
-          cliSources: '.'
+          cliProjectKey: ${{ parameters.projectKey }}
+          cliProjectName: ${{ parameters.projectName }}
+          extraProperties: ${{ parameters.extraProperties }}
+
       - task: SonarQubeAnalyze@5
+        displayName: 'Run SonarQube Analysis'
+
       - task: SonarQubePublish@5
         inputs:
           pollingTimeoutSec: '300'
+        displayName: 'Publish SonarQube Results'

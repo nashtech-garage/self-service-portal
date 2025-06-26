@@ -1,18 +1,40 @@
 parameters:
-  enabled: boolean
+  - name: enabled
+    type: boolean
+    default: false
+
+  - name: serviceConnection
+    type: string
+    default: 'snyk-service-conn'
+
+  - name: testType
+    type: string
+    default: 'app'
+
+  - name: monitor
+    type: boolean
+    default: false
+
+  - name: projectName
+    type: string
+    default: ''
+
+  - name: additionalArguments
+    type: string
+    default: ''
 
 jobs:
-  - job: Job1
-    displayName: Job 1 - Snyk Scan
+  - job: snykScan
+    displayName: Job - Snyk Scan
     condition: eq('${{ parameters.enabled }}', true)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - script: |
-          echo "Running Snyk Scan..."
-          npm install -g snyk
-          snyk auth $SNYK_TOKEN
-          snyk test
-        displayName: "Run Snyk Scan"
-        env:
-          SNYK_TOKEN: $(SNYK_TOKEN)
+      - task: SnykSecurityScan@1
+        displayName: Run Snyk Scan
+        inputs:
+          serviceConnectionEndpoint: ${{ parameters.serviceConnection }}
+          testType: ${{ parameters.testType }}
+          monitor: ${{ parameters.monitor }}
+          projectName: ${{ parameters.projectName }}
+          additionalArguments: ${{ parameters.additionalArguments }}
