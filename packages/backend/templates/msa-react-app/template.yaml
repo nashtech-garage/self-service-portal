@@ -152,13 +152,43 @@ spec:
           type: boolean
           title: Run Snyk
           default: false
-        snykProjectId:
-          type: string
-          title: Snyk Project ID
-          description: Only required if Snyk is selected
+
+        snykConfig:
+          type: object
+          title: Snyk Scan Options
+          description: Configuration options for Snyk vulnerability scan
           ui:options:
             visibleIf:
               useSnyk: true
+          properties:
+            scanType:
+              title: Scan Type
+              type: string
+              enum: [open-source, container, code, iac]
+              default: open-source
+
+            targetPath:
+              title: Target Path
+              type: string
+              default: "."
+              description: Path to the project or directory to scan
+
+            snykProjectId:
+              title: Snyk Project ID
+              type: string
+              description: Optional — only required if your pipeline depends on a known Snyk project context
+
+            severityThreshold:
+              title: Severity Threshold
+              type: string
+              enum: [low, medium, high, critical]
+              default: low
+              description: Minimum severity level to fail the scan
+
+            failOnIssues:
+              title: Fail Build on Issues
+              type: boolean
+              default: true
 
         useSonar:
           type: boolean
