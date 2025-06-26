@@ -199,13 +199,36 @@ spec:
           type: boolean
           title: Run Trivy
           default: false
-        trivyTarget:
-          type: string
-          title: Trivy Target Path
-          description: Only required if Trivy is selected
+
+        trivyConfig:
+          type: object
+          title: Trivy Scan Options
+          description: Settings for Trivy vulnerability scan
           ui:options:
             visibleIf:
               useTrivy: true
+          properties:
+            scanType:
+              title: Scan Type
+              type: string
+              enum: [image, filesystem, repository, sbom]
+              default: filesystem
+            target:
+              title: Target Path or Image
+              type: string
+              description: Path to directory, image name, or repo URL
+            scanners:
+              title: Scanners
+              type: array
+              items:
+                type: string
+                enum: [vuln, misconfig, secret, license]
+              uniqueItems: true
+            format:
+              title: Output Format
+              type: string
+              enum: [table, json, sarif, cyclonedx]
+              default: json
 
     - title: Fill in some steps
       properties:
