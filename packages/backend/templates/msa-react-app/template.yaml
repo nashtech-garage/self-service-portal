@@ -156,74 +156,73 @@ spec:
         snykConfig:
           type: object
           title: Snyk Scan Options
-          description: Configuration options for Snyk vulnerability scan
+          description: Settings for Snyk Security Scan task
           ui:options:
             visibleIf:
               useSnyk: true
           properties:
-            scanType:
+            testType:
               title: Scan Type
               type: string
-              enum: [open-source, container, code, iac]
-              default: open-source
+              enum: [app, container, code]
+              default: app
+              description: Type of scan to run
 
-            targetPath:
-              title: Target Path
-              type: string
-              default: "."
-              description: Path to the project or directory to scan
-
-            snykProjectId:
-              title: Snyk Project ID
-              type: string
-              description: Optional — only required if your pipeline depends on a known Snyk project context
-
-            severityThreshold:
-              title: Severity Threshold
-              type: string
-              enum: [low, medium, high, critical]
-              default: low
-              description: Minimum severity level to fail the scan
-
-            failOnIssues:
-              title: Fail Build on Issues
+            monitor:
+              title: Upload Results to Snyk
               type: boolean
-              default: true
+              default: false
+
+            projectName:
+              title: Snyk Project Name
+              type: string
+              description: Optional name for the project in Snyk
+
+            additionalArguments:
+              title: Extra CLI Arguments
+              type: string
+              description: Optional additional arguments for advanced scan configuration
+
 
         useSonar:
           type: boolean
           title: Run SonarQube
           default: false
-        
-        configMode:
-          type: string
-          title: Configuration Mode
-          description: Choose the configuration mode for SonarQube.
-          enum: ['manual', 'file']
-          enumNames: ['Manual', 'From File']
+
+        sonarConfig:
+          type: object
+          title: SonarQube Scan Options
+          description: Configuration for running SonarQube analysis
           ui:options:
             visibleIf:
               useSonar: true
+          properties:
+            configMode:
+              type: string
+              title: Configuration Mode
+              description: Choose the configuration mode for SonarQube.
+              enum: ['manual', 'file']
+              enumNames: ['Manual', 'From File']
 
-        extraProperties:
-          type: string
-          title: Extra SonarQube Properties
-          description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
+            extraProperties:
+              type: string
+              title: Extra SonarQube Properties
+              description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
 
-        projectKey:
-          type: string
-          title: Project Key
-          description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
+            projectKey:
+              type: string
+              title: Project Key
+              description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
 
-        projectName:
-          type: string
-          title: Project Name
-          description: Human-readable name of the project as it will appear in the SonarQube dashboard.
+            projectName:
+              type: string
+              title: Project Name
+              description: Human-readable name of the project as it will appear in the SonarQube dashboard.
 
-        jdkversion:
-          type: string
-          title: JDK Version
-          description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
+            jdkversion:
+              type: string
+              title: JDK Version
+              description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
 
         useTrivy:
           type: boolean
