@@ -6,7 +6,7 @@ export const getRepoIdAction = () =>
     organization: string;
     project: string;
     repositoryName: string;
-    personalAccessToken: string;
+    token: string;
   }>({
     id: 'azure:get-repo-id',
     description: 'Fetch the repository ID from Azure DevOps',
@@ -32,30 +32,26 @@ export const getRepoIdAction = () =>
     },
     async handler(ctx) {
       const { organization, project, repositoryName } = ctx.input;
-      const personalAccessToken = process.env.AZURE_DEVOPS_PAT;
       const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories/${repositoryName}?api-version=7.0`;
       ctx.logger.info(`Repository Name Being Queried: ${repositoryName}`);
       ctx.logger.info(`Requesting URL: ${url}`);
-      ctx.logger.info(`Using PAT: ${personalAccessToken ? 'Loaded' : 'Not Found'}`);
-
+      
       try {
         ctx.logger.info(`Fetching repository ID from Azure DevOps for repository: ${repositoryName}`);
 
         // Call Azure DevOps API
         const response = await axios.get(url, {
           headers: {
-            Authorization: `Basic ${Buffer.from(`:${personalAccessToken}`).toString('base64')}`,
+            Authorization: `Basic ${Buffer.from(`:${ctx.input.token}`).toString('base64')}`,
           },
         });
 
         // Extract and log the repository ID
         const repositoryId = response.data.id;
         ctx.logger.info(`Successfully fetched repository ID: ${repositoryId}`);
-        ctx.logger.info(`Fetching repository token from Azure DevOps for repository: ${personalAccessToken}`);
+        
         // Output the repository ID for the template
         ctx.output('repositoryId', repositoryId);
-        ctx.output('repositoryToken', personalAccessToken);
-        
       } catch (error) {
         if (error instanceof Error) {
           ctx.logger.error(`Error fetching repository ID: ${error.message}`);

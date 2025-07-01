@@ -32,46 +32,46 @@ spec:
               - github.com
               - dev.azure.com
 
-    # - title: Pipeline Configuration
-    #   required:
-    #     - branchName
-    #     - project
-    #     - folder
-    #     - pipelineRepositoryName
-    #     - pipelineName
-    #   properties:
-    #     project:
-    #       type: string
-    #       title: Project
-    #       description: Azure DevOps project name
-    #     folder:
-    #       type: string
-    #       title: Folder
-    #       description: Pipeline folder path
-    #     pipelineName:
-    #       type: string
-    #       title: Pipeline Name
-    #       description: Name for the new pipeline
-    #     pipelineRepositoryName:
-    #       type: string
-    #       title: Repository Name
-    #       description: Name of the repository
-    #     branchName:
-    #       type: string
-    #       title: Branch Name
-    #       description: The name of the branch to be used for the pipeline
-    #   uiSchema:
-    #     project:
-    #       "ui:autofocus": true
-    #       "ui:placeholder": "Enter project name"
-    #     folder:
-    #       "ui:placeholder": "Enter folder path"
-    #     PipelineName:
-    #       "ui:placeholder": "Enter pipeline name"
-    #     RepositoryName:
-    #       "ui:placeholder": "Enter repository name"
-    #     branchName:
-    #       "ui:placeholder": "Enter branch name"
+    - title: Pipeline Configuration
+      required:
+        - branchName
+        - project
+        - folder
+        - pipelineRepositoryName
+        - pipelineName
+      properties:
+        project:
+          type: string
+          title: Project
+          description: Azure DevOps project name
+        folder:
+          type: string
+          title: Folder
+          description: Pipeline folder path
+        pipelineName:
+          type: string
+          title: Pipeline Name
+          description: Name for the new pipeline
+        pipelineRepositoryName:
+          type: string
+          title: Repository Name
+          description: Name of the repository
+        branchName:
+          type: string
+          title: Branch Name
+          description: The name of the branch to be used for the pipeline
+      uiSchema:
+        project:
+          "ui:autofocus": true
+          "ui:placeholder": "Enter project name"
+        folder:
+          "ui:placeholder": "Enter folder path"
+        PipelineName:
+          "ui:placeholder": "Enter pipeline name"
+        RepositoryName:
+          "ui:placeholder": "Enter repository name"
+        branchName:
+          "ui:placeholder": "Enter branch name"
     
     
     # - title: Basic React Configuration
@@ -92,19 +92,19 @@ spec:
     #       type: string
     #       description: The name of the backend service
     #       ui:autofocus: true
-        # backendImageName:
-        #   title: Backend Container Image Name
-        #   type: string
-        #   description: The name of your backend container image
-        # frontendName:
-        #   title: Frontend Name
-        #   type: string
-        #   description: The name of the frontend service
-        #   ui:autofocus: true
-        # frontendImageName:
-        #   title: Fronent Container Image Name
-        #   type: string
-        #   description: The name of your frontent container image
+    #     backendImageName:
+    #       title: Backend Container Image Name
+    #       type: string
+    #       description: The name of your backend container image
+    #     frontendName:
+    #       title: Frontend Name
+    #       type: string
+    #       description: The name of the frontend service
+    #       ui:autofocus: true
+    #     frontendImageName:
+    #       title: Fronent Container Image Name
+    #       type: string
+    #       description: The name of your frontent container image
     
     # - title: Choose UserName of Docker Hub
     #   required:
@@ -133,10 +133,10 @@ spec:
 
     # - title: Select scan tools
     #   properties:
-    #     useSnyk:
-    #       type: boolean
-    #       title: Run Snyk
-    #       default: false
+        # useSnyk:
+        #   type: boolean
+        #   title: Run Snyk
+        #   default: false
     #     useSonar:
     #       type: boolean
     #       title: Run Sonar
@@ -155,8 +155,6 @@ spec:
 
         snykConfig:
           type: object
-          title: Snyk Scan Options
-          description: Settings for Snyk Security Scan task
           ui:options:
             visibleIf:
               useSnyk: true
@@ -253,7 +251,7 @@ spec:
               title: Scanners
               type: string
               default: 'vuln'
-              description: Comma-separated list: vuln, misconfig, secret, license
+              description: 'Comma-separated list: vuln, misconfig, secret, license'
 
             format:
               title: Output Format
@@ -265,6 +263,7 @@ spec:
               title: Fail Build on Findings
               type: integer
               default: 0
+              enum: [0, 1]
               description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
 
             severity:
@@ -273,7 +272,7 @@ spec:
               enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
               default: LOW
               description: Minimum severity level to include in results
-
+    
     - title: Fill in some steps
       properties:
         name:
@@ -290,18 +289,12 @@ spec:
 
     
   steps:
-    - id: get-secret
+    
+    - id: validate
       name: Validate Token
       action: custom:get-secret
-      
       input:
         secretKey: AZURE_PAT
-    - id: log-token
-      name: Debug Token
-      action: debug:log
-      input:
-        message: "Token being used: ${{ secrets.AZURE_PAT }}"
-
     
     - id: fetch-base
       name: Fetch template for Github repository
@@ -374,15 +367,15 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         # token: ${{ steps.get-secret.output.value }}
-        token: 1nEwHaOjLYkT0GOohAKnf4orlRpynEwiJIuNp9kRmgdu9NSbiFL2JQQJ99BEACAAAAAAAAAAAAASAZDO205E
+        token: '${{ steps.validate.output.value }}'
     - id: getRepoId
       name: Get repository ID
       action: azure:get-repo-id
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryName: ${{ parameters.scanRepositoryName }}
-        
+        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        token: '${{ steps.validate.output.value }}'
     - id: createPipeline
       name: Create Azure Pipeline
       action: azure:pipeline:create
@@ -390,8 +383,8 @@ spec:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         folder: ${{ parameters.folder }}
-        name: ${{ parameters.scanPipelineName }}
+        name: ${{ parameters.pipelineName }}
         repositoryId: ${{ steps.getRepoId.output.repositoryId }}
-        repositoryName: ${{ parameters.scanRepositoryName }}
+        repositoryName: ${{ parameters.pipelineRepositoryName }}
         branchName: ${{ parameters.branchName }}
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        token: '${{ steps.validate.output.value }}'
