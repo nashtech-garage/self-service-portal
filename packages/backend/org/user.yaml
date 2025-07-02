@@ -63,3 +63,17 @@ spec:
     email: platformengineering126@gmail.com
     backstage.io/normalized-identity: platform_engineering
   memberOf: [platform-engineering]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: quy.tranxuan
+  annotations:
+    microsoft.com/email: quy.tranxuan@nashtechglobal.com
+    backstage.io/normalized-identity: quy.tranxuan_nashtechglobal.com#ext#
+spec:
+  profile:
+    displayName: Quy Tran
+    email: quy.tranxuan@nashtechglobal.com
+    backstage.io/normalized-identity: quy.tranxuan@nashtechglobal.com
+  memberOf: [platform-engineering, cloud-architects]

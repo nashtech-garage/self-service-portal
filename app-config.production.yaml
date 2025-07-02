@@ -21,10 +21,10 @@ backend:
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
   listen:
     port: ${BACKEND_PORT}
-  cors:
-    origin: ${APP_BASEURL}
-    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
-    credentials: true
+  # cors:
+  #   origin: ${APP_BASEURL}
+  #   methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+  #   credentials: true
 
   # config options: https://node-postgres.com/apis/client
   database:

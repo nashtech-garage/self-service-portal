@@ -1,18 +1,17 @@
 app:
   title: Self Service Portal
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7007
 organization:
   name: NashTech Vietnam
 
 permission:
   enabled: false  
   rbac:
-    policies-csv-file: ../../packages/backend/org/rbac-policy.csv
-    conditionalPoliciesFile: ../../packages/backend/org/conditional-policies.yaml
+    policies-csv-file: /app/packages/backend/org/rbac-policy.csv
+    conditionalPoliciesFile: /app/packages/backend/org/conditional-policies.yaml
     policyFileReload: true
 
 backend:
-
   baseUrl: http://localhost:7007
   listen:
     port: 7007
@@ -21,7 +20,7 @@ backend:
   csp:
     connect-src: ["'self'", 'http:', 'https:']
   cors:
-    origin: http://localhost:3000
+    origin: http://localhost:7007
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   # This is for local development only, it is not recommended to use this in production
@@ -47,6 +46,12 @@ proxy:
       target: ${GRAFANA_URL}
       headers:
         Authorization: Bearer ${GRAFANA_TOKEN}
+
+    '/sonarqube':
+      target: "${SONARQUBE_URL}"
+      allowedMethods: ['GET']
+      auth: "${SONARQUBE_TOKEN}"
+
     
     # '/prometheus/api':
     #   # url to the api and path of your hosted prometheus instance
@@ -98,12 +103,12 @@ auth:
       development:
         clientId: ${GITHUB_CLIENT_ID}
         clientSecret: ${GITHUB_CLIENT_SECRET}
-       # signIn:
-         # resolvers:
+        signIn:
+          resolvers:
           # typically you would pick one of these
-           # - resolver: usernameMatchingUserEntityName
-         #   - resolver: emailMatchingUserEntityProfileEmail
-          #- resolver: emailLocalPartMatchingUserEntityName
+            - resolver: usernameMatchingUserEntityName
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
     google:
       development:
         clientId: ${GOOGLE_CLIENT_ID}
@@ -128,56 +133,78 @@ catalog:
     - allow: [Component, System, API, Resource, Location, Template]
   locations:
     - type: file
-      target: ../../packages/backend/org/org.yaml
+      target: /app/packages/backend/org/org.yaml
       rules:
         - allow: [User, Group]
 
     # gke template
     - type: file
-      target: ../../packages/backend/templates/gke-cluster/template.yaml
+      target: /app/packages/backend/templates/gke-cluster/template.yaml
       rules:
         - allow: [Template]
      # aks template
     - type: file
-      target: ../../packages/backend/templates/aks-cluster/template.yaml
+      target: /app/packages/backend/templates/aks-cluster/template.yaml
       rules:
         - allow: [Template]
 
     # eks template
     - type: file
-      target: ../../packages/backend/templates/eks-cluster/template.yaml
+      target: /app/packages/backend/templates/eks-cluster/template.yaml
       rules:
         - allow: [Template]
 
     # msa reactjs template
     - type: file
-      target: ../../packages/backend/templates/msa-react-app/template.yaml
+      target: /app/packages/backend/templates/msa-react-app/template.yaml
       rules:
         - allow: [Template]
 
       # microsoft dev box template
     - type: file
-      target: ../../packages/backend/templates/dev-box/template.yaml
+      target: /app/packages/backend/templates/dev-box/template.yaml
       rules:
         - allow: [Template]
 
     - type: file
-      target: ../../packages/backend/system/system.yaml
+      target: /app/packages/backend/system/system.yaml
 
       # back-stack component
     - type: file
-      target: ../../packages/backend/component/back-stack-component.yaml
+      target: /app/packages/backend/component/back-stack-component.yaml
       rules:
         - allow: [Component]
     # github component
     - type: file
-      target: ../../packages/backend/component/github-action-component.yaml
+      target: /app/packages/backend/component/github-action-component.yaml
       rules:
         - allow: [Component]        
         
     - type: file
-      target: ../../packages/backend/component/monitoring-component.yaml
+      target: /app/packages/backend/component/monitoring-component.yaml
       rules:
         - allow: [Component]
-
-
+        
+sonarqube:
+  baseUrl: ${SONARQUBE_URL}
+  instanceKey: sonarqube
+  apiKey: ${SONARQUBE_TOKEN}
+        
+kubernetes:
+  frontend:
+    podDelete:
+      enabled: true
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: minikube
+          authProvider: 'serviceAccount'
+          skipTLSVerify: false
+          skipMetricsLookup: true
+          customResources:
+            - group: 'argoproj.io'
+              apiVersion: 'v1alpha1'
+              plural: 'rollouts'

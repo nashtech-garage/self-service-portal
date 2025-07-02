@@ -7,6 +7,7 @@ metadata:
     grafana/dashboard-selector: "(tags @> 'grafanacloud' || tags @> 'cardinality-management')"
     prometheus.io/rule: 'demoprometheus'
     prometheus.io/alert: "demoprometheus-01"
+    sonarqube.org/project-key: sonarqube/monitoring
   name: monitoring
   description: Easily view your New Relic Dashboards, Grafana Dashboards in Backstage, via real-time snapshots of your dashboards
 spec:

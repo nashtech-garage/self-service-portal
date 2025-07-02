@@ -165,4 +165,6 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'))
 backend.add(import('@backstage/plugin-scaffolder-backend-module-azure'));
 backend.add(scaffolderModuleCustomExtensions);
 
+// SonarQube plugin
+backend.add(import('@backstage-community/plugin-sonarqube-backend'));
 backend.start();

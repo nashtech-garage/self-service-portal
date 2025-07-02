@@ -76,6 +76,11 @@ import {
   EntityPrometheusGraphCard,
   EntityPrometheusAlertCard
 } from '@roadiehq/backstage-plugin-prometheus';
+import { EntitySonarQubeCard } from '@backstage-community/plugin-sonarqube';
+import { isSonarQubeAvailable } from '@backstage-community/plugin-sonarqube-react';
+import { SonarQubeRelatedEntitiesOverview } from '@backstage-community/plugin-sonarqube';
+
+const MISSING_ANNOTATION_READ_MORE_URL = 'https://backstage.io/docs/features/software-catalog/descriptor';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -154,6 +159,11 @@ const overviewContent = (
       <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
         <Grid item sm={4}>
           <EntityArgoCDOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+      <EntitySwitch.Case if={isSonarQubeAvailable}>
+        <Grid item md={6}>
+          <EntitySonarQubeCard variant="gridItem" missingAnnotationReadMoreUrl={MISSING_ANNOTATION_READ_MORE_URL} />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -471,6 +481,9 @@ const systemPage = (
         ]}
         unidirectional={false}
       />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/sonarqube" title="Code Quality">
+      <SonarQubeRelatedEntitiesOverview relationType={RELATION_HAS_PART} entityKind="component" />
     </EntityLayout.Route>
   </EntityLayout>
 );
