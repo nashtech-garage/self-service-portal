@@ -145,6 +145,9 @@ spec:
     #       type: boolean
     #       title: Run Trivy
     #       default: false
+
+
+
     - title: Scan Tool Setup
       type: object
       properties:
@@ -182,110 +185,110 @@ spec:
               description: Optional additional arguments for advanced scan configuration
 
 
-        useSonar:
-          type: boolean
-          title: Run SonarQube
-          default: false
+    #     useSonar:
+    #       type: boolean
+    #       title: Run SonarQube
+    #       default: false
 
-        sonarConfig:
-          type: object
-          title: SonarQube Scan Options
-          description: Configuration for running SonarQube analysis
-          ui:options:
-            visibleIf:
-              useSonar: true
-          properties:
-            configMode:
-              type: string
-              title: Configuration Mode
-              description: Choose the configuration mode for SonarQube.
-              enum: ['manual', 'file']
-              enumNames: ['Manual', 'From File']
+    #     sonarConfig:
+    #       type: object
+    #       title: SonarQube Scan Options
+    #       description: Configuration for running SonarQube analysis
+    #       ui:options:
+    #         visibleIf:
+    #           useSonar: true
+    #       properties:
+    #         configMode:
+    #           type: string
+    #           title: Configuration Mode
+    #           description: Choose the configuration mode for SonarQube.
+    #           enum: ['manual', 'file']
+    #           enumNames: ['Manual', 'From File']
 
-            extraProperties:
-              type: string
-              title: Extra SonarQube Properties
-              description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
+    #         extraProperties:
+    #           type: string
+    #           title: Extra SonarQube Properties
+    #           description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
 
-            projectKey:
-              type: string
-              title: Project Key
-              description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
+    #         projectKey:
+    #           type: string
+    #           title: Project Key
+    #           description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
 
-            projectName:
-              type: string
-              title: Project Name
-              description: Human-readable name of the project as it will appear in the SonarQube dashboard.
+    #         projectName:
+    #           type: string
+    #           title: Project Name
+    #           description: Human-readable name of the project as it will appear in the SonarQube dashboard.
 
-            jdkversion:
-              type: string
-              title: JDK Version
-              description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
+    #         jdkversion:
+    #           type: string
+    #           title: JDK Version
+    #           description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
 
-        useTrivy:
-          type: boolean
-          title: Run Trivy
-          default: false
+    #     useTrivy:
+    #       type: boolean
+    #       title: Run Trivy
+    #       default: false
 
-        trivyConfig:
-          type: object
-          title: Trivy Scan Options
-          description: Settings for Trivy vulnerability scan
-          ui:options:
-            visibleIf:
-              useTrivy: true
-          properties:
-            scanType:
-              title: Scan Type
-              type: string
-              enum: [image, filesystem, repository, sbom]
-              default: filesystem
+    #     trivyConfig:
+    #       type: object
+    #       title: Trivy Scan Options
+    #       description: Settings for Trivy vulnerability scan
+    #       ui:options:
+    #         visibleIf:
+    #           useTrivy: true
+    #       properties:
+    #         scanType:
+    #           title: Scan Type
+    #           type: string
+    #           enum: [image, filesystem, repository, sbom]
+    #           default: filesystem
 
-            target:
-              title: Target Path or Image
-              type: string
-              default: '.'
-              description: Path to directory, image name, or repo URL
+    #         target:
+    #           title: Target Path or Image
+    #           type: string
+    #           default: '.'
+    #           description: Path to directory, image name, or repo URL
 
-            scanners:
-              title: Scanners
-              type: string
-              default: 'vuln'
-              description: 'Comma-separated list: vuln, misconfig, secret, license'
+    #         scanners:
+    #           title: Scanners
+    #           type: string
+    #           default: 'vuln'
+    #           description: 'Comma-separated list: vuln, misconfig, secret, license'
 
-            format:
-              title: Output Format
-              type: string
-              enum: [table, json, sarif, cyclonedx]
-              default: json
+    #         format:
+    #           title: Output Format
+    #           type: string
+    #           enum: [table, json, sarif, cyclonedx]
+    #           default: json
 
-            exitCode:
-              title: Fail Build on Findings
-              type: integer
-              default: 0
-              enum: [0, 1]
-              description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
+    #         exitCode:
+    #           title: Fail Build on Findings
+    #           type: integer
+    #           default: 0
+    #           enum: [0, 1]
+    #           description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
 
-            severity:
-              title: Severity Threshold
-              type: string
-              enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
-              default: LOW
-              description: Minimum severity level to include in results
+    #         severity:
+    #           title: Severity Threshold
+    #           type: string
+    #           enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
+    #           default: LOW
+    #           description: Minimum severity level to include in results
     
-    - title: Fill in some steps
-      properties:
-        name:
-          title: Select environments
-          type: array
-          items:
-            type: string
-            enum:
-              - production
-              - staging
-              - development
-          uniqueItems: true
-          ui:widget: checkboxes
+    # - title: Fill in some steps
+    #   properties:
+    #     name:
+    #       title: Select environments
+    #       type: array
+    #       items:
+    #         type: string
+    #         enum:
+    #           - production
+    #           - staging
+    #           - development
+    #       uniqueItems: true
+    #       ui:widget: checkboxes
 
     
   steps:
@@ -355,36 +358,56 @@ spec:
     #     token: 1oIgeeDfHGcpV5Iw2lnqGxbeEepxoOD7ooHbxKl3HJ6CzzmzeQuOJQQJ99BEACAAAAAAAAAAAAASAZDO33Tf
     #     filePath: scan/scan.yaml
     
-    - id: publish
-      name: Publish to Azure DevOps
-      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
-      action: publish:azure
+    
+    
+    # - id: publish
+    #   name: Publish to Azure DevOps
+    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+    #   action: publish:azure
+    #   input:
+    #     allowedHosts: ['dev.azure.com']
+    #     description: This is ${{ parameters.clusterName }}
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+    #     repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+    #     # token: ${{ steps.get-secret.output.value }}
+    #     token: '${{ steps.validate.output.value }}'
+    # - id: getRepoId
+    #   name: Get repository ID
+    #   action: azure:get-repo-id
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+    #     repositoryName: ${{ parameters.pipelineRepositoryName }}
+    #     token: '${{ steps.validate.output.value }}'
+    # - id: createPipeline
+    #   name: Create Azure Pipeline
+    #   action: azure:pipeline:create
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+    #     folder: ${{ parameters.folder }}
+    #     name: ${{ parameters.pipelineName }}
+    #     repositoryId: ${{ steps.getRepoId.output.repositoryId }}
+    #     repositoryName: ${{ parameters.pipelineRepositoryName }}
+    #     branchName: ${{ parameters.branchName }}
+    #     token: '${{ steps.validate.output.value }}'
+    
+    
+    
+    # - id: ensure-group
+    #   name: Ensure Variable Group Exists
+    #   action: custom:create-or-skip-variable-group
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.project }}
+    #     groupName: hafa
+    #     token: ${{ steps.validate.output.value }}
+
+    
+    - id: flatten
+      name: Flatten Snyk Group
+      action: util:flatten-parameter-group
       input:
-        allowedHosts: ['dev.azure.com']
-        description: This is ${{ parameters.clusterName }}
-        repoUrl: ${{ parameters.repoUrl }}
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
-        # token: ${{ steps.get-secret.output.value }}
-        token: '${{ steps.validate.output.value }}'
-    - id: getRepoId
-      name: Get repository ID
-      action: azure:get-repo-id
-      input:
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
-        token: '${{ steps.validate.output.value }}'
-    - id: createPipeline
-      name: Create Azure Pipeline
-      action: azure:pipeline:create
-      input:
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        folder: ${{ parameters.folder }}
-        name: ${{ parameters.pipelineName }}
-        repositoryId: ${{ steps.getRepoId.output.repositoryId }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
-        branchName: ${{ parameters.branchName }}
-        token: '${{ steps.validate.output.value }}'
+        group: ${{ parameters.snykConfig }}
