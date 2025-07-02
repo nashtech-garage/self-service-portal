@@ -1,5 +1,7 @@
 import { createBackend } from '@backstage/backend-defaults';
-import { getRepoIdAction } from './plugins/getRepoID';
+import { getRepoIdAction } from './plugins/getRepoID'; 
+import { flattenParameterGroup } from './plugins/flattenParameterGroup';
+import { createOrSkipVariableGroup } from './plugins/createOrSkipVariableGroup';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { microsoftAuthenticator } from '@backstage/plugin-auth-backend-module-microsoft-provider';
 import { githubAuthenticator } from '@backstage/plugin-auth-backend-module-github-provider';
@@ -74,6 +76,8 @@ const scaffolderModuleCustomExtensions = createBackendModule({
       async init({ scaffolder }) {
         scaffolder.addActions(createGetSecretAction());
         scaffolder.addActions(getRepoIdAction());
+        scaffolder.addActions(createOrSkipVariableGroup());
+        scaffolder.addActions(flattenParameterGroup());
       },
     });
   },
