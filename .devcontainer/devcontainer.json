@@ -1,0 +1,25 @@
+{
+    "name": "NashTech self service portal",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "VARIANT": "18"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/scripts/post-setup.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-azuretools.vscode-docker",
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                "ms-vscode.vscode-typescript-tslint-plugin",
+                "yzhang.markdown-all-in-one",
+                "bierner.markdown-mermaid"
+            ]
+        }
+    }
+}
