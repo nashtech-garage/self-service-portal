@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "^1.2.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.8"
+    "@backstage/plugin-scaffolder-node": "^0.4.8",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.23.3",

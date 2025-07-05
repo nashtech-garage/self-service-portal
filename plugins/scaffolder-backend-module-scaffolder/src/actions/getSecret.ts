@@ -27,13 +27,17 @@ export const createGetSecretAction = () => {
     },
     async handler(ctx) {
       const secretValue = process.env[ctx.input.secretKey];
-       
+      console.log(`[custom:get-secret] Type of secretKey:`, typeof ctx.input.secretKey, ctx.input.secretKey);
+      console.log(`[custom:get-secret] SecretKey received:`, secretValue);
+      console.log(`[custom:get-secret] Retrieved value:`, process.env[ctx.input.secretKey]);
+
       if (!secretValue) {
         throw new Error(`Environment variable ${ctx.input.secretKey} is not set`);
       }
   
-      ctx.output('value', secretValue);
-
+      ctx.output('value', secretValue); // Ensure it's always a string
+       // Retrieve the stored output and log it
+      
     },
   });
 };

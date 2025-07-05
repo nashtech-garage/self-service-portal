@@ -1,0 +1,52 @@
+parameters:
+  - name: snykEnabled
+    type: boolean
+    default: false
+
+  - name: sonarEnabled
+    type: boolean
+    default: false
+
+  - name: trivyEnabled
+    type: boolean
+    default: false
+
+  - name: snykVariableGroup
+    type: string
+    default: ''
+
+  - name: sonarVariableGroup
+    type: string
+    default: ''
+
+  - name: trivyVariableGroup
+    type: string
+    default: ''
+  
+stages:
+  - ${{ if eq(parameters.snykEnabled, true) }}:
+    - stage: SnykScan
+      jobs:
+        - template: snyk.yaml
+          parameters:
+            enabled: true
+      variables:
+        - group: ${{ parameters.snykVariableGroup }}
+
+  - ${{ if eq(parameters.sonarEnabled, true) }}:
+    - stage: SonarScan
+      jobs:
+        - template: sonar.yaml
+          parameters:
+            enabled: true
+      variables:
+        - group: ${{ parameters.sonarVariableGroup }}
+
+  - ${{ if eq(parameters.trivyEnabled, true) }}:
+    - stage: TrivyScan
+      jobs:
+        - template: trivy.yaml
+          parameters:
+            enabled: true
+      variables:
+        - group: ${{ parameters.trivyVariableGroup }}

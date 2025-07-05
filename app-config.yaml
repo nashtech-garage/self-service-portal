@@ -114,12 +114,14 @@ auth:
         clientId: ${COGNITO_CLIENT_ID}
         clientSecret: ${COGNITO_CLIENT_SECRET}
         domain: ${COGNITO_DOMAIN}
-        
+
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
   secrets:
     GITHUB_TOKEN: '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'
-
+    AZURE_DEVOPS_PAT: '1nEwHaOjLYkT0GOohAKnf4orlRpynEwiJIuNp9kRmgdu9NSbiFL2JQQJ99BEACAAAAAAAAAAAAASAZDO205E'
+  
+      
 catalog:
   import:
     entityFilename: catalog-info.yaml

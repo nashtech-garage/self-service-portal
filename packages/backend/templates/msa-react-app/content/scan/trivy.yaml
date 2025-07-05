@@ -1,0 +1,45 @@
+parameters:
+  - name: enabled
+    type: boolean
+    default: false
+
+  - name: scanType
+    type: string
+    default: 'filesystem'
+
+  - name: target
+    type: string
+    default: '.'
+
+  - name: scanners
+    type: string
+    default: 'vuln'
+
+  - name: format
+    type: string
+    default: 'json'
+
+  - name: exitCode
+    type: string
+    default: '0'
+
+  - name: severity
+    type: string
+    default: 'LOW'
+
+jobs:
+  - job: trivyScan
+    displayName: Trivy Security Scan
+    condition: eq('${{ parameters.enabled }}', true)
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: trivy@2
+        displayName: Run Trivy Scan
+        inputs:
+          type: ${{ parameters.scanType }}
+          target: ${{ parameters.target }}
+          scanners: ${{ parameters.scanners }}
+          format: ${{ parameters.format }}
+          exitCode: ${{ parameters.exitCode }}
+          severity: ${{ parameters.severity }}
