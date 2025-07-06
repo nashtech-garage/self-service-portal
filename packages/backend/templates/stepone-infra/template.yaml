@@ -1,13 +1,13 @@
-apiVersion: scaffolder.backstage.io/v1beta3
+piVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: aks-cluster
+  name: stepone-infra
   title: New Stepone Infrastructure
   description: An  template for the scaffolder that provision a AKS cluster using Crossplane and ArgoCD
   tags: 
     - infrastructure
 spec:
-  owner: user:le.caothihoang
+  owner: user:nhat
   type: infrastructure
 
   parameters:  
@@ -69,7 +69,6 @@ spec:
             - ap-southeast-2
             - us-east-2
             - us-east-1
-            - ap-southeast-1
         cidrVPCBlock:
           type: string
           title: CIDR VPC Block for EKS
@@ -139,9 +138,15 @@ spec:
           title: Capacity tyoe for EKS
           description: Capacity tyoe for EKS
         instanceTypes:
-          type: array
-          title: List of instance type for EKS
-          description: List of instance type for EKS
+          type: string
+          enum:
+            - t3.medium
+            - t3.large
+            - t3.xlarge
+            - m5.large
+            - m5.xlarge
+          title: Instance type for EKS
+          description: Instance type for EKS
         diskSize:
           type: string
           title: Size of disk EKS
@@ -152,8 +157,8 @@ spec:
       action: custom:get-secret
       input:
         secretKey: PORTAL_SECRET_GITHUB_TOKEN 
-    - id: fetch-base-aks-skeleton
-      name: Fetch AKS Cluster skeleton
+    - id: fetch-base-stepone-skeleton
+      name: Fetch Step one skeleton
       action: fetch:template
       input:
         url: ./content
