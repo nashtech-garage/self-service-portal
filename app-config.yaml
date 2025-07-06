@@ -137,6 +137,11 @@ catalog:
       target: ../../packages/backend/templates/gke-cluster/template.yaml
       rules:
         - allow: [Template]
+    # stepone infrastructure template
+    - type: file
+      target: ../../packages/backend/templates/stepone-infra/template.yaml
+      rules:
+        - allow: [Template]
      # aks template
     - type: file
       target: ../../packages/backend/templates/aks-cluster/template.yaml
