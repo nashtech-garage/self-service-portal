@@ -69,6 +69,7 @@ spec:
             - ap-southeast-2
             - us-east-2
             - us-east-1
+            - ap-southeast-1
         cidrVPCBlock:
           type: string
           title: CIDR VPC Block for EKS

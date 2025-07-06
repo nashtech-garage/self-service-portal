@@ -132,6 +132,7 @@ catalog:
       rules:
         - allow: [User, Group]
 
+
     # gke template
     - type: file
       target: ../../packages/backend/templates/gke-cluster/template.yaml
@@ -158,6 +159,12 @@ catalog:
       # microsoft dev box template
     - type: file
       target: ../../packages/backend/templates/dev-box/template.yaml
+      rules:
+        - allow: [Template]
+        
+    # stepone template
+    - type: file
+      target: ../../packages/backend/templates/stepone-infra/template.yaml
       rules:
         - allow: [Template]
 

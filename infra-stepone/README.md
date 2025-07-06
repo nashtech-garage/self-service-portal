@@ -69,7 +69,6 @@ cacheNodeType
 numCacheClusters
 
 --- EKS ---
-instanceTypes
 minSize
 maxSize
 desiredSize
