@@ -63,16 +63,3 @@ spec:
     email: platformengineering126@gmail.com
     backstage.io/normalized-identity: platform_engineering
   memberOf: [platform-engineering]
----
-apiVersion: backstage.io/v1alpha1
-kind: User
-metadata:
-  name: nhatcao1105
-  annotations:
-    github.com/user-login: nhatcao1105
-spec:
-  profile:
-    displayName: Platform engineering
-    email: caominhnhat99tg@gmail.com
-    backstage.io/normalized-identity: platform_engineering
-  memberOf: [platform-engineering]
