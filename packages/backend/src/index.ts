@@ -16,8 +16,10 @@ import { stringifyEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model'
 import { cognitoAuthenticator } from './auth/cognito';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createGetSecretAction } from '../../../plugins/scaffolder-backend-module-scaffolder/src/actions/getSecret';
+
 // Custom Auth Module
 require('dotenv').config();
+
 console.log(process.env.AZURE_PAT);
 const customAuth = createBackendModule({
   pluginId: 'auth', // The plugin targeted
