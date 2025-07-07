@@ -1,4 +1,4 @@
-name: Manage EKS Cluster
+name: Manage Stepone Infra
 
 on:
   workflow_dispatch:
@@ -15,9 +15,6 @@ on:
       host:
         description: 'github.com or azure.dev.com'
         required: true
-      customKyvernoPolicies:
-        description: 'Custom Policy Repository Location'
-        required: false
       username:
         description: 'Username of host'
         required: true
