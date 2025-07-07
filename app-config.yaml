@@ -149,6 +149,11 @@ catalog:
       rules:
         - allow: [Template]
 
+    # stepone template
+    - type: file
+      target: ../../packages/backend/templates/stepone-infra/template.yaml
+      rules:
+        - allow: [Template]
     # msa reactjs template
     - type: file
       target: ../../packages/backend/templates/msa-react-app/template.yaml
@@ -160,6 +165,7 @@ catalog:
       target: ../../packages/backend/templates/dev-box/template.yaml
       rules:
         - allow: [Template]
+
 
     - type: file
       target: ../../packages/backend/system/system.yaml

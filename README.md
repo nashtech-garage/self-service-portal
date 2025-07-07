@@ -36,7 +36,7 @@ yarn install
 yarn dev
 
 ## Open another terminal
-export ARGOCD_URL=""
+export ARGOCD_URL="http://example.com"
 export ARGOCD_AUTH_TOKEN=""
 
 export GITHUB_TOKEN=''
@@ -54,6 +54,11 @@ export GOOGLE_CLIENT_SECRET=""
 
 export GRAFANA_URL=''
 export GRAFANA_TOKEN=''
+
+
+export COGNITO_DOMAIN=''
+export COGNITO_CLIENT_ID=''
+export COGNITO_CLIENT_SECRET=''
 
 cd package/backend
 yarn install 

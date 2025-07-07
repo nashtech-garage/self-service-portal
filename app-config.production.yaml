@@ -79,6 +79,12 @@ catalog:
       rules:
         - allow: [User, Group]
 
+    # stepone template
+    - type: file
+      target: ../../packages/backend/templates/stepone-infra/template.yaml
+      rules:
+        - allow: [Template]
+
     # gke template
     - type: file
       target: ./packages/backend/templates/gke-cluster/template.yaml

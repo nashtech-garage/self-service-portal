@@ -1,0 +1,85 @@
+apiVersion: database.aws.crossplane.io/v1beta1
+kind: DBSubnetGroup
+metadata:
+  name: rds-subnet-${{ values.clusterName }}
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    description: "Subnet group for private RDS"
+    subnetIdRefs: 
+      - name: private-subnet-${{ values.clusterName }}-a
+      - name: private-subnet-${{ values.clusterName }}-b
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: SecurityGroup
+metadata:
+  name: sg-rds-${{ values.clusterName }}
+spec:
+  forProvider:
+    groupName: rds-sg
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+    description: "Allow EKS nodes to connect to RDS"
+    tags:
+      - key: Name
+        value: sg-rds
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.crossplane.io/v1alpha1
+kind: SecurityGroupRule
+metadata:
+  name: rds-${{ values.clusterName }}-ingress-rule
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    securityGroupIdRef:
+      name: sg-rds-${{ values.clusterName }}
+    type: ingress
+    protocol: tcp
+    fromPort: ${{ values.ingressFromPort }}
+    toPort: ${{ values.ingressToPort }}
+    cidrBlock: ${{ values.ingressCIDRBlock }}
+  providerConfigRef:
+    name: default
+---
+apiVersion: rds.aws.crossplane.io/v1alpha1
+kind: DBInstance
+metadata:
+  name: my-private-rds
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    dbInstanceClass: ${{ values.dbInstanceClass }}
+    allocatedStorage: ${{ values.storage }}
+    engine: ${{ values.engine }}
+    engineVersion: ${{ values.engineVersion }}
+    masterUsername: root
+    masterUserPasswordSecretRef:
+      namespace: crossplane-system
+      name: rds-password
+      key: password
+    publiclyAccessible: false
+    vpcSecurityGroupIDRefs:
+      - name: sg-rds-${{ values.clusterName }}
+    dbSubnetGroupNameRef:
+      name: rds-subnet-${{ values.clusterName }}
+  providerConfigRef:
+    name: default
+---
+apiVersion: secretsmanager.aws.crossplane.io/v1beta1
+kind: Secret
+metadata:
+  name: rds-password
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    stringSecretRef:
+      key: password
+      name: rds-password
+      namespace: crossplane-system
+  providerConfigRef:
+    name: default

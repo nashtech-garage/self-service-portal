@@ -1,0 +1,253 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: stepone-infra
+  title: New Stepone Infrastructure
+  description: An  template for the scaffolder that provision a AKS cluster using Crossplane and ArgoCD
+  tags: 
+    - infrastructure
+spec:
+  owner: user:nhat
+  type: infrastructure
+
+  parameters:  
+    - title: Choose a Repo location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location for ArgoCD to Deploy ( Owner is username)
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                - repo  # Allows creating repositories
+                - workflow  # Allows managing GitHub Actions
+                azure:
+                - email
+                - openid
+            allowedHosts:
+              - github.com
+              - dev.azure.com
+    - title: Create infrastructture for step one
+      required:
+        - clusterName
+        - region
+        - cidrVPCBlock
+        - cidrSubnetBlockA
+        - cidrSubnetBlockB
+        - bucketName
+        - dbInstanceClass
+        - storage
+        - engine
+        - engineVersion
+        - ingressFromPort
+        - ingressToPort
+        - ingressCIDRBlock
+        - cacheNodeType
+        - numCacheClusters
+        - minSize
+        - maxSize
+        - desiredSize
+        - capacityType
+        - instanceTypes
+        - diskSize
+      properties:
+        clusterName:
+          title: EKS Cluster Name
+          type: string
+          description: The name of the EKS cluster to create
+          ui:autofocus: true
+        region:
+          title: Region
+          type: string
+          description: The region where the EKS cluster will be deployed
+          enum:
+            - ap-southeast-2
+            - ap-southeast-1
+            - us-east-2
+            - us-east-1
+        cidrVPCBlock:
+          enum:
+          - 10.0.0.0/20
+          type: string
+          title: CIDR VPC Block for EKS
+          description: Name of the Azure Resource Group to be used or created
+        cidrSubnetBlockA:
+          enum:
+          - 10.0.1.0/24
+          title: CIDR Subnet Block A
+          type: string
+          description: CIDR Subnet Block A
+        cidrSubnetBlockB:
+          enum:
+          - 10.0.2.0/24
+          title: CIDR Subnet Block B
+          type: string
+          description: CIDR Subnet Block B
+        bucketName:
+          type: string
+          title: S3 bucket name
+          description: Bucket name for stepone
+        dbInstanceClass:
+          type: string
+          enum:
+            - t3.medium
+            - t3.large
+          title: DB Instance Class for RDS
+          description: DB Instance Class for RDS
+        storage:
+          type: string
+          title: RDS storage
+          description: RDS storage
+        engine:
+          enum:
+            - postgres
+          type: string
+          title: Choose engine for RDS 
+          description: RDS storage
+        engineVersion:
+          enum:
+            - "16"
+          type: string
+          title: Choose version engine for RDS 
+          description: version engine for RDS
+        ingressFromPort:
+          type: string
+          title: Allow range CIDR from port
+          description: Allow range CIDR from port
+        ingressToPort:
+          type: string
+          title: Allow range CIDR to port 
+          description: Allow range CIDR to port
+        ingressCIDRBlock:
+          enum:
+          - 10.0.0.0/20
+          type: string
+          title: Allow CIDR Block range
+          description: Allow CIDR Block range
+        cacheNodeType:    
+          enum:
+          - "cache.t3.micro"
+          type: string
+          title: Choose Node type for Elastic Cache
+          description: Choose Node type for Elastic Cache
+        numCacheClusters:
+          type: string
+          title: Number of nodes for Elastic Cache
+          description: Number of nodes for Elastic Cache
+        minSize:
+          type: string
+          title: Min size for EKS
+          description: Min size for EKS
+        maxSize:
+          type: string
+          title: Max size for EKS
+          description: Max size for EKS
+        desiredSize:
+          type: string
+          title: Desire size for EKS
+          description: Desire size for EKS
+        capacityType:
+          enum:
+          - ON_DEMAND
+          type: string
+          title: Capacity tyoe for EKS
+          description: Capacity tyoe for EKS
+        instanceTypes:
+          type: string
+          enum:
+            - t3.medium
+            - t3.large
+            - t3.xlarge
+            - m5.large
+            - m5.xlarge
+          title: Instance type for EKS
+          description: Instance type for EKS
+        diskSize:
+          type: string
+          title: Size of disk EKS
+          description: Size of disk EKS
+  steps:
+    - id: validate-github-token
+      name: Validate Token
+      action: custom:get-secret
+      input:
+        secretKey: PORTAL_SECRET_GITHUB_TOKEN 
+    - id: fetch-base-stepone-skeleton
+      name: Fetch Step one skeleton
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}      
+          owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
+    # # This step publishes to github
+    # - id: publish
+    #   name: Publish to Github
+    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+    #   action: publish:github
+    #   input:
+    #     allowedHosts: ['github.com']
+    #     description: This is ${{ parameters.clusterName }}
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     # here's where the secret can be used
+    #     token: ${{ secrets.USER_OAUTH_TOKEN }}
+    #     # This step publishes to Azure DevOps
+    # - id: publish
+    #   name: Publish to Azure DevOps
+    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+    #   action: publish:azure
+    #   input:
+    #     allowedHosts: ['dev.azure.com']
+    #     description: This is ${{ parameters.clusterName }}
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+    #     repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+    #     token: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    # Start a GitHub Action to build an AKS cluster with Crossplane
+    - id: github-action
+      name: Trigger GitHub Action for github host
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_stepone_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
+        token:  ${{ steps['validate-github-token'].output.value }}
+        branchOrTagName: 'feature/add-stepone-infra'
+        workflowInputs:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          kubernetesVersion: ${{ parameters.kubernetesVersion}}       
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
+          username: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
+          repoURLToken: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    - id: github-action
+      name: Trigger GitHub Action for azure host
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: github:actions:dispatch
+      input:
+        workflowId: deploy_stepone_with_argocd.yaml
+        repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
+        token:  ${{ steps['validate-github-token'].output.value }}
+        branchOrTagName: 'main'
+        workflowInputs:
+          clusterName: ${{ parameters.clusterName }}
+          region: ${{ parameters.region }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          kubernetesVersion: ${{ parameters.kubernetesVersion}}
+          dnsPrefix: ${{ parameters.dnsPrefix }}          
+          repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
+          host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
+          username: ${{ parameters.repoUrl | parseRepoUrl | pick('organization')}} 
+          repoURLToken: ${{ secrets.USER_OAUTH_TOKEN }}

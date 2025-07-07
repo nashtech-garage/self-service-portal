@@ -1,0 +1,29 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: private-subnet-${{ values.clusterName }}-a
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: ${{ values.clusterName }}-vpc
+    cidrBlock: ${{ values.cidrSubnetBlockA }}
+    availabilityZone: ${{ values.region }}a
+    mapPublicIPOnLaunch: false
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: private-subnet-${{ values.clusterName }}-b
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: ${{ values.cidrSubnetBlockA }}-vpc
+    cidrBlock: ${{ values.cidrSubnetBlockB }}
+    availabilityZone: ${{ values.region }}b
+    mapPublicIPOnLaunch: false
+  providerConfigRef:
+    name: default
