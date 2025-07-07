@@ -53,7 +53,7 @@ metadata:
 spec:
   forProvider:
     region: ${{ values.region }}
-    dbInstanceClass: ${{ values.dbInstanceClass }}
+    dbInstanceClass: [${{ values.dbInstanceClass }}]
     allocatedStorage: ${{ values.storage }}
     engine: ${{ values.engine }}
     engineVersion: ${{ values.engineVersion }}

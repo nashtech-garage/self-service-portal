@@ -1,4 +1,4 @@
-piVersion: scaffolder.backstage.io/v1beta3
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: stepone-infra
@@ -67,17 +67,24 @@ spec:
           description: The region where the EKS cluster will be deployed
           enum:
             - ap-southeast-2
+            - ap-southeast-1
             - us-east-2
             - us-east-1
         cidrVPCBlock:
+          enum:
+          - 10.0.0.0/20
           type: string
           title: CIDR VPC Block for EKS
           description: Name of the Azure Resource Group to be used or created
         cidrSubnetBlockA:
+          enum:
+          - 10.0.1.0/24
           title: CIDR Subnet Block A
           type: string
           description: CIDR Subnet Block A
         cidrSubnetBlockB:
+          enum:
+          - 10.0.2.0/24
           title: CIDR Subnet Block B
           type: string
           description: CIDR Subnet Block B
@@ -87,6 +94,9 @@ spec:
           description: Bucket name for stepone
         dbInstanceClass:
           type: string
+          enum:
+            - t3.medium
+            - t3.large
           title: DB Instance Class for RDS
           description: DB Instance Class for RDS
         storage:
@@ -94,10 +104,14 @@ spec:
           title: RDS storage
           description: RDS storage
         engine:
+          enum:
+            - postgres
           type: string
           title: Choose engine for RDS 
           description: RDS storage
         engineVersion:
+          enum:
+            - "16"
           type: string
           title: Choose version engine for RDS 
           description: version engine for RDS
@@ -110,10 +124,14 @@ spec:
           title: Allow range CIDR to port 
           description: Allow range CIDR to port
         ingressCIDRBlock:
+          enum:
+          - 10.0.0.0/20
           type: string
           title: Allow CIDR Block range
           description: Allow CIDR Block range
-        cacheNodeType:
+        cacheNodeType:    
+          enum:
+          - "cache.t3.micro"
           type: string
           title: Choose Node type for Elastic Cache
           description: Choose Node type for Elastic Cache
@@ -134,6 +152,8 @@ spec:
           title: Desire size for EKS
           description: Desire size for EKS
         capacityType:
+          enum:
+          - ON_DEMAND
           type: string
           title: Capacity tyoe for EKS
           description: Capacity tyoe for EKS
@@ -164,10 +184,7 @@ spec:
         url: ./content
         values:
           clusterName: ${{ parameters.clusterName }}
-          region: ${{ parameters.region }}
-          resourceGroupName: ${{ parameters.resourceGroupName }}
-          kubernetesVersion: ${{ parameters.kubernetesVersion}}
-          dnsPrefix: ${{ parameters.dnsPrefix }}        
+          region: ${{ parameters.region }}      
           owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
           repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
     # This step publishes to github
@@ -201,16 +218,15 @@ spec:
       if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
       action: github:actions:dispatch
       input:
-        workflowId: deploy_aks_with_argocd.yaml
+        workflowId: deploy_stepone_with_argocd.yaml
         repoUrl: 'github.com?owner=nashtech-garage&repo=self-service-portal'
         token:  ${{ steps['validate-github-token'].output.value }}
-        branchOrTagName: 'main'
+        branchOrTagName: 'feature/add-stepone-infra'
         workflowInputs:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}
           resourceGroupName: ${{ parameters.resourceGroupName }}
-          kubernetesVersion: ${{ parameters.kubernetesVersion}}
-          dnsPrefix: ${{ parameters.dnsPrefix }}          
+          kubernetesVersion: ${{ parameters.kubernetesVersion}}       
           repoURLforArgo: ${{ steps['publish'].output.remoteUrl }} 
           host: ${{ parameters.repoUrl | parseRepoUrl | pick('host') }}
           username: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
