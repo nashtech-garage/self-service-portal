@@ -3,8 +3,16 @@ parameters:
     type: boolean
     default: false
 
-  - name: scanType
+  - name: method
     type: string
+    default: 'install'
+
+  - name: options
+    type: string
+    default: ''
+
+  - name: scanType
+    type: object
     default: 'filesystem'
 
   - name: target
@@ -12,8 +20,14 @@ parameters:
     default: '.'
 
   - name: scanners
-    type: string
-    default: 'vuln'
+    type: object
+    default:
+    - 'vuln'
+    values: 
+    - 'vuln'
+    - 'license'
+    - 'misconfig'
+    - 'secret'
 
   - name: format
     type: string
@@ -27,19 +41,31 @@ parameters:
     type: string
     default: 'LOW'
 
+  - name: dockerImage
+    type: string
+    default: ''
+
 jobs:
   - job: trivyScan
     displayName: Trivy Security Scan
     condition: eq('${{ parameters.enabled }}', true)
     pool:
       vmImage: 'ubuntu-latest'
+    variables:
+      formattedScanners: ${{ join(',', parameters.scanners) }}
     steps:
       - task: trivy@2
         displayName: Run Trivy Scan
         inputs:
+          ${{ if eq(parameters.method, 'system') }}:
+            method: system
+          ${{ elseif eq(parameters.method, 'docker') }}:
+            method: docker
+            image: ${{ parameters.dockerImage }}
+          options: ${{ parameters.options }}
           type: ${{ parameters.scanType }}
           target: ${{ parameters.target }}
-          scanners: ${{ parameters.scanners }}
+          scanners: $[variables.formattedScanners]
           format: ${{ parameters.format }}
           exitCode: ${{ parameters.exitCode }}
           severity: ${{ parameters.severity }}
