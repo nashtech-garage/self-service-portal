@@ -38,3 +38,42 @@ jobs:
           monitor: ${{ parameters.monitor }}
           projectName: ${{ parameters.projectName }}
           additionalArguments: ${{ parameters.additionalArguments }}
+
+
+%testType: 'app'%
+- task: SnykSecurityScan@1
+  inputs:
+    serviceConnectionEndpoint: 'snyk'
+    testType: 'app'
+    targetFile: 'ádf'
+    monitorWhen: 'always'
+    failOnIssues: true
+    projectName: 'ádf'
+    organization: 'ádf'
+    additionalArguments: 'ádf'
+%testType: 'app'%
+
+%code%
+- task: SnykSecurityScan@1
+  inputs:
+    serviceConnectionEndpoint: 'snyk'
+    testType: 'code'
+    failOnIssues: true
+    projectName: 'ádf'
+    organization: 'ádf'
+    additionalArguments: 'ádf'
+%code%
+
+%image%
+- task: SnykSecurityScan@1
+  inputs:
+    serviceConnectionEndpoint: 'snyk'
+    testType: 'container'
+    dockerImageName: 'ádf'
+    dockerfilePath: 'ádfsd'
+    monitorWhen: 'always'
+    failOnIssues: true
+    projectName: 'ádf'
+    organization: 'ádf'
+    additionalArguments: 'ádf'
+%image%
