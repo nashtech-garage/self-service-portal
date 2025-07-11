@@ -131,168 +131,33 @@ spec:
     #           title: Trivy
     #           type: boolean
 
-    # - title: Select scan tools
-    #   properties:
-        # useSnyk:
-        #   type: boolean
-        #   title: Run Snyk
-        #   default: false
-    #     useSonar:
-    #       type: boolean
-    #       title: Run Sonar
-    #       default: false
-    #     useTrivy:
-    #       type: boolean
-    #       title: Run Trivy
-    #       default: false
-
-
-
-    # - title: Scan Tool Setup
-    #   type: object
-    #   properties:
-    #     useSnyk:
-    #       type: boolean
-    #       title: Run Snyk
-    #       default: false
-
-    #     snykConfig:
-    #       type: object
-    #       ui:options:
-    #         visibleIf:
-    #           useSnyk: true
-    #       properties:
-    #         testType:
-    #           title: Scan Type
-    #           type: string
-    #           enum: [app, container, code]
-    #           default: app
-    #           description: Type of scan to run
-
-    #         monitor:
-    #           title: Upload Results to Snyk
-    #           type: boolean
-    #           default: false
-
-    #         projectName:
-    #           title: Snyk Project Name
-    #           type: string
-    #           description: Optional name for the project in Snyk
-
-    #         additionalArguments:
-    #           title: Extra CLI Arguments
-    #           type: string
-    #           description: Optional additional arguments for advanced scan configuration
-
-
-    #     useSonar:
-    #       type: boolean
-    #       title: Run SonarQube
-    #       default: false
-
-    #     sonarConfig:
-    #       type: object
-    #       title: SonarQube Scan Options
-    #       description: Configuration for running SonarQube analysis
-    #       ui:options:
-    #         visibleIf:
-    #           useSonar: true
-    #       properties:
-    #         configMode:
-    #           type: string
-    #           title: Configuration Mode
-    #           description: Choose the configuration mode for SonarQube.
-    #           enum: ['manual', 'file']
-    #           enumNames: ['Manual', 'From File']
-
-    #         extraProperties:
-    #           type: string
-    #           title: Extra SonarQube Properties
-    #           description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
-
-    #         projectKey:
-    #           type: string
-    #           title: Project Key
-    #           description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
-
-    #         projectName:
-    #           type: string
-    #           title: Project Name
-    #           description: Human-readable name of the project as it will appear in the SonarQube dashboard.
-
-    #         jdkversion:
-    #           type: string
-    #           title: JDK Version
-    #           description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
-
-    #     useTrivy:
-    #       type: boolean
-    #       title: Run Trivy
-    #       default: false
-
-    #     trivyConfig:
-    #       type: object
-    #       title: Trivy Scan Options
-    #       description: Settings for Trivy vulnerability scan
-    #       ui:options:
-    #         visibleIf:
-    #           useTrivy: true
-    #       properties:
-    #         scanType:
-    #           title: Scan Type
-    #           type: string
-    #           enum: [image, filesystem, repository, sbom]
-    #           default: filesystem
-
-    #         target:
-    #           title: Target Path or Image
-    #           type: string
-    #           default: '.'
-    #           description: Path to directory, image name, or repo URL
-
-    #         scanners:
-    #           title: Scanners
-    #           type: string
-    #           default: 'vuln'
-    #           description: 'Comma-separated list: vuln, misconfig, secret, license'
-
-    #         format:
-    #           title: Output Format
-    #           type: string
-    #           enum: [table, json, sarif, cyclonedx]
-    #           default: json
-
-    #         exitCode:
-    #           title: Fail Build on Findings
-    #           type: integer
-    #           default: 0
-    #           enum: [0, 1]
-    #           description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
-
-    #         severity:
-    #           title: Severity Threshold
-    #           type: string
-    #           enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
-    #           default: LOW
-    #           description: Minimum severity level to include in results
-    - title: Snyk Security Scan
-      type: object
+    - title: Select scan tools
       properties:
         useSnyk:
           type: boolean
           title: Run Snyk
           default: false
+        useSonar:
+          type: boolean
+          title: Run Sonar
+          default: false
+        useTrivy:
+          type: boolean
+          title: Run Trivy
+          default: false
 
+
+
+    - title: Snyk Security Scan
+      type: object
+      properties:
+       
         snykConfig:
           type: object
           ui:options:
             visibleIf:
               useSnyk: true
           properties:
-            variableGroup:
-              title: Snyk Variable Group
-              type: string
-              default: SnykDefaults
             testType:
               title: Scan Type
               type: string
@@ -312,11 +177,7 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        useSonar:
-          type: boolean
-          title: Run SonarQube
-          default: false
-
+        
         sonarConfig:
           type: object
           ui:options:
@@ -339,11 +200,7 @@ spec:
     - title: Trivy Container Scan
       type: object
       properties:
-        useTrivy:
-          type: boolean
-          title: Run Trivy
-          default: false
-
+        
         trivyConfig:
           type: object
           ui:options:
