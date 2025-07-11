@@ -148,7 +148,134 @@ spec:
 
 
 
-    - title: Scan Tool Setup
+    # - title: Scan Tool Setup
+    #   type: object
+    #   properties:
+    #     useSnyk:
+    #       type: boolean
+    #       title: Run Snyk
+    #       default: false
+
+    #     snykConfig:
+    #       type: object
+    #       ui:options:
+    #         visibleIf:
+    #           useSnyk: true
+    #       properties:
+    #         testType:
+    #           title: Scan Type
+    #           type: string
+    #           enum: [app, container, code]
+    #           default: app
+    #           description: Type of scan to run
+
+    #         monitor:
+    #           title: Upload Results to Snyk
+    #           type: boolean
+    #           default: false
+
+    #         projectName:
+    #           title: Snyk Project Name
+    #           type: string
+    #           description: Optional name for the project in Snyk
+
+    #         additionalArguments:
+    #           title: Extra CLI Arguments
+    #           type: string
+    #           description: Optional additional arguments for advanced scan configuration
+
+
+    #     useSonar:
+    #       type: boolean
+    #       title: Run SonarQube
+    #       default: false
+
+    #     sonarConfig:
+    #       type: object
+    #       title: SonarQube Scan Options
+    #       description: Configuration for running SonarQube analysis
+    #       ui:options:
+    #         visibleIf:
+    #           useSonar: true
+    #       properties:
+    #         configMode:
+    #           type: string
+    #           title: Configuration Mode
+    #           description: Choose the configuration mode for SonarQube.
+    #           enum: ['manual', 'file']
+    #           enumNames: ['Manual', 'From File']
+
+    #         extraProperties:
+    #           type: string
+    #           title: Extra SonarQube Properties
+    #           description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
+
+    #         projectKey:
+    #           type: string
+    #           title: Project Key
+    #           description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
+
+    #         projectName:
+    #           type: string
+    #           title: Project Name
+    #           description: Human-readable name of the project as it will appear in the SonarQube dashboard.
+
+    #         jdkversion:
+    #           type: string
+    #           title: JDK Version
+    #           description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
+
+    #     useTrivy:
+    #       type: boolean
+    #       title: Run Trivy
+    #       default: false
+
+    #     trivyConfig:
+    #       type: object
+    #       title: Trivy Scan Options
+    #       description: Settings for Trivy vulnerability scan
+    #       ui:options:
+    #         visibleIf:
+    #           useTrivy: true
+    #       properties:
+    #         scanType:
+    #           title: Scan Type
+    #           type: string
+    #           enum: [image, filesystem, repository, sbom]
+    #           default: filesystem
+
+    #         target:
+    #           title: Target Path or Image
+    #           type: string
+    #           default: '.'
+    #           description: Path to directory, image name, or repo URL
+
+    #         scanners:
+    #           title: Scanners
+    #           type: string
+    #           default: 'vuln'
+    #           description: 'Comma-separated list: vuln, misconfig, secret, license'
+
+    #         format:
+    #           title: Output Format
+    #           type: string
+    #           enum: [table, json, sarif, cyclonedx]
+    #           default: json
+
+    #         exitCode:
+    #           title: Fail Build on Findings
+    #           type: integer
+    #           default: 0
+    #           enum: [0, 1]
+    #           description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
+
+    #         severity:
+    #           title: Severity Threshold
+    #           type: string
+    #           enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
+    #           default: LOW
+    #           description: Minimum severity level to include in results
+    - title: Snyk Security Scan
       type: object
       properties:
         useSnyk:
@@ -162,29 +289,29 @@ spec:
             visibleIf:
               useSnyk: true
           properties:
+            variableGroup:
+              title: Snyk Variable Group
+              type: string
+              default: SnykDefaults
             testType:
               title: Scan Type
               type: string
               enum: [app, container, code]
               default: app
-              description: Type of scan to run
-
             monitor:
               title: Upload Results to Snyk
               type: boolean
               default: false
-
             projectName:
               title: Snyk Project Name
               type: string
-              description: Optional name for the project in Snyk
-
             additionalArguments:
               title: Extra CLI Arguments
               type: string
-              description: Optional additional arguments for advanced scan configuration
-
-
+    
+    - title: SonarQube Code Analysis
+      type: object
+      properties:
         useSonar:
           type: boolean
           title: Run SonarQube
@@ -192,8 +319,6 @@ spec:
 
         sonarConfig:
           type: object
-          title: SonarQube Scan Options
-          description: Configuration for running SonarQube analysis
           ui:options:
             visibleIf:
               useSonar: true
@@ -201,30 +326,19 @@ spec:
             configMode:
               type: string
               title: Configuration Mode
-              description: Choose the configuration mode for SonarQube.
-              enum: ['manual', 'file']
-              enumNames: ['Manual', 'From File']
-
+              enum: [manual, file]
+              enumNames: [Manual, From File]
             extraProperties:
               type: string
-              title: Extra SonarQube Properties
-              description: Additional key-value properties to pass to the Sonar scanner. Use standard SonarQube property format (e.g. sonar.coverage.exclusions=**/*Test.cs).
-
             projectKey:
               type: string
-              title: Project Key
-              description: Unique identifier for the project in SonarQube. Usually follows the convention [organization]:[project].
-
             projectName:
               type: string
-              title: Project Name
-              description: Human-readable name of the project as it will appear in the SonarQube dashboard.
-
             jdkversion:
               type: string
-              title: JDK Version
-              description: Specify the Java Development Kit (JDK) version required for the scan (e.g. 8, 11, 17).
-
+    - title: Trivy Container Scan
+      type: object
+      properties:
         useTrivy:
           type: boolean
           title: Run Trivy
@@ -232,50 +346,32 @@ spec:
 
         trivyConfig:
           type: object
-          title: Trivy Scan Options
-          description: Settings for Trivy vulnerability scan
           ui:options:
             visibleIf:
               useTrivy: true
           properties:
             scanType:
-              title: Scan Type
               type: string
               enum: [image, filesystem, repository, sbom]
               default: filesystem
-
             target:
-              title: Target Path or Image
               type: string
               default: '.'
-              description: Path to directory, image name, or repo URL
-
             scanners:
-              title: Scanners
               type: string
               default: 'vuln'
-              description: 'Comma-separated list: vuln, misconfig, secret, license'
-
             format:
-              title: Output Format
               type: string
               enum: [table, json, sarif, cyclonedx]
               default: json
-
             exitCode:
-              title: Fail Build on Findings
               type: integer
-              default: 0
               enum: [0, 1]
-              description: Exit code to return when vulnerabilities are found (0 = pass, 1 = fail)
-
+              default: 0
             severity:
-              title: Severity Threshold
               type: string
               enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
               default: LOW
-              description: Minimum severity level to include in results
-    
     - title: Fill in some steps
       properties:
         name:
@@ -305,6 +401,7 @@ spec:
       action: fetch:template
       input:
         url: ./content/scan
+        targetPath: ./workspace
         values:
           appName: ${{ parameters.appName }}
           backendName: ${{ parameters.backendName }}
@@ -314,17 +411,7 @@ spec:
           dockerHubUserName: ${{ parameters.dockerHubUserName }}    
           repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
     
-    # This step publishes the contents of the working directory to GitHub.
-    # - id: publish
-    #   name: Publish to Github
-    #   if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "github.com" }}
-    #   action: publish:github
-    #   input:
-    #     allowedHosts: ['github.com']
-    #     description: This is msa reactjs ${{ parameters.appName }} app
-    #     repoUrl: ${{ parameters.repoUrl }}
-    #     token: ${{ secrets.USER_OAUTH_TOKEN }}
-
+       
     - id: publish
       name: Publish to Azure DevOps
       if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
@@ -405,3 +492,25 @@ spec:
         groupName: trivyConfig
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flatten-trivy.output.flattened }}
+
+    - id: parse-scan-template
+      name: Parse scan.yaml (YAML)
+      action: roadiehq:utils:fs:parse
+      input:
+        path: ./workspace/scan.yaml
+        parser: yaml
+
+    - id: show-scan-output
+      name: Show Parsed scan.yaml Structure
+      action: debug:log
+      input:
+        message: |
+          ✅ Parsed scan.yaml structure:
+          ${{ steps['parse-scan-template'].output.content }}
+    - id: log-raw-scan
+      name: Log Raw scan.yaml
+      action: debug:log
+      input:
+        message: |
+          ✅ Raw scan.yaml content:
+          ${{ steps['parse-scan-template'].output.content | dump }}

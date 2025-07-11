@@ -1,29 +1,31 @@
 parameters:
-  - name: snykEnabled
-    type: boolean
-    default: false
+{% if snykScanCode %}
+- name: runSnyk
+  type: boolean
+  default: false
+  displayName: Run Snyk Scan
+  description: Whether to include the Snyk security scan stage
+{% endif %}
 
-  - name: sonarEnabled
-    type: boolean
-    default: false
+{% if sonarScanCode %}
+- name: runSonar
+  type: boolean
+  default: false
+  displayName: Run SonarQube Scan
+  description: Whether to include the SonarQube code quality scan stage
+{% endif %}
 
-  - name: trivyEnabled
-    type: boolean
-    default: false
+{% if trivyScanCode %}
+- name: runTrivy
+  type: boolean
+  default: false
+  displayName: Run Trivy Scan
+  description: Whether to include the Trivy container vulnerability scan stage
+{% endif %}
 
-  - name: snykVariableGroup
-    type: string
-    default: ''
-
-  - name: sonarVariableGroup
-    type: string
-    default: ''
-
-  - name: trivyVariableGroup
-    type: string
-    default: ''
-  
 stages:
+{% if snykEnabled %}
+{% raw %}
   - ${{ if eq(parameters.snykEnabled, true) }}:
     - stage: SnykScan
       jobs:
@@ -32,7 +34,10 @@ stages:
             enabled: true
       variables:
         - group: ${{ parameters.snykVariableGroup }}
-
+{% endraw %}   
+{% endif %}
+{% if sonarEnabled %}
+{% raw %}
   - ${{ if eq(parameters.sonarEnabled, true) }}:
     - stage: SonarScan
       jobs:
@@ -41,7 +46,10 @@ stages:
             enabled: true
       variables:
         - group: ${{ parameters.sonarVariableGroup }}
-
+{% endraw %}
+{% endif %}
+{% if trivyEnabled %}
+{% raw %}
   - ${{ if eq(parameters.trivyEnabled, true) }}:
     - stage: TrivyScan
       jobs:
@@ -50,3 +58,5 @@ stages:
             enabled: true
       variables:
         - group: ${{ parameters.trivyVariableGroup }}
+{% endraw %}
+{% endif %}
