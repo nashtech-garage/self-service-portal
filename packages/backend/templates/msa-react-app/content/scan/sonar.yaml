@@ -54,3 +54,25 @@ jobs:
         inputs:
           pollingTimeoutSec: '300'
         displayName: 'Publish SonarQube Results'
+
+%fromfile%
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'GT-Sonarqube'
+    scannerMode: 'cli'
+    cliScannerVersion: 'dsfas'
+    configMode: 'file'
+%fromfile%
+
+%Manually%
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'GT-Sonarqube'
+    scannerMode: 'cli'
+    cliScannerVersion: 'dsfas'
+    configMode: 'manual'
+    cliProjectKey: 'jkhlkhhj'
+    cliProjectName: 'lkjhlkhjlkhj'
+    cliSources: '.'
+    extraProperties: '-ádfsadfdsf'
+%Manually%

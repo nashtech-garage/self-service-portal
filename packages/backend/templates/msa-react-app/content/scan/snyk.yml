@@ -67,7 +67,7 @@ jobs:
 %image%
 - task: SnykSecurityScan@1
   inputs:
-    serviceConnectionEndpoint: 'snyk'
+    serviceConnectionEndpoint: $(serviceConnectionEndpoint)'snyk'
     testType: 'container'
     dockerImageName: 'ádf'
     dockerfilePath: 'ádfsd'
