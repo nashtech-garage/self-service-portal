@@ -138,7 +138,7 @@ jobs:
       run: |
           argocd app create eks-${{ github.event.inputs.clusterName }}-app \
             --repo ${{ github.event.inputs.repoURLforArgo }} \
-            --path content \
+            --path manifests \
             --dest-server https://kubernetes.default.svc \
             --dest-namespace aws-provider \
             --project default \

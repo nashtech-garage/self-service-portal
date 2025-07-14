@@ -72,19 +72,19 @@ spec:
             - us-east-1
         cidrVPCBlock:
           enum:
-          - 10.0.0.0/20
+            - 10.0.0.0/20
           type: string
           title: CIDR VPC Block for EKS
           description: Name of the Azure Resource Group to be used or created
         cidrSubnetBlockA:
           enum:
-          - 10.0.1.0/24
+            - 10.0.1.0/24
           title: CIDR Subnet Block A
           type: string
           description: CIDR Subnet Block A
         cidrSubnetBlockB:
           enum:
-          - 10.0.2.0/24
+            - 10.0.2.0/24
           title: CIDR Subnet Block B
           type: string
           description: CIDR Subnet Block B
@@ -125,35 +125,35 @@ spec:
           description: Allow range CIDR to port
         ingressCIDRBlock:
           enum:
-          - 10.0.0.0/20
+            - 10.0.0.0/20
           type: string
           title: Allow CIDR Block range
           description: Allow CIDR Block range
         cacheNodeType:    
           enum:
-          - "cache.t3.micro"
+            - "cache.t3.micro"
           type: string
           title: Choose Node type for Elastic Cache
           description: Choose Node type for Elastic Cache
         numCacheClusters:
-          type: string
+          type: number
           title: Number of nodes for Elastic Cache
           description: Number of nodes for Elastic Cache
         minSize:
-          type: string
+          type: number
           title: Min size for EKS
           description: Min size for EKS
         maxSize:
-          type: string
+          type: number
           title: Max size for EKS
           description: Max size for EKS
         desiredSize:
-          type: string
+          type: number
           title: Desire size for EKS
           description: Desire size for EKS
         capacityType:
           enum:
-          - ON_DEMAND
+            - ON_DEMAND
           type: string
           title: Capacity tyoe for EKS
           description: Capacity tyoe for EKS
@@ -168,7 +168,7 @@ spec:
           title: Instance type for EKS
           description: Instance type for EKS
         diskSize:
-          type: string
+          type: number
           title: Size of disk EKS
           description: Size of disk EKS
   steps:
@@ -185,6 +185,24 @@ spec:
         values:
           clusterName: ${{ parameters.clusterName }}
           region: ${{ parameters.region }}      
+          cidrVPCBlock: ${{ parameters.cidrVPCBlock }}
+          cidrSubnetBlockA: ${{ parameters.cidrSubnetBlockA }}      
+          cidrSubnetBlockB: ${{ parameters.cidrSubnetBlockB }}
+          bucketName: ${{ parameters.bucketName }}      
+          dbInstanceClass: ${{ parameters.dbInstanceClass }}
+          engine: ${{ parameters.engine }}      
+          engineVersion: ${{ parameters.engineVersion }}
+          ingressFromPort: ${{ parameters.ingressFromPort }}      
+          ingressToPort: ${{ parameters.ingressToPort }}
+          ingressCIDRBlock: ${{ parameters.ingressCIDRBlock }}      
+          cacheNodeType: ${{ parameters.cacheNodeType }}      
+          numCacheClusters: ${{ parameters.numCacheClusters }}      
+          minSize: ${{ parameters.minSize }}      
+          maxSize: ${{ parameters.maxSize }}      
+          desiredSize: ${{ parameters.desiredSize }}      
+          capacityType: ${{ parameters.capacityType }}      
+          instanceTypes: ${{ parameters.instanceTypes }}      
+          diskSize: ${{ parameters.diskSize }}           
           owner: ${{ parameters.repoUrl | parseRepoUrl | pick('owner')}} 
           repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo')}} 
     # This step publishes to github
