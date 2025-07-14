@@ -49,68 +49,33 @@ jobs:
 - task: trivy@2
   inputs:
     version: 'latest'
-    options: 'ádfadsf'
+    options: 'asdfasd'
     type: 'filesystem'
-    target: 'asdfdsf'
+    target: 'asdfasdf'
     scanners: 'license, misconfig, secret, vuln'
     severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
     ignoreUnfixed: true
     showSuppressed: true
     ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
+    failOnSeverityThreshold: 'CRITICAL'
     reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
     publish: true
 %Trivy Run Method - install%
-%Trivy Run Method - install%
-- task: trivy@2
-  inputs:
-    method: 'docker'
-    image: 'asdfsd'
-    version: 'latest'
-    options: 'ádfadsf'
-    type: 'filesystem'
-    target: 'asdfdsf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - install%
-
 %Trivy Run Method - docker%
 - task: trivy@2
   inputs:
     method: 'docker'
-    image: 'asdfsd'
+    image: 'asdfasdf'
     version: 'latest'
-    options: 'ádfadsf'
+    options: 'asdfasd'
     type: 'filesystem'
-    target: 'asdfdsf'
+    target: 'asdfasdf'
     scanners: 'license, misconfig, secret, vuln'
     severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
     ignoreUnfixed: true
     showSuppressed: true
     ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
+    failOnSeverityThreshold: 'CRITICAL'
     reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
     publish: true
 %Trivy Run Method - docker%
@@ -119,20 +84,192 @@ jobs:
 - task: trivy@2
   inputs:
     method: 'system'
-    options: 'ádfadsf'
+    options: 'asdfasd'
     type: 'filesystem'
-    target: 'asdfdsf'
+    target: 'asdfasdf'
     scanners: 'license, misconfig, secret, vuln'
     severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
     ignoreUnfixed: true
     showSuppressed: true
     ignoreScanErrors: true
-    failOnSeverityThreshold: 'HIGH'
+    failOnSeverityThreshold: 'CRITICAL'
     reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
     publish: true
-    templates: 'adsf'
+    templates: 'asdfsdaf'
 %Trivy Run Method - system%
 %Scan Type - filesystem% 
 
-%%
-%%
+%Scan Type - image% 
+%Trivy Run Method - install%
+- task: trivy@2
+  inputs:
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'image'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - install%
+
+%Trivy Run Method - docker%
+
+- task: trivy@2
+  inputs:
+    method: 'docker'
+    image: 'asdf'
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'image'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - docker%
+
+%Trivy Run Method - system%
+- task: trivy@2
+  inputs:
+    method: 'system'
+    options: 'asdfasd'
+    type: 'image'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+
+%Trivy Run Method - system%
+%Scan Type - image% 
+
+
+%Scan Type - repository% 
+%Trivy Run Method - install%
+
+- task: trivy@2
+  inputs:
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'repository'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - install%
+
+%Trivy Run Method - docker%
+- task: trivy@2
+  inputs:
+    method: 'docker'
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'repository'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - docker%
+
+%Trivy Run Method - system%
+- task: trivy@2
+  inputs:
+    method: 'system'
+    options: 'asdfasd'
+    type: 'repository'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - system%
+%Scan Type - repository% 
+
+
+%Scan Type - sbom% 
+%Trivy Run Method - install%
+
+- task: trivy@2
+  inputs:
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'sbom'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+
+%Trivy Run Method - install%
+
+%Trivy Run Method - docker%
+
+- task: trivy@2
+  inputs:
+    method: 'docker'
+    image: 'sâdsf'
+    version: 'latest'
+    options: 'asdfasd'
+    type: 'sbom'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+%Trivy Run Method - docker%
+
+%Trivy Run Method - system%
+- task: trivy@2
+  inputs:
+    method: 'system'
+    options: 'asdfasd'
+    type: 'sbom'
+    target: 'asdfasdf'
+    scanners: 'license, misconfig, secret, vuln'
+    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
+    ignoreUnfixed: true
+    showSuppressed: true
+    ignoreScanErrors: true
+    failOnSeverityThreshold: 'CRITICAL'
+    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
+    publish: true
+    templates: 'ádsadasd'
+%Trivy Run Method - system%
+
+%Scan Type - sbom% 
+
