@@ -73,6 +73,24 @@ spec:
         branchName:
           "ui:placeholder": "Enter branch name"
     
+    - title: Source Repository Configuration
+      properties:
+        sourceRepoAlias:
+          title: Repository Alias
+          type: string
+          description: Alias to refer to the source repository in the pipeline
+          default: Source
+        sourceRepoName:
+          title: Repository Name
+          type: string
+          description: Full path of the repository in Azure DevOps (e.g. ProjectName/repo-name)
+          default: Source
+        scanBranch:
+          title: Branch to Scan
+          type: string
+          description: Git branch to pull from for scanning
+          default: main
+
     
     # - title: Basic React Configuration
     #   required:
@@ -258,14 +276,14 @@ spec:
       action: fetch:template
       input:
         url: ./content/scan
-        targetPath: ./workspace
-        values:
-          appName: ${{ parameters.appName }}
-          backendName: ${{ parameters.backendName }}
-          backendImageName: ${{ parameters.backendImageName }}                 
-          frontendName: ${{ parameters.frontendName }}
-          frontendImageName: ${{ parameters.frontendImageName }}       
-          dockerHubUserName: ${{ parameters.dockerHubUserName }}    
+        values: 
+          parameters: ${{ parameters }}
+          # appName: ${{ parameters.appName }}
+          # backendName: ${{ parameters.backendName }}
+          # backendImageName: ${{ parameters.backendImageName }}                 
+          # frontendName: ${{ parameters.frontendName }}
+          # frontendImageName: ${{ parameters.frontendImageName }}       
+          # dockerHubUserName: ${{ parameters.dockerHubUserName }}    
           repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
     
        
@@ -281,6 +299,7 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: '${{ steps.validate.output.value }}'
+    
     - id: getRepoId
       name: Get repository ID
       action: azure:get-repo-id
@@ -289,6 +308,7 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repositoryName: ${{ parameters.pipelineRepositoryName }}
         token: '${{ steps.validate.output.value }}'
+    
     - id: createPipeline
       name: Create Azure Pipeline
       action: azure:pipeline:create
@@ -302,72 +322,50 @@ spec:
         branchName: ${{ parameters.branchName }}
         token: '${{ steps.validate.output.value }}'
     
-    - id: flatten
-      name: Flatten Snyk Group
-      action: util:flatten-parameter-group
-      input:
-        group: ${{ parameters.snykConfig }}
+    # - id: flatten
+    #   name: Flatten Snyk Group
+    #   action: util:flatten-parameter-group
+    #   input:
+    #     group: ${{ parameters.snykConfig }}
 
-    - id: ensure-group
-      name: Ensure Variable Group Exists
-      action: custom:create-or-skip-variable-group
-      input:
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: snykConfig
-        token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flatten.output.flattened }}
+    # - id: ensure-group
+    #   name: Ensure Variable Group Exists
+    #   action: custom:create-or-skip-variable-group
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.project }}
+    #     groupName: snykConfig
+    #     token: ${{ steps.validate.output.value }}
+    #     variables: ${{ steps.flatten.output.flattened }}
 
-    - id: flatten-sonar
-      name: Flatten Sonar Group
-      action: util:flatten-parameter-group
-      input:
-        group: ${{ parameters.sonarConfig }}
+    # - id: flatten-sonar
+    #   name: Flatten Sonar Group
+    #   action: util:flatten-parameter-group
+    #   input:
+    #     group: ${{ parameters.sonarConfig }}
 
-    - id: ensure-sonar-group
-      name: Ensure Sonar Variable Group Exists
-      action: custom:create-or-skip-variable-group
-      input:
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: sonarConfig
-        token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flatten-sonar.output.flattened }}
+    # - id: ensure-sonar-group
+    #   name: Ensure Sonar Variable Group Exists
+    #   action: custom:create-or-skip-variable-group
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.project }}
+    #     groupName: sonarConfig
+    #     token: ${{ steps.validate.output.value }}
+    #     variables: ${{ steps.flatten-sonar.output.flattened }}
 
-    - id: flatten-trivy
-      name: Flatten Trivy Group
-      action: util:flatten-parameter-group
-      input:
-        group: ${{ parameters.trivyConfig }}
+    # - id: flatten-trivy
+    #   name: Flatten Trivy Group
+    #   action: util:flatten-parameter-group
+    #   input:
+    #     group: ${{ parameters.trivyConfig }}
 
-    - id: ensure-trivy-group
-      name: Ensure Trivy Variable Group Exists
-      action: custom:create-or-skip-variable-group
-      input:
-        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: trivyConfig
-        token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flatten-trivy.output.flattened }}
-
-    - id: parse-scan-template
-      name: Parse scan.yaml (YAML)
-      action: roadiehq:utils:fs:parse
-      input:
-        path: ./workspace/scan.yaml
-        parser: yaml
-
-    - id: show-scan-output
-      name: Show Parsed scan.yaml Structure
-      action: debug:log
-      input:
-        message: |
-          ✅ Parsed scan.yaml structure:
-          ${{ steps['parse-scan-template'].output.content }}
-    - id: log-raw-scan
-      name: Log Raw scan.yaml
-      action: debug:log
-      input:
-        message: |
-          ✅ Raw scan.yaml content:
-          ${{ steps['parse-scan-template'].output.content | dump }}
+    # - id: ensure-trivy-group
+    #   name: Ensure Trivy Variable Group Exists
+    #   action: custom:create-or-skip-variable-group
+    #   input:
+    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+    #     project: ${{ parameters.project }}
+    #     groupName: trivyConfig
+    #     token: ${{ steps.validate.output.value }}
+    #     variables: ${{ steps.flatten-trivy.output.flattened }}
