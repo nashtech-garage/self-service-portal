@@ -1,34 +1,37 @@
 parameters:
-{% if values.parameters.useSnyk %}
-- name: runSnyk
-  type: boolean
-  default: false
-  displayName: Run Snyk Scan
-  description: Whether to include the Snyk security scan stage
-{% endif %}
+  - name: sourceAlias
+    default: ${{ values.parameters.sourceRepoAlias }}
 
-{% if values.parameters.useSonar %}
-- name: runSonar
-  type: boolean
-  default: false
-  displayName: Run SonarQube Scan
-  description: Whether to include the SonarQube code quality scan stage
-{% endif %}
+  {% if values.parameters.useSnyk %}
+  - name: runSnyk
+    type: boolean
+    default: false
+    displayName: Run Snyk Scan
+    description: Whether to include the Snyk security scan stage
+  {% endif %}
 
-{% if values.parameters.useTrivy %}
-- name: runTrivy
-  type: boolean
-  default: false
-  displayName: Run Trivy Scan
-  description: Whether to include the Trivy container vulnerability scan stage
-{% endif %}
+  {% if values.parameters.useSonar %}
+  - name: runSonar
+    type: boolean
+    default: false
+    displayName: Run SonarQube Scan
+    description: Whether to include the SonarQube code quality scan stage
+  {% endif %}
+
+  {% if values.parameters.useTrivy %}
+  - name: runTrivy
+    type: boolean
+    default: false
+    displayName: Run Trivy Scan
+    description: Whether to include the Trivy container vulnerability scan stage
+  {% endif %}
 
 resources:
   repositories: 
-    - repository: ${{ parameters.sourceRepoAlias }}
+    - repository: ${{ parameters.sourceAlias }}
       type: git
-      name: ${{ parameters.sourceRepoName }}
-      ref: ${{ parameters.scanBranch }}
+      name: ${{ values.parameters.sourceRepoName }}
+      ref: ${{ values.parameters.scanBranch }}
 
 
 
@@ -43,8 +46,10 @@ stages:
         - template: snyk.yaml
           parameters:
             enabled: true
+            source: ${{ parameters.sourceAlias }}
       variables:
         - group: ${{ parameters.snykVariableGroup }}
+        
 {% endraw %}   
 {% endif %}
 {% endif %}
@@ -57,8 +62,10 @@ stages:
         - template: sonar.yaml
           parameters:
             enabled: true
+            source: ${{ parameters.sourceAlias }}
       variables:
         - group: ${{ parameters.sonarVariableGroup }}
+
 {% endraw %}
 {% endif %}
 
@@ -70,6 +77,7 @@ stages:
         - template: trivy.yaml
           parameters:
             enabled: true
+            source: ${{ parameters.sourceAlias }}
       variables:
         - group: ${{ parameters.trivyVariableGroup }}
 {% endraw %}

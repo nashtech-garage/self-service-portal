@@ -1,31 +1,10 @@
 parameters:
+  - name: source
+      type: string
+      default: true
   - name: enabled
-    type: boolean
-    default: false
-
-  - name: scanType
-    type: string
-    default: 'filesystem'
-
-  - name: target
-    type: string
-    default: '.'
-
-  - name: scanners
-    type: string
-    default: 'vuln'
-
-  - name: format
-    type: string
-    default: 'json'
-
-  - name: exitCode
-    type: string
-    default: '0'
-
-  - name: severity
-    type: string
-    default: 'LOW'
+      type: boolean
+      default: false
 
 jobs:
   - job: trivyScan
@@ -34,242 +13,224 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - task: trivy@2
-        displayName: Run Trivy Scan
-        inputs:
-          type: ${{ parameters.scanType }}
-          target: ${{ parameters.target }}
-          scanners: ${{ parameters.scanners }}
-          format: ${{ parameters.format }}
-          exitCode: ${{ parameters.exitCode }}
-          severity: ${{ parameters.severity }}
+      - checkout: ${{ parameters.source }}    
+      {% if values.parameters.scanType == 'filesystem' %}
+        {% if values.parameters.trivyRunMethod == 'install' %}
+        - task: trivy@2
+          inputs:
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-%Scan Type - filesystem% 
-%Trivy Run Method - install%
-- task: trivy@2
-  inputs:
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'filesystem'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - install%
-%Trivy Run Method - docker%
-- task: trivy@2
-  inputs:
-    method: 'docker'
-    image: 'asdfasdf'
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'filesystem'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - docker%
+        {% if values.parameters.trivyRunMethod == 'docker' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            image: $(image)
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-%Trivy Run Method - system%
-- task: trivy@2
-  inputs:
-    method: 'system'
-    options: 'asdfasd'
-    type: 'filesystem'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-    templates: 'asdfsdaf'
-%Trivy Run Method - system%
-%Scan Type - filesystem% 
+        {% if values.parameters.trivyRunMethod == 'system' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+            templates: $(templates)
+        {% endif %}
+      {% endif %}
 
-%Scan Type - image% 
-%Trivy Run Method - install%
-- task: trivy@2
-  inputs:
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'image'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - install%
+      {% if values.parameters.scanType == 'image' %}
+        {% if values.parameters.trivyRunMethod == 'install' %}
+        - task: trivy@2
+          inputs:
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-%Trivy Run Method - docker%
+        {% if values.parameters.trivyRunMethod == 'docker' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            image: $(image)
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-- task: trivy@2
-  inputs:
-    method: 'docker'
-    image: 'asdf'
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'image'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - docker%
+        {% if values.parameters.trivyRunMethod == 'system' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
+      {% endif %}
 
-%Trivy Run Method - system%
-- task: trivy@2
-  inputs:
-    method: 'system'
-    options: 'asdfasd'
-    type: 'image'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
+      {% if values.parameters.scanType == 'repository' %}
+        {% if values.parameters.trivyRunMethod == 'install' %}
+        - task: trivy@2
+          inputs:
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-%Trivy Run Method - system%
-%Scan Type - image% 
+        {% if values.parameters.trivyRunMethod == 'docker' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
+        {% if values.parameters.trivyRunMethod == 'system' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
+      {% endif %}
 
-%Scan Type - repository% 
-%Trivy Run Method - install%
+      {% if values.parameters.scanType == 'sbom' %}
+        {% if values.parameters.trivyRunMethod == 'install' %}
+        - task: trivy@2
+          inputs:
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-- task: trivy@2
-  inputs:
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'repository'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - install%
+        {% if values.parameters.trivyRunMethod == 'docker' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            image: $(image)
+            version: $(version)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+        {% endif %}
 
-%Trivy Run Method - docker%
-- task: trivy@2
-  inputs:
-    method: 'docker'
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'repository'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - docker%
-
-%Trivy Run Method - system%
-- task: trivy@2
-  inputs:
-    method: 'system'
-    options: 'asdfasd'
-    type: 'repository'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - system%
-%Scan Type - repository% 
-
-
-%Scan Type - sbom% 
-%Trivy Run Method - install%
-
-- task: trivy@2
-  inputs:
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'sbom'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-
-%Trivy Run Method - install%
-
-%Trivy Run Method - docker%
-
-- task: trivy@2
-  inputs:
-    method: 'docker'
-    image: 'sâdsf'
-    version: 'latest'
-    options: 'asdfasd'
-    type: 'sbom'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-%Trivy Run Method - docker%
-
-%Trivy Run Method - system%
-- task: trivy@2
-  inputs:
-    method: 'system'
-    options: 'asdfasd'
-    type: 'sbom'
-    target: 'asdfasdf'
-    scanners: 'license, misconfig, secret, vuln'
-    severities: 'UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL'
-    ignoreUnfixed: true
-    showSuppressed: true
-    ignoreScanErrors: true
-    failOnSeverityThreshold: 'CRITICAL'
-    reports: 'asff, cosign, cyclonedx, github, html, junit, sarif, spdx, spdxjson, table'
-    publish: true
-    templates: 'ádsadasd'
-%Trivy Run Method - system%
-
-%Scan Type - sbom% 
-
+        {% if values.parameters.trivyRunMethod == 'system' %}
+        - task: trivy@2
+          inputs:
+            method: $(method)
+            options: $(options)
+            type: $(scanType)
+            target: $(target)
+            scanners: $(scanners)
+            severities: $(severities)
+            ignoreUnfixed: $(ignoreUnfixed)
+            showSuppressed: $(showSuppressed)
+            ignoreScanErrors: $(ignoreScanErrors)
+            failOnSeverityThreshold: $(failOnSeverityThreshold)
+            reports: $(reports)
+            publish: $(publish)
+            templates: $(templates)
+        {% endif %}
+      {% endif %}

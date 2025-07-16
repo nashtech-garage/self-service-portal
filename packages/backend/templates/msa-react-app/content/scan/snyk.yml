@@ -1,27 +1,9 @@
 parameters:
+  - name: source
+      type: string
   - name: enabled
-    type: boolean
-    default: false
-
-  - name: serviceConnection
-    type: string
-    default: 'snyk-service-conn'
-
-  - name: testType
-    type: string
-    default: 'app'
-
-  - name: monitor
-    type: boolean
-    default: false
-
-  - name: projectName
-    type: string
-    default: ''
-
-  - name: additionalArguments
-    type: string
-    default: ''
+      type: boolean
+      default: false
 
 jobs:
   - job: snykScan
@@ -30,6 +12,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+      - checkout: ${{ parameters.source }}    
       - task: SnykSecurityScan@1
         displayName: Run Snyk Scan
         inputs:
@@ -40,40 +23,40 @@ jobs:
           additionalArguments: ${{ parameters.additionalArguments }}
 
 
-%testType: 'app'%
-- task: SnykSecurityScan@1
-  inputs:
-    serviceConnectionEndpoint: 'snyk'
-    testType: 'app'
-    targetFile: 'ádf'
-    monitorWhen: 'always'
-    failOnIssues: true
-    projectName: 'ádf'
-    organization: 'ádf'
-    additionalArguments: 'ádf'
-%testType: 'app'%
+      {% if values.parameters.testType == 'app' %}
+      - task: SnykSecurityScan@1
+        inputs:
+          serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+          testType: 'app'
+          targetFile: $(targetFile)
+          monitorWhen: $(monitorWhen)
+          failOnIssues: $(failOnIssues)
+          projectName: $(projectName)
+          organization: $(organization)
+          additionalArguments: $(additionalArguments)
+      {% endif %}
 
-%code%
-- task: SnykSecurityScan@1
-  inputs:
-    serviceConnectionEndpoint: 'snyk'
-    testType: 'code'
-    failOnIssues: true
-    projectName: 'ádf'
-    organization: 'ádf'
-    additionalArguments: 'ádf'
-%code%
+      {% if values.parameters.testType == 'code' %}
+      - task: SnykSecurityScan@1
+        inputs:
+          serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+          testType: 'code'
+          failOnIssues: $(failOnIssues)
+          projectName: $(projectName)
+          organization: $(organization)
+          additionalArguments: $(additionalArguments)
+      {% endif %}
 
-%image%
-- task: SnykSecurityScan@1
-  inputs:
-    serviceConnectionEndpoint: $(serviceConnectionEndpoint)'snyk'
-    testType: 'container'
-    dockerImageName: 'ádf'
-    dockerfilePath: 'ádfsd'
-    monitorWhen: 'always'
-    failOnIssues: true
-    projectName: 'ádf'
-    organization: 'ádf'
-    additionalArguments: 'ádf'
-%image%
+      {% if values.parameters.testType == 'container' %}
+      - task: SnykSecurityScan@1
+        inputs:
+          serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+          testType: 'container'
+          dockerImageName: $(dockerImageName)
+          dockerfilePath: $(dockerfilePath)
+          monitorWhen: $(monitorWhen)
+          failOnIssues: $(failOnIssues)
+          projectName: $(projectName)
+          organization: $(organization)
+          additionalArguments: $(additionalArguments)
+      {% endif %}

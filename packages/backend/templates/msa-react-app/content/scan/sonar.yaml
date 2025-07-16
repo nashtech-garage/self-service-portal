@@ -1,23 +1,10 @@
 parameters:
+  - name: source
+      type: string
+      default: true
   - name: enabled
-    type: boolean
-    default: false
-
-  - name: projectKey
-    type: string
-    default: ''
-
-  - name: projectName
-    type: string
-    default: ''
-
-  - name: extraProperties
-    type: string
-    default: ''
-
-  - name: jdkVersion
-    type: string
-    default: '11'
+      type: boolean
+      default: false
 
 jobs:
   - job: sonarScan
@@ -26,11 +13,32 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+      - checkout: ${{ parameters.source }}    
       - task: UseJavaVersion@1
         inputs:
           versionSpec: '${{ parameters.jdkVersion }}'
           architecture: 'x64'
         displayName: 'Use Java ${{ parameters.jdkVersion }}'
+      ${{ if eq(values.parameters.configMode, 'file') }}:
+      - task: SonarQubePrepare@7
+        inputs:
+          SonarQube: $(SonarQube)
+          scannerMode: $(scannerMode)
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+      {% endif %}
+      ${{ if eq(values.parameters.configMode, 'manual') }}:
+      - task: SonarQubePrepare@7
+        inputs:
+          SonarQube: $(SonarQube)
+          scannerMode: $(scannerMode)
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
+          cliSources: $(cliSources)
+          extraProperties: $(extraProperties)
+      {% endif %}
 
       - script: |
           npm install -g @angular/cli
@@ -55,24 +63,3 @@ jobs:
           pollingTimeoutSec: '300'
         displayName: 'Publish SonarQube Results'
 
-%fromfile%
-- task: SonarQubePrepare@7
-  inputs:
-    SonarQube: 'GT-Sonarqube'
-    scannerMode: 'cli'
-    cliScannerVersion: 'dsfas'
-    configMode: 'file'
-%fromfile%
-
-%Manually%
-- task: SonarQubePrepare@7
-  inputs:
-    SonarQube: 'GT-Sonarqube'
-    scannerMode: 'cli'
-    cliScannerVersion: 'dsfas'
-    configMode: 'manual'
-    cliProjectKey: 'jkhlkhhj'
-    cliProjectName: 'lkjhlkhjlkhj'
-    cliSources: '.'
-    extraProperties: '-ádfsadfdsf'
-%Manually%
