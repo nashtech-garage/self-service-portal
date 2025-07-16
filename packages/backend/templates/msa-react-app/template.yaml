@@ -322,7 +322,25 @@ spec:
         branchName: ${{ parameters.branchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
+    
+    - id: runAzurePipeline
+      name: Run Azure Pipeline
+      action: azure:pipeline:run
+      input:
+        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+
+    - id: permitAzurePipeline
+      name: Change Azure Pipeline Permissions
+      action: azure:pipeline:permit
+      input:
+        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+        resourceId: <serviceEndpointId>
+        resourceType: endpoint
         authorized: true
+        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
     # - id: flatten
     #   name: Flatten Snyk Group
     #   action: util:flatten-parameter-group
