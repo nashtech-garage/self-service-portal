@@ -321,6 +321,7 @@ spec:
         repositoryName: ${{ parameters.pipelineRepositoryName }}
         branchName: ${{ parameters.branchName }}
         token: '${{ steps.validate.output.value }}'
+        yamlPath: ./scans.yaml
     
     # - id: flatten
     #   name: Flatten Snyk Group
