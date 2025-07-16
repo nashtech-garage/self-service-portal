@@ -322,7 +322,7 @@ spec:
         branchName: ${{ parameters.branchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
-    
+        authorized: true
     # - id: flatten
     #   name: Flatten Snyk Group
     #   action: util:flatten-parameter-group
