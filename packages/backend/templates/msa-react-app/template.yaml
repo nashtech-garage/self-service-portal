@@ -169,7 +169,6 @@ spec:
     - title: Snyk Security Scan
       type: object
       properties:
-       
         snykConfig:
           type: object
           ui:options:
@@ -181,72 +180,222 @@ spec:
               type: string
               enum: [app, container, code]
               default: app
+              description: Type of security scan to run — application, container, or code analysis.
+
             monitor:
               title: Upload Results to Snyk
               type: boolean
               default: false
+              description: If true, scan results will be uploaded to Snyk for ongoing monitoring.
+
             projectName:
               title: Snyk Project Name
               type: string
+              default: ''
+              description: Display name for the project in Snyk. Used for organizing scan reports.
+
             additionalArguments:
               title: Extra CLI Arguments
               type: string
+              default: ''
+              description: Any additional arguments passed to the Snyk CLI.
+
+            targetFile:
+              title: Target File (app scan only)
+              type: string
+              default: ''
+              description: Path to the manifest or configuration file for the application scan.
+
+            monitorWhen:
+              title: Monitor Trigger (used in app/container scan)
+              type: string
+              default: ''
+              description: Specifies when Snyk should trigger monitoring — for example, post-build or on deploy.
+
+            dockerImageName:
+              title: Docker Image Name (container scan only)
+              type: string
+              default: 'ghcr.io/aquasecurity/trivy:latest'
+              description: Name of the Docker image used to run the Trivy vulnerability scanner.
+
+            dockerfilePath:
+              title: Dockerfile Path (container scan only)
+              type: string
+              default: ''
+              description: Path to the Dockerfile associated with the container image.
+
+            failOnIssues:
+              title: Fail on Issues
+              type: boolean
+              default: false
+              description: If true, the pipeline will fail when vulnerabilities are found.
+
+            serviceConnectionEndpoint:
+              title: Service Connection Endpoint
+              type: string
+              default: ''
+              description: Azure DevOps service connection used to authenticate with Snyk.
     
     - title: SonarQube Code Analysis
       type: object
       properties:
-        
-        sonarConfig:
+        sonarQubeConfig:
           type: object
           ui:options:
             visibleIf:
-              useSonar: true
+              useSonarQube: true
           properties:
+            SonarQube:
+              title: SonarQube
+              type: string
+              default: ''
+              description: The Azure DevOps SonarQube service connection name.
+
+            scannerMode:
+              title: Scanner Mode
+              type: string
+              default: 'CLI'
+              description: Mode used for scanning, such as CLI or MSBuild.
+
+            cliScannerVersion:
+              title: CLI Scanner Version
+              type: string
+              default: 'latest'
+              description: Version of the CLI scanner to use.
+
             configMode:
+              title: Config Mode
               type: string
-              title: Configuration Mode
-              enum: [manual, file]
-              enumNames: [Manual, From File]
+              enum: [file, manual]
+              default: file
+              description: Determines whether configuration is read from a file or set manually.
+
+            cliProjectKey:
+              title: cliProjectKey
+              type: string
+              default: ''
+              description: Project key used for identifying the SonarQube project (manual mode only).
+
+            cliProjectName:
+              title: cliProjectName
+              type: string
+              default: ''
+              description: Name of the SonarQube project (manual mode only).
+
+            cliSources:
+              title: cliSources
+              type: string
+              default: ''
+              description: Path to the source code files for the scanner to analyze.
+
             extraProperties:
+              title: extraProperties
               type: string
-            projectKey:
-              type: string
-            projectName:
-              type: string
-            jdkversion:
-              type: string
+              default: ''
+              description: Additional properties for configuring the scan.
+                
+
+
+
     - title: Trivy Container Scan
       type: object
       properties:
-        
         trivyConfig:
           type: object
           ui:options:
             visibleIf:
               useTrivy: true
           properties:
-            scanType:
+            version:
+              title: version
               type: string
-              enum: [image, filesystem, repository, sbom]
-              default: filesystem
+              default: 'latest'
+              description: Version of Trivy to use for scanning.
+
+            method:
+              title: method
+              type: string
+              default: ''
+              description: Execution method for Trivy (e.g., docker or system).
+
+            image:
+              title: image
+              type: string
+              default: ''
+              description: Docker image name used to run Trivy in containerized mode.
+
+            options:
+              title: options
+              type: string
+              default: ''
+              description: Additional CLI options passed to the Trivy scan.
+
+            type:
+              title: type
+              type: string
+              default: ''
+              description: Type of scan to run — filesystem, image, repository, or sbom.
+
             target:
+              title: target
               type: string
-              default: '.'
+              default: ''
+              description: Path or target of the scan (e.g., directory or image reference).
+
             scanners:
+              title: scanners
               type: string
-              default: 'vuln'
-            format:
+              default: ''
+              description: Types of vulnerabilities to scan for (e.g., vuln, config).
+
+            severities:
+              title: severities
               type: string
-              enum: [table, json, sarif, cyclonedx]
-              default: json
-            exitCode:
-              type: integer
-              enum: [0, 1]
-              default: 0
-            severity:
+              default: ''
+              description: Severity levels to filter results by (e.g., CRITICAL,HIGH).
+
+            ignoreUnfixed:
+              title: ignoreUnfixed
+              type: boolean
+              default: false
+              description: If true, ignores vulnerabilities that haven’t been fixed yet.
+
+            showSuppressed:
+              title: showSuppressed
+              type: boolean
+              default: false
+              description: If true, includes suppressed vulnerabilities in scan results.
+
+            ignoreScanErrors:
+              title: ignoreScanErrors
+              type: boolean
+              default: false
+              description: If true, scan errors won’t fail the pipeline.
+
+            failOnSeverityThreshold:
+              title: failOnSeverityThreshold
               type: string
-              enum: [UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL]
-              default: LOW
+              default: ''
+              description: If set, fails the pipeline when vulnerabilities meet or exceed this severity.
+
+            reports:
+              title: reports
+              type: string
+              default: ''
+              description: Report formats to generate (e.g., json, sarif).
+
+            publish:
+              title: publish
+              type: boolean
+              default: false
+              description: If true, publishes scan results as pipeline artifacts.
+
+            templates:
+              title: templates
+              type: string
+              default: ''
+              description: Templates used to customize the report output (sbom/system mode only).
+    
     - title: Fill in some steps
       properties:
         name:

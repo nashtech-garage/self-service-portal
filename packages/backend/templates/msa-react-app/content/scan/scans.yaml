@@ -37,8 +37,8 @@ resources:
 
 stages:
 
-{% if values.parameters.useSonar %}
-{% if values.parameters.useTrivy %}
+
+{% if values.parameters.useSnyk %}
 {% raw %}
   - ${{ if eq(parameters.useSnyk, true) }}:
     - stage: SnykScan
@@ -52,7 +52,7 @@ stages:
         
 {% endraw %}   
 {% endif %}
-{% endif %}
+
 
 {% if values.parameters.useSonar %}
 {% raw %}
