@@ -1,0 +1,37 @@
+Sample set of parameters for trivy
+
+v## Trivy Scan Configuration
+
+This repository uses Trivy to scan for vulnerabilities, misconfigurations, licenses, and secrets.
+
+- `version: 'latest'`  
+  The scan will use the latest available Trivy version.
+
+- `type: 'repository'`  
+  Indicates that the scan target is a source code repository.
+
+- `target: '.'`  
+  Scans the current working directory (root of the project).
+
+- `scanners: 'license, misconfig, secret, vuln'`  
+  Enables multiple scanning modules:  
+  - `license`: Detects license info in dependencies  
+  - `misconfig`: Checks for configuration errors  
+  - `secret`: Detects embedded secrets (API keys, tokens)  
+  - `vuln`: Scans for known vulnerabilities
+
+- `severities: 'HIGH, CRITICAL'`  
+  Filters results to show only high and critical severity issues.
+
+- `ignoreUnfixed: true`  
+  Ignores vulnerabilities that don’t have a known fix.
+
+- `failOnSeverityThreshold: 'CRITICAL'`  
+  The scan will fail if any critical issue is found.
+
+- `reports: 'html'`  
+  Output will be generated as an HTML report.
+
+- `publish: true`  
+  Enables report publishing in supported environments.
+

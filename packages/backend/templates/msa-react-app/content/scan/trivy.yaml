@@ -14,6 +14,14 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: ${{ parameters.source }}    
+      - script: |
+          for d in */; do
+            if [ -f "$d/package.json" ]; then
+              echo "📦 Installing in $d"
+              npm install --prefix "$d"
+            fi
+          done
+        displayName: 'Run a multi-line script'
       {% if values.parameters.scanType == 'filesystem' %}
         {% if values.parameters.trivyRunMethod == 'install' %}
         - task: trivy@2
