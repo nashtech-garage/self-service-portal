@@ -91,7 +91,6 @@ spec:
           description: Git branch to pull from for scanning
           default: main
 
-    
     # - title: Basic React Configuration
     #   required:
     #     - appName
@@ -163,9 +162,25 @@ spec:
           type: boolean
           title: Run Trivy
           default: false
-
-
-
+  
+    - title: Variables Group Mapping
+      properties:
+        snykVariableGroupName:
+          type: string
+          title: Snyk Variable Group Name
+          description: Name of the variable group to use for Snyk scanning
+          default: snyk
+        sonarVariableGroupName:
+          type: string
+          title: Sonar Variable Group Name
+          description: Name of the variable group to use for SonarQube scanning
+          default: sonar
+        trivyVariableGroupName:
+          type: string
+          title: Trivy Variable Group Name
+          description: Name of the variable group to use for Trivy scanning
+          default: trivy
+    
     - title: Snyk Security Scan
       type: object
       properties:
@@ -239,7 +254,7 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarQubeConfig:
+        sonarConfig:
           type: object
           ui:options:
             visibleIf:
@@ -294,9 +309,6 @@ spec:
               default: ''
               description: Additional properties for configuring the scan.
                 
-
-
-
     - title: Trivy Container Scan
       type: object
       properties:
@@ -472,68 +484,68 @@ spec:
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
     
-    - id: runAzurePipeline
-      name: Run Azure Pipeline
-      action: azure:pipeline:run
+    # - id: runAzurePipeline
+    #   name: Run Azure Pipeline
+    #   action: azure:pipeline:run
+    #   input:
+    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+
+    # - id: permitAzurePipeline
+    #   name: Change Azure Pipeline Permissions
+    #   action: azure:pipeline:permit
+    #   input:
+    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+    #     resourceId: <serviceEndpointId>
+    #     resourceType: endpoint
+    #     authorized: true
+    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+    - id: flattenSnyk
+      name: Flatten Snyk Group
+      action: util:flatten-parameter-group
       input:
-        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
-        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
-        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+        group: ${{ parameters.snykConfig }}
 
-    - id: permitAzurePipeline
-      name: Change Azure Pipeline Permissions
-      action: azure:pipeline:permit
+    - id: ensure-snyk-group
+      name: Ensure Variable Group Exists
+      action: custom:create-or-skip-variable-group
       input:
-        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
-        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
-        resourceId: <serviceEndpointId>
-        resourceType: endpoint
-        authorized: true
-        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
-    # - id: flatten
-    #   name: Flatten Snyk Group
-    #   action: util:flatten-parameter-group
-    #   input:
-    #     group: ${{ parameters.snykConfig }}
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.snykVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSnyk.output.flattened }}
 
-    # - id: ensure-group
-    #   name: Ensure Variable Group Exists
-    #   action: custom:create-or-skip-variable-group
-    #   input:
-    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-    #     project: ${{ parameters.project }}
-    #     groupName: snykConfig
-    #     token: ${{ steps.validate.output.value }}
-    #     variables: ${{ steps.flatten.output.flattened }}
+    - id: flattenSonar
+      name: Flatten Sonar Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.sonarConfig }}
 
-    # - id: flatten-sonar
-    #   name: Flatten Sonar Group
-    #   action: util:flatten-parameter-group
-    #   input:
-    #     group: ${{ parameters.sonarConfig }}
+    - id: ensure-sonar-group
+      name: Ensure Sonar Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.sonarVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSonar.output.flattened }}
 
-    # - id: ensure-sonar-group
-    #   name: Ensure Sonar Variable Group Exists
-    #   action: custom:create-or-skip-variable-group
-    #   input:
-    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-    #     project: ${{ parameters.project }}
-    #     groupName: sonarConfig
-    #     token: ${{ steps.validate.output.value }}
-    #     variables: ${{ steps.flatten-sonar.output.flattened }}
+    - id: flattenTrivy
+      name: Flatten Trivy Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.trivyConfig }}
 
-    # - id: flatten-trivy
-    #   name: Flatten Trivy Group
-    #   action: util:flatten-parameter-group
-    #   input:
-    #     group: ${{ parameters.trivyConfig }}
-
-    # - id: ensure-trivy-group
-    #   name: Ensure Trivy Variable Group Exists
-    #   action: custom:create-or-skip-variable-group
-    #   input:
-    #     organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-    #     project: ${{ parameters.project }}
-    #     groupName: trivyConfig
-    #     token: ${{ steps.validate.output.value }}
-    #     variables: ${{ steps.flatten-trivy.output.flattened }}
+    - id: ensure-trivy-group
+      name: Ensure Trivy Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.trivyVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenTrivy.output.flattened }}

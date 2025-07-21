@@ -1,10 +1,10 @@
 parameters:
   - name: source
-      type: string
-      default: true
+    type: string
+    default: true
   - name: enabled
-      type: boolean
-      default: false
+    type: boolean
+    default: false
 
 jobs:
   - job: trivyScan
@@ -12,8 +12,8 @@ jobs:
     condition: eq('${{ parameters.enabled }}', true)
     pool:
       vmImage: 'ubuntu-latest'
-    steps:
-      - checkout: ${{ parameters.source }}    
+    steps: 
+      {% raw %}- checkout: ${{ parameters.source }} {% endraw %}
       - script: |
           for d in */; do
             if [ -f "$d/package.json" ]; then
@@ -22,223 +22,212 @@ jobs:
             fi
           done
         displayName: 'Run a multi-line script'
-      {% if values.parameters.scanType == 'filesystem' %}
-        {% if values.parameters.trivyRunMethod == 'install' %}
-        - task: trivy@2
-          inputs:
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'docker' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            image: $(image)
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'system' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-            templates: $(templates)
-        {% endif %}
-      {% endif %}
-
-      {% if values.parameters.scanType == 'image' %}
-        {% if values.parameters.trivyRunMethod == 'install' %}
-        - task: trivy@2
-          inputs:
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'docker' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            image: $(image)
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'system' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-      {% endif %}
-
-      {% if values.parameters.scanType == 'repository' %}
-        {% if values.parameters.trivyRunMethod == 'install' %}
-        - task: trivy@2
-          inputs:
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'docker' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'system' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-      {% endif %}
-
-      {% if values.parameters.scanType == 'sbom' %}
-        {% if values.parameters.trivyRunMethod == 'install' %}
-        - task: trivy@2
-          inputs:
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'docker' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            image: $(image)
-            version: $(version)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-        {% endif %}
-
-        {% if values.parameters.trivyRunMethod == 'system' %}
-        - task: trivy@2
-          inputs:
-            method: $(method)
-            options: $(options)
-            type: $(scanType)
-            target: $(target)
-            scanners: $(scanners)
-            severities: $(severities)
-            ignoreUnfixed: $(ignoreUnfixed)
-            showSuppressed: $(showSuppressed)
-            ignoreScanErrors: $(ignoreScanErrors)
-            failOnSeverityThreshold: $(failOnSeverityThreshold)
-            reports: $(reports)
-            publish: $(publish)
-            templates: $(templates)
-        {% endif %}
-      {% endif %}
+      {%- if values.parameters.trivyConfig.type == 'filesystem' %}
+      {%- if values.parameters.trivyConfig.method == 'install' %}
+      - task: trivy@2
+        inputs:
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'docker' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          image: $(image)
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'system' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+          templates: $(templates)
+      {% endif -%}
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.type == 'image' %}
+      {%- if values.parameters.trivyConfig.method == 'install' %}
+      - task: trivy@2
+        inputs:
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'docker' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          image: $(image)
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'system' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.type == 'repository' %}
+      {%- if values.parameters.trivyConfig.method == 'install' %}
+      - task: trivy@2
+        inputs:
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'docker' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'system' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.type == 'sbom' %}
+      {%- if values.parameters.trivyConfig.method == 'install' %}
+      - task: trivy@2
+        inputs:
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'docker' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          image: $(image)
+          version: $(version)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+      {% endif -%}
+      {%- if values.parameters.trivyConfig.method == 'system' %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          options: $(options)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          showSuppressed: $(showSuppressed)
+          ignoreScanErrors: $(ignoreScanErrors)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)
+          templates: $(templates)
+      {% endif -%}
+      {% endif -%}

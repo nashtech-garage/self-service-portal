@@ -19,15 +19,16 @@ jobs:
           versionSpec: '${{ parameters.jdkVersion }}'
           architecture: 'x64'
         displayName: 'Use Java ${{ parameters.jdkVersion }}'
-      ${{ if eq(values.parameters.configMode, 'file') }}:
+      ${% if values.parameters.configMode == 'file' %}:
       - task: SonarQubePrepare@7
         inputs:
           SonarQube: $(SonarQube)
           scannerMode: $(scannerMode)
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
+
       {% endif %}
-      ${{ if eq(values.parameters.configMode, 'manual') }}:
+      ${% if values.parameters.configMode == 'manual' %}:
       - task: SonarQubePrepare@7
         inputs:
           SonarQube: $(SonarQube)
