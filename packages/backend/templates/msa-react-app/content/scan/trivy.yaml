@@ -1,15 +1,14 @@
 parameters:
   - name: source
     type: string
-    default: true
   - name: enabled
     type: boolean
-    default: false
+    default: true
 
 jobs:
   - job: trivyScan
     displayName: Trivy Security Scan
-    condition: eq('${{ parameters.enabled }}', true)
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps: 
