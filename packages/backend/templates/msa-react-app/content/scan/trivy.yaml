@@ -12,7 +12,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps: 
-      {% raw %}- checkout: ${{ parameters.source }} {% endraw %}
+      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
       - script: |
           for d in */; do
             if [ -f "$d/package.json" ]; then
@@ -26,11 +26,11 @@ jobs:
           {%- if values.parameters.trivyConfig.method == 'docker' %}
           method: $(method)
           image: $(image)
-          {% endif -%}
+          {%- endif %}
           {%- if values.parameters.trivyConfig.method == 'system' %}
           method: $(method)
           templates: $(templates)
-          {% endif -%}
+          {%- endif %}
           version: $(version)
           options: $(options)
           type: $(type)

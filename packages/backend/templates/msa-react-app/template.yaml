@@ -282,7 +282,7 @@ spec:
             cliScannerVersion:
               title: CLI Scanner Version
               type: string
-              default: 'latest'
+              default: ''
               description: Version of the CLI scanner to use.
 
             configMode:
@@ -315,7 +315,12 @@ spec:
               type: string
               default: ''
               description: Additional properties for configuring the scan.
-                
+            organization:
+              title: Organization
+              type: string
+              default: ''
+              description: Name of the organization performing or responsible for the scan.
+              
     - title: Trivy Container Scan
       type: object
       properties:
@@ -415,7 +420,7 @@ spec:
               default: ''
               description: Templates used to customize the report output (sbom/system mode only).
     
-    - title: Fill in some steps
+    - title: Environments
       properties:
         name:
           title: Select environments

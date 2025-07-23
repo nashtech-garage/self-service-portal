@@ -43,8 +43,7 @@ stages:
         - group: ${{ values.parameters.snykVariableGroupName }}   
   {%- endif %}
   {%- if values.parameters.useSonar %}
-  {% raw %}
-  - ${{ if eq(parameters.runSonar, true) }}:
+  {% raw %}- ${{ if eq(parameters.runSonar, true) }}:
     - stage: SonarScan
       dependsOn: []
       jobs:
@@ -65,7 +64,6 @@ stages:
           parameters:
             enabled: true
             source: ${{ parameters.sourceAlias }}{% endraw %}
-            SonarQube: ${{ parameters.sonarConfig.SonarQube }}
       variables:
         - group: ${{ values.parameters.trivyVariableGroupName }}
   {%- endif %}
