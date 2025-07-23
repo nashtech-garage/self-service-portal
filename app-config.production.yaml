@@ -70,7 +70,7 @@ auth:
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
   secrets:
-    GITHUB_TOKEN: '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'
+    GITHUB_TOKEN: ''
 
 catalog:
   import:
