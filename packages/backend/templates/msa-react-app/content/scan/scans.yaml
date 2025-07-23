@@ -1,7 +1,8 @@
+trigger: none
 parameters:
   - name: sourceAlias
     default: ${{ values.parameters.sourceRepoAlias }}
-  {%- if values.parameters.useSnyk -%}
+  {%- if values.parameters.useSnyk %}
   - name: runSnyk
     type: boolean
     default: true
@@ -31,35 +32,40 @@ stages:
   {%- if values.parameters.useSnyk %}
   {% raw %}- ${{ if eq(parameters.runSnyk, true) }}:
     - stage: SnykScan
+      dependsOn: []
       jobs:
         - template: snyk.yaml
           parameters:
             enabled: true
-            source: ${{ parameters.sourceAlias }}
+            source: ${{ parameters.sourceAlias }}{% endraw %}
+            serviceConnectionEndpoint: ${{ values.parameters.snykConfig.serviceConnectionEndpoint }}
       variables:
-        - group: ${{ values.parameters.snykVariableGroupName }}{% endraw %}   
+        - group: ${{ values.parameters.snykVariableGroupName }}   
   {%- endif %}
   {%- if values.parameters.useSonar %}
   {% raw %}
   - ${{ if eq(parameters.runSonar, true) }}:
     - stage: SonarScan
+      dependsOn: []
       jobs:
         - template: sonar.yaml
           parameters:
             enabled: true
-            source: ${{ parameters.sourceAlias }}
+            source: ${{ parameters.sourceAlias }}{% endraw %}
+            SonarQube: ${{ values.parameters.sonarConfig.SonarQube }}
       variables:
         - group: ${{ values.parameters.sonarVariableGroupName }}
-  {% endraw %}
   {%- endif %}
   {%- if values.parameters.useTrivy %}
   {% raw %}- ${{ if eq(parameters.runTrivy, true) }}:
     - stage: TrivyScan
+      dependsOn: []
       jobs:
         - template: trivy.yaml
           parameters:
             enabled: true
-            source: ${{ parameters.sourceAlias }}
-      variables:{% endraw %}
+            source: ${{ parameters.sourceAlias }}{% endraw %}
+            SonarQube: ${{ parameters.sonarConfig.SonarQube }}
+      variables:
         - group: ${{ values.parameters.trivyVariableGroupName }}
   {%- endif %}

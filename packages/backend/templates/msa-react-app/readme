@@ -35,3 +35,31 @@ This repository uses Trivy to scan for vulnerabilities, misconfigurations, licen
 - `publish: true`  
   Enables report publishing in supported environments.
 
+Snyk Scan Configuration
+
+This repository uses Snyk to scan application dependencies for known vulnerabilities.
+
+
+- `serviceConnectionEndpoint: 'Snyk'`  
+  Specifies the name of the configured service connection that authenticates with Snyk.
+
+- `testType: 'app'`  
+  Indicates the scan is targeting an application or project manifest.
+
+- `targetFile: ''`  
+  Path to the target file to be scanned (e.g., `package.json`). Leave empty to auto-resolve.
+
+- `monitorWhen: 'always'`  
+  Enables monitoring of the project in Snyk every time the scan runs.
+
+- `failOnIssues: true`  
+  Fails the build if any vulnerabilities are detected.
+
+- `projectName: 'Angular'`  
+  Custom name for the project as displayed in the Snyk dashboard.
+
+- `organization: 'tiennguyen202520251'`  
+  Snyk organization identifier under which the scan will be executed.
+
+- `additionalArguments: ''`  
+  Any extra flags or options for customizing the scan behavior.

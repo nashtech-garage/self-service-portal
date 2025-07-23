@@ -27,7 +27,7 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 require('dotenv').config();
-console.log(process.env.AZURE_PAT);
+
 
 // 🔐 Custom Auth Module
 const customAuth = createBackendModule({

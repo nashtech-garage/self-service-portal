@@ -250,6 +250,13 @@ spec:
               type: string
               default: ''
               description: Azure DevOps service connection used to authenticate with Snyk.
+            
+            organization:
+              title: Organization Identifier
+              type: string
+              default: ''
+              description: The Snyk organization ID under which scans and monitoring actions are performed.
+
     
     - title: SonarQube Code Analysis
       type: object
@@ -269,7 +276,7 @@ spec:
             scannerMode:
               title: Scanner Mode
               type: string
-              default: 'CLI'
+              default: 'cli'
               description: Mode used for scanning, such as CLI or MSBuild.
 
             cliScannerVersion:
@@ -333,7 +340,7 @@ spec:
             image:
               title: image
               type: string
-              default: ''
+              default: 'aquasec/trivy:latest'
               description: Docker image name used to run Trivy in containerized mode.
 
             options:
