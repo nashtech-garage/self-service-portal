@@ -69,8 +69,6 @@ grafana:
   # Optional. Default: false
   unifiedAlerting: true    
 
-
-
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
@@ -114,7 +112,6 @@ auth:
         clientId: ${COGNITO_CLIENT_ID}
         clientSecret: ${COGNITO_CLIENT_SECRET}
         domain: ${COGNITO_DOMAIN}
-
    
 catalog:
   import:
