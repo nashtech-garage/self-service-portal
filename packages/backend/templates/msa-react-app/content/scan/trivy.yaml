@@ -44,5 +44,3 @@ jobs:
           reports: $(reports)
           publish: $(publish)
      
-      
-     
