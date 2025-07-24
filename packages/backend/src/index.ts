@@ -23,11 +23,7 @@ import {
   createReplaceInFileAction,
 } from '@roadiehq/scaffolder-backend-module-utils';
 
-// ✅ Type casting workaround
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-
-require('dotenv').config();
-
 
 // 🔐 Custom Auth Module
 const customAuth = createBackendModule({
