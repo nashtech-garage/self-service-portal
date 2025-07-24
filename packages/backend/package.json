@@ -43,6 +43,8 @@
     "@backstage/plugin-search-backend-node": "^1.2.27",
     "@backstage/plugin-techdocs-backend": "^1.10.9",
     "@janus-idp/backstage-plugin-rbac-backend": "^4.10.2",
+    "@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines": "^1.3.0",
+    "@roadiehq/scaffolder-backend-module-utils": "^3.5.0",
     "@spotify/backstage-plugin-permission-backend-module-rbac": "^0.3.1",
     "app": "link:../app",
     "better-sqlite3": "^9.0.0",
