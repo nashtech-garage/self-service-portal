@@ -63,3 +63,33 @@ This repository uses Snyk to scan application dependencies for known vulnerabili
 
 - `additionalArguments: ''`  
   Any extra flags or options for customizing the scan behavior.
+
+- task: SnykSecurityScan@1
+  inputs:
+    serviceConnectionEndpoint: 'Snyk'
+    testType: 'container'
+    dockerImageName: 'mcr.microsoft.com/dotnet/sdk:6.0'
+    monitorWhen: 'always'
+    failOnIssues: true
+    projectName: 'tiennguyen202520251'
+    organization: 'tiennguyen202520251'
+
+- job: trivyScan
+    displayName: Trivy Scan
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps: 
+      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
+      - task: trivy@2
+        inputs:
+          method: 'docker'
+          version: 'latest'
+          type: 'image'
+          target: 'mcr.microsoft.com/dotnet/sdk:6.0'
+          scanners: 'license, misconfig, secret, vuln'
+          severities: 'HIGH, CRITICAL'
+          ignoreUnfixed: true
+          failOnSeverityThreshold: 'CRITICAL'
+          reports: 'html'
+          publish: true

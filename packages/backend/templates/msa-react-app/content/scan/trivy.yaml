@@ -44,5 +44,22 @@ jobs:
           reports: $(reports)
           publish: $(publish)
      
-      
-     
+  - job: trivyScanBackend
+    displayName: Trivy Scan (Backend)
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps: 
+      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
+      - task: trivy@2
+        inputs:
+          method: $(method)
+          version: $(version)
+          type: $(type)
+          target: $(target)
+          scanners: $(scanners)
+          severities: $(severities)
+          ignoreUnfixed: $(ignoreUnfixed)
+          failOnSeverityThreshold: $(failOnSeverityThreshold)
+          reports: $(reports)
+          publish: $(publish)

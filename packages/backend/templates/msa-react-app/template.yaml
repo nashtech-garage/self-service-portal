@@ -150,18 +150,36 @@ spec:
 
     - title: Select scan tools
       properties:
-        useSnyk:
-          type: boolean
-          title: Run Snyk
-          default: false
-        useSonar:
-          type: boolean
-          title: Run Sonar
-          default: false
-        useTrivy:
-          type: boolean
-          title: Run Trivy
-          default: false
+        frontendScan:
+          type: object
+          title: Frontend Scan Tools
+          properties:
+            useSnyk:
+              type: boolean
+              title: Run Snyk (Frontend)
+              default: false
+            useSonar:
+              type: boolean
+              title: Run Sonar (Frontend)
+              default: false
+            useTrivy:
+              type: boolean
+              title: Run Trivy (Frontend)
+              default: false
+
+        backendScan:
+          type: object
+          title: Backend (.NET Container) Scan Tools
+          properties:
+            useDonetSnykContainer:
+              type: boolean
+              title: Scan .NET container with Snyk
+              default: false
+            useDonetTrivyContainer:
+              type: boolean
+              title: Scan .NET container with Trivy
+              default: false
+
   
     - title: Variables Group Mapping
       properties:

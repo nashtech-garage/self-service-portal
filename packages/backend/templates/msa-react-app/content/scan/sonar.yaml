@@ -54,22 +54,25 @@ jobs:
         inputs:
           pollingTimeoutSec: '300'
 
-# - task: SonarQubePrepare@7
-#         inputs:
-#           {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
-#           scannerMode: $(scannerMode)
-#           cliScannerVersion: $(cliScannerVersion)
-#           configMode: $(configMode)
-#           {%- if values.parameters.sonarConfig.configMode == 'manual' %}
-#           cliProjectKey: $(cliProjectKey)
-#           cliProjectName: $(cliProjectName)
-#           cliSources: $(cliSources)
-#           extraProperties: $(extraProperties)
-#           {%- endif %}
-#  - task: SonarQubeAnalyze@5
-#         displayName: 'Run SonarQube Analysis'
+{%- if false %}
+###This piece of code will never run
+- task: SonarQubePrepare@7
+        inputs:
+          {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
+          scannerMode: $(scannerMode)
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
+          cliSources: $(cliSources)
+          extraProperties: $(extraProperties)
+          {%- endif %}
+ - task: SonarQubeAnalyze@5
+        displayName: 'Run SonarQube Analysis'
 
-#       - task: SonarQubePublish@5
-#         inputs:
-#           pollingTimeoutSec: '300'
-#         displayName: 'Publish SonarQube Results'
+      - task: SonarQubePublish@5
+        inputs:
+          pollingTimeoutSec: '300'
+        displayName: 'Publish SonarQube Results'
+{%- endof %}

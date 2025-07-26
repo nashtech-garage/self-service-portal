@@ -7,8 +7,8 @@ parameters:
   - name: serviceConnectionEndpoint
     type: string
 jobs:
-  - job: snykScan
-    displayName: Snyk Scan
+  - job: snykScanFrontend
+    displayName: Snyk Scan (Frontend)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
@@ -31,4 +31,22 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-     
+  - job: snykScanFrontend
+    displayName: Snyk Scan (Frontend)
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
+      {%- if values.parameters.snyKDotnetConfig.configMode == 'manual' %}
+        - task: SnykSecurityScan@1
+          inputs:
+            serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+            testType: $(testType)
+            dockerImageName: $(dockerImageName)
+            monitorWhen: $(monitorWhen)
+            failOnIssues: $(failOnIssues)
+            projectName: $(projectName)
+            organization: $(organization)
+      {%- endif %}
+
