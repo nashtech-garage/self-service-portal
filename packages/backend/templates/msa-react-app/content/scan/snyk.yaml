@@ -31,7 +31,6 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-<<<<<<< HEAD
 
   - job: snykScanBacked
     displayName: Snyk Scan (Backend)
@@ -51,6 +50,3 @@ jobs:
             projectName: $(projectName)
             organization: $(organization)
       {%- endif %}
-=======
-     
->>>>>>> d153aa3462ec27cf193c88d87c575f0860026c41
