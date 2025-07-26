@@ -43,6 +43,7 @@ jobs:
           failOnSeverityThreshold: $(failOnSeverityThreshold)
           reports: $(reports)
           publish: $(publish)
+<<<<<<< HEAD
 
   - job: trivyScanBackend
     displayName: Trivy Scan (Backend)
@@ -63,3 +64,6 @@ jobs:
           failOnSeverityThreshold: $(failOnSeverityThreshold)
           reports: $(reports)
           publish: $(publish)
+=======
+     
+>>>>>>> d153aa3462ec27cf193c88d87c575f0860026c41
