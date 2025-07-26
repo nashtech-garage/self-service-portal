@@ -66,12 +66,6 @@ auth:
         clientId: ${GOOGLE_CLIENT_ID}
         clientSecret: ${GOOGLE_CLIENT_SECRET}
 
-
-scaffolder:
-  # see https://backstage.io/docs/features/software-templates/configuration for software template options
-  secrets:
-    GITHUB_TOKEN: ''
-
 catalog:
   import:
     entityFilename: catalog-info.yaml
