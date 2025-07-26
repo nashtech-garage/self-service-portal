@@ -6,8 +6,8 @@ parameters:
     default: true
 
 jobs:
-  - job: trivyScan
-    displayName: Trivy Scan
+  - job: trivyScanFrontend
+    displayName: Trivy Scan (Frontend)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
@@ -43,8 +43,7 @@ jobs:
           failOnSeverityThreshold: $(failOnSeverityThreshold)
           reports: $(reports)
           publish: $(publish)
-     
-<<<<<<< HEAD
+
   - job: trivyScanBackend
     displayName: Trivy Scan (Backend)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
@@ -64,5 +63,3 @@ jobs:
           failOnSeverityThreshold: $(failOnSeverityThreshold)
           reports: $(reports)
           publish: $(publish)
-=======
->>>>>>> d153aa3462ec27cf193c88d87c575f0860026c41

@@ -31,9 +31,9 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-<<<<<<< HEAD
-  - job: snykScanFrontend
-    displayName: Snyk Scan (Frontend)
+
+  - job: snykScanBacked
+    displayName: Snyk Scan (Backend)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
@@ -50,7 +50,3 @@ jobs:
             projectName: $(projectName)
             organization: $(organization)
       {%- endif %}
-
-=======
-     
->>>>>>> d153aa3462ec27cf193c88d87c575f0860026c41
