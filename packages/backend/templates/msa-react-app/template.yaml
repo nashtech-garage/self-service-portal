@@ -183,17 +183,17 @@ spec:
   
     - title: Variables Group Mapping
       properties:
-        snykVariableGroupName:
+        snykFrontendVariableGroupName:
           type: string
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarVariableGroupName:
+        sonarFrontendVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
-        trivyVariableGroupName:
+        trivyFrontendVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
@@ -202,7 +202,7 @@ spec:
     - title: Snyk Security Scan
       type: object
       properties:
-        snykConfig:
+        snykFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -279,7 +279,7 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarConfig:
+        sonarFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -342,7 +342,7 @@ spec:
     - title: Trivy Container Scan
       type: object
       properties:
-        trivyConfig:
+        trivyFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -536,7 +536,7 @@ spec:
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.snykConfig }}
+        group: ${{ parameters.snykFrontendConfig }}
 
     - id: ensure-snyk-group
       name: Ensure Variable Group Exists
@@ -544,7 +544,7 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.snykVariableGroupName }}
+        groupName: ${{ parameters.snykFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnyk.output.flattened }}
 
@@ -552,7 +552,7 @@ spec:
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarConfig }}
+        group: ${{ parameters.sonarFrontendConfig }}
 
     - id: ensure-sonar-group
       name: Ensure Sonar Variable Group Exists
@@ -560,7 +560,7 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarVariableGroupName }}
+        groupName: ${{ parameters.sonarFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSonar.output.flattened }}
 
@@ -568,7 +568,7 @@ spec:
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.trivyConfig }}
+        group: ${{ parameters.trivyFrontendConfig }}
 
     - id: ensure-trivy-group
       name: Ensure Trivy Variable Group Exists
@@ -576,6 +576,6 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.trivyVariableGroupName }}
+        groupName: ${{ parameters.trivyFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivy.output.flattened }}

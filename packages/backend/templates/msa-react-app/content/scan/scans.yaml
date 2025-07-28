@@ -38,9 +38,9 @@ stages:
           parameters:
             enabled: true
             source: ${{ parameters.sourceAlias }}{% endraw %}
-            serviceConnectionEndpoint: ${{ values.parameters.snykConfig.serviceConnectionEndpoint }}
+            serviceConnectionEndpoint: ${{ values.parameters.snykFrontendConfig.serviceConnectionEndpoint }}
       variables:
-        - group: ${{ values.parameters.snykVariableGroupName }}   
+        - group: ${{ values.parameters.snykFrontendVariableGroupName }}   
   {%- endif %}
   {%- if values.parameters.useSonar %}
   {% raw %}- ${{ if eq(parameters.runSonar, true) }}:
@@ -51,9 +51,9 @@ stages:
           parameters:
             enabled: true
             source: ${{ parameters.sourceAlias }}{% endraw %}
-            SonarQube: ${{ values.parameters.sonarConfig.SonarQube }}
+            SonarQube: ${{ values.parameters.sonarFrontendConfig.SonarQube }}
       variables:
-        - group: ${{ values.parameters.sonarVariableGroupName }}
+        - group: ${{ values.parameters.sonarFrontendVariableGroupName }}
   {%- endif %}
   {%- if values.parameters.useTrivy %}
   {% raw %}- ${{ if eq(parameters.runTrivy, true) }}:
@@ -65,5 +65,5 @@ stages:
             enabled: true
             source: ${{ parameters.sourceAlias }}{% endraw %}
       variables:
-        - group: ${{ values.parameters.trivyVariableGroupName }}
+        - group: ${{ values.parameters.trivyFrontendVariableGroupName }}
   {%- endif %}

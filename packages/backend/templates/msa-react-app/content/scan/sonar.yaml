@@ -31,7 +31,7 @@ jobs:
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarFrontendConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)
@@ -62,7 +62,7 @@ jobs:
           scannerMode: $(scannerMode)
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarFrontendConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)

@@ -18,11 +18,11 @@ jobs:
         inputs:
           {% raw %}serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}{% endraw %}
           testType: 'code'
-          {%- if values.parameters.snykConfig.testType == 'app' %}
+          {%- if values.parameters.snykFrontendConfig.testType == 'app' %}
           targetFile: $(targetFile)
           monitorWhen: $(monitorWhen)
           {%- endif %}
-          {%- if values.parameters.snykConfig.testType == 'container' %}
+          {%- if values.parameters.snykFrontendConfig.testType == 'container' %}
           dockerImageName: $(dockerImageName)
           dockerfilePath: $(dockerfilePath)
           monitorWhen: $(monitorWhen)

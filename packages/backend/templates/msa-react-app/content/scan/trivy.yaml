@@ -23,11 +23,11 @@ jobs:
         displayName: 'Run a multi-line script'
       - task: trivy@2
         inputs:
-          {%- if values.parameters.trivyConfig.method == 'docker' %}
+          {%- if values.parameters.trivyFrontendConfig.method == 'docker' %}
           method: $(method)
           image: $(image)
           {%- endif %}
-          {%- if values.parameters.trivyConfig.method == 'system' %}
+          {%- if values.parameters.trivyFrontendConfig.method == 'system' %}
           method: $(method)
           templates: $(templates)
           {%- endif %}
