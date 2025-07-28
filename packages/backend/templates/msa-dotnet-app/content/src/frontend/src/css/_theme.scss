@@ -1,0 +1,89 @@
+// ===============================
+// THEME UTILITIES & DESIGN SYSTEM
+// -------------------------------
+// This file provides utility classes and base styles for consistent design.
+//
+// HOW TO USE:
+// - Import this file in your main SCSS or entry point.
+// - Use the provided utility classes directly in your JSX/HTML for quick styling.
+// - You can extend or override these classes as needed for your project.
+//
+// MAIN SECTIONS:
+// 1. Text color utilities
+// 2. Background color utilities
+// 3. Font size utilities
+// 4. Spacing (margin, padding, gap) utilities
+// 5. Flexbox utilities
+// 6. Layout helpers (container, card, etc.)
+// 7. Form, table, badge base styles
+//
+// Example usage:
+//   <div class="text-primary bg-white p-4 d-flex justify-content-center">...</div>
+//
+// For custom variables, see _variables.scss
+// For mixins, see _mixins.scss
+// ===============================
+
+@use "variables" as v;
+@use "mixins" as m;
+
+// ===============================
+// Text color utilities
+// ===============================
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.text-main {
+  color: var(--color-text-main);
+}
+
+.text-light {
+  color: var(--color-text-light);
+}
+
+.text-white {
+  color: var(--color-text-white);
+}
+
+.text-gray {
+  color: var(--color-text-gray);
+}
+
+.text-light-gray {
+  color: var(--color-text-light-gray);
+}
+
+// ===============================
+// Background color utilities
+// ===============================
+.bg-white {
+  background-color: var(--color-bg-white);
+}
+
+.bg-overlay {
+  background-color: var(--color-bg-overlay);
+}
+
+.bg-gray {
+  background-color: var(--color-bg-gray);
+}
+
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-none {
+  background-color: transparent;
+}
+
+.bg-btn-primary {
+  background-color: var(--color-btn-primary);
+}
+
+// ===============================
+// Color Border utilities
+// ===============================
+.border-gray {
+  border-color: var(--color-border-grey);
+}

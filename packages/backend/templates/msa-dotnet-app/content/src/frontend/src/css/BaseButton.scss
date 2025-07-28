@@ -1,0 +1,48 @@
+.base-button {
+  &.p-button {
+    margin: 0.25rem;
+    
+    &.p-button-small {
+      font-size: 0.875rem;
+      padding: 0.4rem 0.8rem;
+    }
+    
+    &.p-button-large {
+      font-size: 1.25rem;
+      padding: 0.8rem 1.6rem;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #dc2626;
+      outline: 0 none;
+    }
+    
+    &.p-button-raised {
+      box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+                 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    }
+    
+    &.p-button-rounded {
+      border-radius: 2rem;
+    }
+
+    // Specific styling for different button types
+    &.p-button-danger:focus {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #dc2626;
+    }
+
+    &.p-button-success:focus {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #059669;
+    }
+
+    &.p-button-secondary:focus {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #374151;
+    }
+
+    // Remove blue outline from active state
+    &:active {
+      outline: none !important;
+    }
+  }
+} 

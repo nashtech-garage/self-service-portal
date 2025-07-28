@@ -1,0 +1,248 @@
+/**
+ * PrimeReact Component Style Overrides
+ * 
+ * This file contains custom styles to override and enhance PrimeReact component appearances.
+ * It uses SCSS to modify the default PrimeReact styles while maintaining the component functionality.
+ */
+
+@use 'variables' as v;
+
+/**
+ * Input Component Styles
+ * Customizes the appearance of PrimeReact input fields
+ * - Rounded corners
+ * - Custom focus state with primary color
+ */
+.p-inputtext {
+  border-radius: 6px !important;
+
+  &:enabled:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 1px var(--color-primary) !important;
+  }
+}
+
+/**
+ * Button Component Styles
+ * Customizes the appearance of PrimeReact buttons
+ * - Rounded corners
+ */
+.p-button {
+  border-radius: 6px !important;
+}
+
+/**
+ * Dropdown Component Styles
+ * Customizes the appearance of PrimeReact dropdowns
+ * - Rounded corners
+ * - Hover and focus states with primary color
+ */
+.p-dropdown {
+  border-radius: 6px !important;
+
+  &:not(.p-disabled):hover {
+    border-color: var(--color-primary) !important;
+  }
+
+  &:not(.p-disabled).p-focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 1px var(--color-primary) !important;
+  }
+}
+
+/**
+ * MultiSelect Component Styles
+ * Customizes the appearance of PrimeReact multi-select dropdowns
+ * - Rounded corners
+ * - Hover and focus states with primary color
+ */
+.p-multiselect {
+  border-radius: 6px !important;
+
+  &:not(.p-disabled):hover {
+    border-color: var(--color-primary) !important;
+  }
+
+  &:not(.p-disabled).p-focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 1px var(--color-primary) !important;
+  }
+}
+
+/**
+ * Calendar Component Styles
+ * Customizes the appearance of PrimeReact calendar input
+ * - Rounded corners for the input field
+ */
+.p-calendar .p-inputtext {
+  border-radius: 6px !important;
+}
+
+/**
+ * Calendar Navigation Button Styles
+ * Fixes transparent navigation buttons in the calendar
+ */
+.p-datepicker .p-datepicker-header .p-datepicker-prev,
+.p-datepicker .p-datepicker-header .p-datepicker-next {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  border-radius: 50% !important;
+
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+    outline: 0 none;
+  }
+}
+
+.p-datepicker .p-datepicker-header .p-datepicker-prev::before,
+.p-datepicker .p-datepicker-header .p-datepicker-next::before {
+  content: "" !important;
+  display: none !important;
+}
+
+.p-datepicker .p-datepicker-header .p-datepicker-prev::after,
+.p-datepicker .p-datepicker-header .p-datepicker-next::after {
+  display: block !important;
+  font-family: 'PrimeIcons' !important;
+  font-size: 1rem !important;
+  font-weight: normal !important;
+  opacity: 1 !important;
+}
+
+.p-datepicker .p-datepicker-header .p-datepicker-prev::after {
+  content: "\e900" !important;
+  /* PrimeIcons chevron-left */
+}
+
+.p-datepicker .p-datepicker-header .p-datepicker-next::after {
+  content: "\e901" !important;
+  /* PrimeIcons chevron-right */
+}
+
+.p-datepicker-year-dropdown-container .p-dropdown-item,
+.p-datepicker-month-dropdown-container .p-dropdown-item {
+  background-color: #fff !important;
+  color: #495057 !important;
+
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  &.p-highlight {
+    background-color: #e9ecef !important;
+    color: #495057 !important;
+  }
+}
+
+/**
+ * InputNumber Component Styles
+ * Customizes the appearance of PrimeReact number input
+ * - Rounded corners for the input field
+ */
+.p-inputnumber .p-inputtext {
+  border-radius: 6px !important;
+}
+
+/**
+ * Toast Notification Styles
+ * Customizes the appearance of PrimeReact toast notifications
+ * Features:
+ * - Glassmorphism effect with blur
+ * - Custom colors for different message types
+ * - Consistent spacing and typography
+ * - Custom close button
+ */
+.custom-toast {
+  .p-toast-message {
+    border-radius: 6px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    margin: 0 0 1rem 0 !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+
+    // Info toast style
+    &.p-toast-message-info {
+      border: solid #2196F3 !important;
+      border-width: 0 0 0 6px !important;
+      color: #0C5460 !important;
+    }
+
+    // Success toast style
+    &.p-toast-message-success {
+      border: solid #4CAF50 !important;
+      border-width: 0 0 0 6px !important;
+      color: #155724 !important;
+    }
+
+    // Warning toast style
+    &.p-toast-message-warn {
+      border: solid #FF9800 !important;
+      border-width: 0 0 0 6px !important;
+      color: #856404 !important;
+    }
+
+    // Error toast style
+    &.p-toast-message-error {
+      border: solid #F44336 !important;
+      border-width: 0 0 0 6px !important;
+      color: #721C24 !important;
+    }
+
+    // Toast content layout
+    .p-toast-message-content {
+      padding: 1rem !important;
+    }
+
+    // Toast icon size
+    .p-toast-message-icon {
+      font-size: 1.5rem !important;
+    }
+
+    // Toast text spacing
+    .p-toast-message-text {
+      margin: 0 0 0 1rem !important;
+    }
+
+    // Toast summary (title) style
+    .p-toast-summary {
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+    }
+
+    // Toast detail (message) style
+    .p-toast-detail {
+      margin: 0.5rem 0 0 0 !important;
+    }
+
+    // Close button style
+    .p-toast-icon-close {
+      width: 2rem !important;
+      height: 2rem !important;
+      border-radius: 50% !important;
+      background: transparent !important;
+      transition: background-color 0.2s !important;
+      font-family: "PrimeIcons" !important;
+
+      &::before {
+        content: "\e90b";
+        font-family: "PrimeIcons" !important;
+        font-size: 1.2rem;
+        color: inherit;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1) !important;
+      }
+    }
+  }
+}
