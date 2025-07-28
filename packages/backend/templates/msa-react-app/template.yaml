@@ -33,6 +33,8 @@ spec:
               - dev.azure.com
 
     - title: Pipeline Configuration
+
+    - title: Pipeline Configuration
       required:
         - branchName
         - project
@@ -134,57 +136,78 @@ spec:
     #       ui:autofocus: true
     # - title: Scan
     #   properties:
-    #     Tools:
-    #       type: object
-    #       title: Tools
-    #       properties:
-    #         checkboxFieldSnyk:
-    #           title: Snyk
-    #           type: boolean
-    #         checkboxFieldSonar:
-    #           title: Sonar
-    #           type: boolean
-    #         checkboxFieldTrivy:
-    #           title: Trivy
-    #           type: boolean
 
     - title: Select scan tools
       properties:
-        useSnyk:
-          type: boolean
-          title: Run Snyk
-          default: false
-        useSonar:
-          type: boolean
-          title: Run Sonar
-          default: false
-        useTrivy:
-          type: boolean
-          title: Run Trivy
-          default: false
+        frontendScan:
+          type: object
+          title: Frontend Scan Tools
+          properties:
+            useSnyk:
+              type: boolean
+              title: Run Snyk (Frontend)
+              default: false
+            useSonar:
+              type: boolean
+              title: Run Sonar (Frontend)
+              default: false
+            useTrivy:
+              type: boolean
+              title: Run Trivy (Frontend)
+              default: false
+
+        backendScan:
+          type: object
+          title: Backend (.NET Container) Scan Tools
+          properties:
+            useSonarCodeBackend:
+              type: boolean
+              title: Scan source code with SonarQube
+              default: false
+
+            useTrivyCodeBackend:
+              type: boolean
+              title: Scan source code with Trivy
+              default: false
+
+            useSnykCode:
+              type: boolean
+              title: Scan source code with Snyk
+              default: false
+            
+            useSnykDonetContainer:
+              type: boolean
+              title: Scan .NET container with Snyk
+              default: false
+            
+            useTrivyDonetContainer:
+              type: boolean
+              title: Scan .NET container with Trivy
+              default: false
+
   
     - title: Variables Group Mapping
       properties:
-        snykVariableGroupName:
+        snykFrontendVariableGroupName:
           type: string
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarVariableGroupName:
+        sonarFrontendVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
-        trivyVariableGroupName:
+        trivyFrontendVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
     
-    - title: Snyk Security Scan
+    - title: Snyk configuration (Frontend)
       type: object
       properties:
-        snykConfig:
+        snykFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -261,7 +284,7 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarConfig:
+        sonarFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -324,7 +347,7 @@ spec:
     - title: Trivy Container Scan
       type: object
       properties:
-        trivyConfig:
+        trivyFrontendConfig:
           type: object
           ui:options:
             visibleIf:
@@ -518,46 +541,46 @@ spec:
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.snykConfig }}
+        group: ${{ parameters.snykFrontendConfig }}
 
-    - id: ensure-snyk-group
+    - id: ensure-snyk-group-frontend
       name: Ensure Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.snykVariableGroupName }}
+        groupName: ${{ parameters.snykFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnyk.output.flattened }}
 
-    - id: flattenSonar
+    - id: flattenSonarFrontend
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarConfig }}
+        group: ${{ parameters.sonarFrontendConfig }}
 
-    - id: ensure-sonar-group
+    - id: ensureSonarGroupFrontend
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarVariableGroupName }}
+        groupName: ${{ parameters.sonarFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSonar.output.flattened }}
 
-    - id: flattenTrivy
+    - id: flattenTrivyFrontend
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.trivyConfig }}
+        group: ${{ parameters.trivyFrontendConfig }}
 
-    - id: ensure-trivy-group
+    - id: ensureTrivyGroupFrontend
       name: Ensure Trivy Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.trivyVariableGroupName }}
+        groupName: ${{ parameters.trivyFrontendVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivy.output.flattened }}

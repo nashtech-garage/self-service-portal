@@ -1,0 +1,171 @@
+// SCSS Variables
+// Colors
+$color-primary: rgba(207, 35, 56, 1);
+$color-text-main: rgba(33, 37, 41, 1);
+$color-text-light: rgba(250, 252, 252, 1);
+$color-text-white: rgba(255, 255, 255, 1);
+$color-text-gray: rgba(108, 117, 125, 1);
+$color-text-light-gray: rgb(235, 235, 235);
+
+$color-bg-white: rgba(255, 255, 255, 1);
+$color-bg-overlay: rgba(0, 0, 0, 0.5);
+
+// Typography
+$font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+  Arial, "Noto Sans", sans-serif;
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+$line-height-base: 1.5;
+
+// Spacing
+$spacing-0: 0;
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+
+$color-bg-white: rgba(255, 255, 255, 1);
+$color-bg-overlay: rgba(0, 0, 0, 0.5);
+$color-bg-grey: rgba(239, 241, 245, 1);
+
+// Typography
+$font-family: Segoe UI, Arial;
+$font-size-base: 16px;
+$font-size-sm: 10px;
+$font-size-md: 15px;
+$font-size-lg: 20px;
+$line-height-base: 1.5;
+
+// Spacing
+$spacing-0: 0;
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+
+// Common padding
+$padding-button: 0.5rem 1rem;
+$padding-button: 0.5rem 1rem;
+
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+$container-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1320px,
+);
+
+// Z-index
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// Border radius
+$border-radius-sm: 0.2rem;
+$border-radius: 0.25rem;
+$border-radius-lg: 0.3rem;
+
+$color-bg-white: rgba(255, 255, 255, 1);
+$color-bg-overlay: rgba(0, 0, 0, 0.5);
+$color-bg-gray: rgb(239, 241, 245);
+$color-bg-grey: rgba(239, 241, 245, 1);
+$color-border-grey: rgb(108, 108, 108);
+$color-btn-primary: rgba(227, 12, 24, 1);
+
+// Typography
+$font-family: Segoe UI, Arial;
+$font-size-base: 16px;
+$font-size-sm: 10px;
+$font-size-md: 15px;
+$font-size-lg: 20px;
+$line-height-base: 1.5;
+
+// Spacing
+$spacing-0: 0;
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+
+// Common padding
+$padding-button: 0.5rem 1rem;
+$padding-button: 0.5rem 1rem;
+
+// Z-index
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// Border radius
+$border-radius-sm: 0.2rem;
+$border-radius: 0.25rem;
+$border-radius-lg: 0.3rem;
+
+:root {
+  // Colors
+  --color-primary: #{$color-primary};
+  --color-text-main: #{$color-text-main};
+  --color-text-light: #{$color-text-light};
+  --color-text-white: #{$color-text-white};
+  --color-text-gray: #{$color-text-gray};
+  --color-text-light-gray: #{$color-text-light-gray};
+
+  --color-bg-white: #{$color-bg-white};
+  --color-bg-overlay: #{$color-bg-overlay};
+  --color-bg-gray: #{$color-bg-gray};
+  --color-btn-primary: #{$color-btn-primary};
+
+  // Typography
+  --font-family: #{$font-family};
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-base: #{$font-size-base};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --line-height-base: #{$line-height-base};
+
+  // Spacing
+  --spacing-0: #{$spacing-0};
+  --spacing-1: #{$spacing-1};
+  --spacing-2: #{$spacing-2};
+  --spacing-3: #{$spacing-3};
+  --spacing-4: #{$spacing-4};
+  --spacing-5: #{$spacing-5};
+
+  // Z-index
+  --z-index-dropdown: #{$z-index-dropdown};
+  --z-index-sticky: #{$z-index-sticky};
+
+  // Border color
+  --color-border-grey: #{$color-border-grey};
+}

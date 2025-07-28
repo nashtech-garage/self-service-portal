@@ -1,0 +1,60 @@
+$column-table-spacing: 95%;
+
+.am-table {
+  color: black;
+
+  .p-datatable-thead>tr>th {
+    border-width: 0 0 1.5px 0;
+    border-color: black;
+  }
+
+  .p-datatable-thead>tr>th,
+  .p-datatable-tbody>tr>td {
+    position: relative;
+    border-bottom: none !important;
+    padding: 0.5rem;
+  }
+
+  .p-datatable-tbody>tr>td:not(:has(.cell-action))::after {
+    content: "";
+    position: absolute;
+    left: 2.5%;
+    right: 2.5%;
+    bottom: 0;
+    height: 1px;
+    background-color: #dee2e6;
+  }
+
+  .p-datatable-thead>tr>th:not(.ignore-header) {
+    background-color: transparent !important;
+    border-bottom: none !important;
+    position: relative;
+    background-image: linear-gradient(to right,
+        transparent 2.5%,
+        rgba(33, 37, 41, 1) 2.5%,
+        rgba(33, 37, 41, 1) 97.5%,
+        transparent 97.5%);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    color: black;
+  }
+
+  .p-datatable-thead>tr>th.p-sortable-column.p-highlight {
+    color: var(--color-primary);
+  }
+
+  .cell-action {
+    .delete-icon {
+      color: red;
+    }
+
+    .decline-icon {
+      color: #000000;
+    }
+
+    .return-icon {
+      color: #0c0cdb;
+    }
+  }
+}

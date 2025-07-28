@@ -1,0 +1,246 @@
+@use "variables" as v;
+@use "mixins" as m;
+@use "theme" as t;
+@use "sass:map";
+@use "sass:list";
+@use "prime-override";
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif !important;
+}
+
+[class^="p-"],
+[class*=" p-"] {
+  font-family: "Segoe UI", Arial, sans-serif !important;
+}
+
+body {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-base);
+  line-height: v.$line-height-base;
+  color: var(--color-text-main);
+  background-color: var(--color-bg-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pi,
+.pi:before {
+  font-family: "PrimeIcons" !important;
+}
+// Buttons
+button {
+  @include m.button-base;
+  font-weight: 500;
+  font-family: inherit;
+
+  &.primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-white);
+    border: 1px solid var(--color-primary);
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    &.p-button-outlined {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-primary);
+        color: var(--color-text-white);
+      }
+    }
+
+    &.p-button-text {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 1px solid transparent;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(207, 35, 56, 0.1);
+      }
+    }
+  }
+
+  &.secondary {
+    background-color: var(--color-text-gray);
+    color: var(--color-text-white);
+    border: 1px solid var(--color-text-gray);
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    &.outlined {
+      background-color: transparent;
+      color: var(--color-text-gray);
+      border: 1px solid var(--color-text-gray);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-text-gray);
+        color: var(--color-text-white);
+      }
+    }
+
+    &.text {
+      background-color: transparent;
+      color: var(--color-text-gray);
+      border: 1px solid transparent;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(108, 117, 125, 0.1);
+      }
+    }
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+}
+
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1320px,
+);
+
+%container-base {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 75px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+  @extend %container-base;
+}
+.container-fluid {
+  @extend %container-base;
+  max-width: 100% !important;
+}
+
+// container: có max-width từ sm trở lên
+@each $size, $breakpoint in $breakpoints {
+  @media (min-width: #{$breakpoint}) {
+    .container {
+      max-width: map.get($container-max-widths, $size);
+    }
+  }
+}
+
+// container-sm: từ sm trở lên
+@each $size, $breakpoint in $breakpoints {
+  @media (min-width: #{$breakpoint}) {
+    .container-sm {
+      max-width: map.get($container-max-widths, $size);
+    }
+  }
+}
+
+// container-md: từ md trở lên
+@each $size, $breakpoint in $breakpoints {
+  @if $size != sm {
+    @media (min-width: #{$breakpoint}) {
+      .container-md {
+        max-width: map.get($container-max-widths, $size);
+      }
+    }
+  }
+}
+
+// container-lg: từ lg trở lên
+@each $size, $breakpoint in $breakpoints {
+  @if list.index(("lg", "xl", "xxl"), $size) {
+    @media (min-width: #{$breakpoint}) {
+      .container-lg {
+        max-width: map.get($container-max-widths, $size);
+      }
+    }
+  }
+}
+
+// container-xl: từ xl trở lên
+@each $size, $breakpoint in $breakpoints {
+  @if list.index(("xl", "xxl"), $size) {
+    @media (min-width: #{$breakpoint}) {
+      .container-xl {
+        max-width: map.get($container-max-widths, $size);
+      }
+    }
+  }
+}
+
+// container-xxl: chỉ từ xxl trở lên
+@media (min-width: #{map.get($breakpoints, xxl)}) {
+  .container-xxl {
+    max-width: map.get($container-max-widths, xxl);
+  }
+}
+
+.render-3-dot {
+  display: -webkit-box;
+  display: box; /* fallback */
+  -webkit-box-orient: vertical;
+  box-orient: vertical; /* fallback */
+
+  -webkit-line-clamp: 1;
+  line-clamp: 1; /* Standard property */
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  line-height: 1.5em;
+  max-height: 1.5em;
+}
+
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.text-title {
+  font-weight: bold;
+
+  @include m.text-title;
+}
+
+.text-paragraph {
+  @include m.text-body;
+}
+
+.text-caption {
+  @include m.text-secondary;
+}

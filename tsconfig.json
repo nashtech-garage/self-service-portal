@@ -6,9 +6,17 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
-    "outDir": "dist-types",
-    "rootDir": "."
+    "paths": {
+      "@backstage/plugin-auth-node": [
+        "./node_modules/@backstage/plugin-auth-node"
+      ]
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   }
 }

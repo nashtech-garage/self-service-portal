@@ -1,0 +1,10 @@
+@use "variables" as v;
+
+.p-radiobutton.p-highlight .p-radiobutton-box {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:hover) .p-radiobutton-box {
+  border-color: var(--color-primary) !important;
+}

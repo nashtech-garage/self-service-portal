@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage">
+        <Configuration>
+          <Exclude>
+            <ModulePath>.*StackExchange\.Redis\.dll$</ModulePath>
+          </Exclude>
+          <ExcludeByFile>
+            Domain/*.cs
+            Domain/**/*.cs
+            Infrastructure/*.cs
+            Infrastructure/**/*.cs
+          </ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
