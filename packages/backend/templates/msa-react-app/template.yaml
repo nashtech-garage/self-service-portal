@@ -370,21 +370,6 @@ spec:
               default: ''
               description: Templates used to customize the report output (sbom/system mode only).
     
-    # - title: Environments
-    #   properties:
-    #     name:
-    #       title: Select environments
-    #       type: array
-    #       items:
-    #         type: string
-    #         enum:
-    #           - production
-    #           - staging
-    #           - development
-    #       uniqueItems: true
-    #       ui:widget: checkboxes
-
-
   steps:
     
     - id: validate
