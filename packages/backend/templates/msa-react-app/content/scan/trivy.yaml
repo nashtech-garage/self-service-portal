@@ -1,20 +1,17 @@
 parameters:
   - name: source
     type: string
-  - name: scanFrontend
+  - name: scanCode
     type: boolean
     default: false
-  - name: scanCodeBackend
+  - name: scanImage
     type: boolean
     default: false
-  - name: scanContainerBackend
-    type: boolean
-    default: true
 
 jobs:
-  - job: trivyScanFrontend
-    displayName: Trivy Scan (Frontend)
-    {% raw %}condition: eq('${{ parameters.scanFrontend }}', true){% endraw %}
+  - job: trivyScanCode
+    displayName: Trivy Scan (Code)
+    {% raw %}condition: eq('${{ parameters.scanImage }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps: 
@@ -29,11 +26,11 @@ jobs:
         displayName: 'Run a multi-line script'
       - task: trivy@2
         inputs:
-          {%- if values.parameters.trivyFrontendConfig.method == 'docker' %}
+          {%- if values.parameters.trivyCodeConfig.method == 'docker' %}
           method: $(method)
           image: $(image)
           {%- endif %}
-          {%- if values.parameters.trivyFrontendConfig.method == 'system' %}
+          {%- if values.parameters.trivyCodeConfig.method == 'system' %}
           method: $(method)
           templates: $(templates)
           {%- endif %}
@@ -50,9 +47,9 @@ jobs:
           reports: $(reports)
           publish: $(publish)
 
-  - job: trivyImageScanBackend
-    displayName: Trivy Image Scan (Backend)
-    {% raw %}condition: eq('${{ parameters.scanContainerBackend }}', true){% endraw %}
+  - job: trivyImageScan
+    displayName: Trivy Image Scan
+    {% raw %}condition: eq('${{ parameters.scanImage }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps: 
