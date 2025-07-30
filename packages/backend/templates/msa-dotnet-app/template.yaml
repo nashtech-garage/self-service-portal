@@ -91,51 +91,7 @@ spec:
           description: Git branch to pull from for scanning
           default: main
 
-    # - title: Basic React Configuration
-    #   required:
-    #     - appName
-    #     - backendName
-    #     - backendImageName
-    #     - frontendName
-    #     - frontendImageName
-    #   properties:
-    #     appName:
-    #       title: Application Name
-    #       type: string
-    #       description: The name of the msa react application
-    #       ui:autofocus: true
-    #     backendName:
-    #       title: Backend Name
-    #       type: string
-    #       description: The name of the backend service
-    #       ui:autofocus: true
-    #     backendImageName:
-    #       title: Backend Container Image Name
-    #       type: string
-    #       description: The name of your backend container image
-    #     frontendName:
-    #       title: Frontend Name
-    #       type: string
-    #       description: The name of the frontend service
-    #       ui:autofocus: true
-    #     frontendImageName:
-    #       title: Fronent Container Image Name
-    #       type: string
-    #       description: The name of your frontent container image
-    
-    # - title: Choose UserName of Docker Hub
-    #   required:
-    #     - dockerHubUserName
-    #   properties:
-    #     dockerHubUserName:
-    #       title: Username of Docker Hub
-    #       type: string
-    #       description: Username of Docker Hub
-    #       ui:autofocus: true
-    # - title: Scan
-    #   properties:
-
-    - title: Select scan tools
+  - title: Select scan tools
       properties:
         frontendScan:
           type: object
@@ -186,22 +142,33 @@ spec:
   
     - title: Variables Group Mapping
       properties:
-        snykFrontendVariableGroupName:
+        snykCodeVariableGroupName:
           type: string
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarFrontendVariableGroupName:
+        sonarCodeVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
-        trivyFrontendVariableGroupName:
+        trivyCodeVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
-    
+        snykImageVariableGroupName:
+          type: string
+          title: Snyk Image Variable Group Name
+          description: Name of the variable group to use for Snyk image scanning
+          default: snyk-image
+
+        trivyImageVariableGroupName:
+          type: string
+          title: Trivy Image Variable Group Name
+          description: Name of the variable group to use for Trivy image scanning
+          default: trivy-image
+
     - title: Snyk configuration (Frontend)
       type: object
       properties:
@@ -282,11 +249,11 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarFrontendConfig:
+        sonarCodeConfig:
           type: object
           ui:options:
             visibleIf:
-              useSonarQube: true
+              useSonar: true
           properties:
             SonarQube:
               title: SonarQube
@@ -345,7 +312,7 @@ spec:
     - title: Trivy Container Scan
       type: object
       properties:
-        trivyFrontendConfig:
+        trivyCodeConfig:
           type: object
           ui:options:
             visibleIf:

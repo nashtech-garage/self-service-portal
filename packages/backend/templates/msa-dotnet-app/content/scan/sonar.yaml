@@ -1,10 +1,7 @@
 parameters:
   - name: source
     type: string
-  - name: scanFrontend
-    type: boolean
-    default: false
-  - name: scanCodeBackend
+  - name: scanCode
     type: boolean
     default: false
   - name: SonarQube
@@ -33,7 +30,7 @@ jobs:
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarFrontendConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)
@@ -64,7 +61,7 @@ jobs:
           scannerMode: $(scannerMode)
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarFrontendConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)

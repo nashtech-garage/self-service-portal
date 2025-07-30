@@ -2,23 +2,23 @@ trigger: none
 parameters:
   - name: sourceAlias
     default: ${{ values.parameters.sourceRepoAlias }}
-  {%- if values.parameters.frontendScan.useSnyk %}
-  - name: runSnykFrontend
+  {%- if values.parameters.useSnykCode %}
+  - name: runSnykCode
     type: boolean
     default: true
-    displayName: Run Snyk Scan
+    displayName: Run Snyk Code Scan
   {%- endif %}
-  {%- if values.parameters.frontendScan.useSonar %}
-  - name: runSonarFrontend
+  {%- if values.parameters.useSonarCode %}
+  - name: runSonarCode
     type: boolean
     default: true
-    displayName: Run SonarQube Scan
+    displayName: Run SonarQube Code Scan
   {%- endif %}
-  {%- if values.parameters.frontendScan.useTrivy %}
-  - name: runTrivyFrontend
+  {%- if values.parameters.useTrivyCode %}
+  - name: runTrivyCode
     type: boolean
     default: true
-    displayName: Run Trivy Scan
+    displayName: Run Trivy Code Scan
   {%- endif %}
 
 resources:
@@ -29,10 +29,8 @@ resources:
       ref: ${{ values.parameters.scanBranch }}
 
 stages:
-  {%- if values.parameters.frontendScan.useSnyk 
-    or values.parameters.backendScan.useSnykCode 
-    or values.parameters.backendScan.useSnykDonetContainer %}
-  - stage: SnykScanFrontend
+  {%- if values.parameters.useSnykCode %}
+  - stage: SnykScan
       condition: 
       dependsOn: []
       jobs:
@@ -40,41 +38,28 @@ stages:
           parameters:
             enabled: true
             {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            serviceConnectionEndpoint: ${{ values.parameters.snykFrontendConfig.serviceConnectionEndpoint }}
-            {%- if values.parameters.frontendScan.useSnyk %}scanFrontend: true{%- endif %}
-            {%- if values.parameters.backendScan.useSnykCode %}scanCodeBackend: true{%- endif %}
-            {%- if values.parameters.backendScan.useSnykDonetContainer %}scanContainerBackend: true{%- endif %}
+            serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
       variables:
-        - group: ${{ values.parameters.snykFrontendVariableGroupName }}   
+        - group: ${{ values.parameters.snykCodeVariableGroupName }}   
   {%- endif %}
-  {%- if values.parameters.frontendScan.useSonar 
-      or values.parameters.backendScan.useSonarCode 
-      or values.parameters.backendScan.useSonarContainer %}
-    - stage: SonarScanFrontend
+  {%- if values.parameters.useSonarCode %}
+    - stage: SonarScanCode
       dependsOn: []
       jobs:
         - template: sonar.yaml
           parameters:
             {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            SonarQube: ${{ values.parameters.sonarFrontendConfig.SonarQube }}
-            {%- if values.parameters.frontendScan.useSonar %}scanFrontendSonar: true{%- endif %}
-            {%- if values.parameters.backendScan.useSonarCode %}scanCodeBackendSonar: true{%- endif %}
-            {%- if values.parameters.backendScan.useSonarContainer %}scanContainerBackendSonar: true{%- endif %}
+            SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
       variables:
-        - group: ${{ values.parameters.sonarFrontendVariableGroupName }}
+        - group: ${{ values.parameters.sonarCodeVariableGroupName }}
   {%- endif %}
-  {%- if values.parameters.frontendScan.useTrivy 
-      or values.parameters.backendScan.useTrivyCode 
-      or values.parameters.backendScan.useTrivyContainer %}
-    - stage: TrivyScanFrontend
+  {%- if values.parameters.useTrivyCode %}
+   - stage: TrivyScanCode
       dependsOn: []
       jobs:
         - template: trivy.yaml
           parameters:
             {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            {%- if values.parameters.frontendScan.useTrivy %}scanFrontendTrivy: true{%- endif %}
-            {%- if values.parameters.backendScan.useTrivyCode %}scanCodeBackendTrivy: true{%- endif %}
-            {%- if values.parameters.backendScan.useTrivyContainer %}scanContainerBackendTrivy: true{%- endif %}
       variables:
-        - group: ${{ values.parameters.trivyFrontendVariableGroupName }}
+        - group: ${{ values.parameters.trivyCodeVariableGroupName }}
   {%- endif %}
