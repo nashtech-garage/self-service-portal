@@ -93,50 +93,6 @@ spec:
           description: Git branch to pull from for scanning
           default: main
 
-    # - title: Basic React Configuration
-    #   required:
-    #     - appName
-    #     - backendName
-    #     - backendImageName
-    #     - frontendName
-    #     - frontendImageName
-    #   properties:
-    #     appName:
-    #       title: Application Name
-    #       type: string
-    #       description: The name of the msa react application
-    #       ui:autofocus: true
-    #     backendName:
-    #       title: Backend Name
-    #       type: string
-    #       description: The name of the backend service
-    #       ui:autofocus: true
-    #     backendImageName:
-    #       title: Backend Container Image Name
-    #       type: string
-    #       description: The name of your backend container image
-    #     frontendName:
-    #       title: Frontend Name
-    #       type: string
-    #       description: The name of the frontend service
-    #       ui:autofocus: true
-    #     frontendImageName:
-    #       title: Fronent Container Image Name
-    #       type: string
-    #       description: The name of your frontent container image
-    
-    # - title: Choose UserName of Docker Hub
-    #   required:
-    #     - dockerHubUserName
-    #   properties:
-    #     dockerHubUserName:
-    #       title: Username of Docker Hub
-    #       type: string
-    #       description: Username of Docker Hub
-    #       ui:autofocus: true
-    # - title: Scan
-    #   properties:
-
     - title: Select scan tools
       properties:
         useSonarCode:
@@ -185,7 +141,7 @@ spec:
           type: object
           ui:options:
             visibleIf:
-              useSnyk: true
+              useSnykCode: true
           properties:
             testType:
               title: Scan Type
@@ -324,7 +280,7 @@ spec:
           type: object
           ui:options:
             visibleIf:
-              useTrivy: true
+              useTrivyCode: true
           properties:
             version:
               title: version
@@ -432,7 +388,7 @@ spec:
 
 
   steps:
-
+    
     - id: validate
       name: Validate Token
       action: custom:get-secret
