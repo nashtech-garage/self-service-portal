@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: react-app
   title: Creates and initializes a new React SPA
-  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Frontend, Backend, and Database.
+  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
   tags: 
     - application
 spec:
@@ -31,8 +31,6 @@ spec:
             allowedHosts:
               - github.com
               - dev.azure.com
-
-    - title: Pipeline Configuration
 
     - title: Pipeline Configuration
       required:
@@ -118,23 +116,23 @@ spec:
 
     - title: Variables Group Mapping
       properties:
-        snykFrontendVariableGroupName:
+        snykCodeVariableGroupName:
           type: string
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarFrontendVariableGroupName:
+        sonarCodeVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
-        trivyFrontendVariableGroupName:
+        trivyCodeVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
     
-    - title: Snyk configuration (Frontend)
+    - title: Snyk configuration for code scan
       type: object
       properties:
         snykCodeConfig:
@@ -403,12 +401,6 @@ spec:
         url: ./content/scan
         values: 
           parameters: ${{ parameters }}
-          # appName: ${{ parameters.appName }}
-          # backendName: ${{ parameters.backendName }}
-          # backendImageName: ${{ parameters.backendImageName }}                 
-          # frontendName: ${{ parameters.frontendName }}
-          # frontendImageName: ${{ parameters.frontendImageName }}       
-          # dockerHubUserName: ${{ parameters.dockerHubUserName }}    
           repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
     
        
@@ -470,46 +462,46 @@ spec:
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.snykFrontendConfig }}
+        group: ${{ parameters.snykCodeConfig }}
 
-    - id: ensure-snyk-group-frontend
+    - id: ensure-snyk-group-code
       name: Ensure Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.snykFrontendVariableGroupName }}
+        groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnyk.output.flattened }}
 
-    - id: flattenSonarFrontend
+    - id: flattenSonarCode
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarFrontendConfig }}
+        group: ${{ parameters.sonarCodeConfig }}
 
-    - id: ensureSonarGroupFrontend
+    - id: ensureSonarGroupCode
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarFrontendVariableGroupName }}
+        groupName: ${{ parameters.sonarCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSonar.output.flattened }}
 
-    - id: flattenTrivyFrontend
+    - id: flattenTrivyCode
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.trivyFrontendConfig }}
+        group: ${{ parameters.trivyCodeConfig }}
 
-    - id: ensureTrivyGroupFrontend
+    - id: ensureTrivyGroupCode
       name: Ensure Trivy Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.trivyFrontendVariableGroupName }}
+        groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivy.output.flattened }}
