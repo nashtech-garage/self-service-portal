@@ -33,6 +33,8 @@ spec:
               - dev.azure.com
 
     - title: Pipeline Configuration
+
+    - title: Pipeline Configuration
       required:
         - branchName
         - project

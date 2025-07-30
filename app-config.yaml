@@ -112,7 +112,7 @@ auth:
         clientId: ${COGNITO_CLIENT_ID}
         clientSecret: ${COGNITO_CLIENT_SECRET}
         domain: ${COGNITO_DOMAIN}
-   
+
 catalog:
   import:
     entityFilename: catalog-info.yaml
