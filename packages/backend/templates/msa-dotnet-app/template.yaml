@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: react-app
-  title: Creates and initializes a new React SPA
+  name: dotnet-app
+  title: Creates and initializes a new Dotnet SPA
   description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Frontend, Backend, and Database.
   tags:
     - application
@@ -15,7 +15,7 @@ spec:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository location for your new  React application
+          title: Repository location for your new  Dotnet application
           type: string
           ui:field: RepoUrlPicker
           ui:options:

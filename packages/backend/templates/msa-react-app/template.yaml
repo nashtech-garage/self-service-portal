@@ -10,39 +10,103 @@ spec:
   owner: user:le.caothihoang
   type: application
   parameters:
-    - title: Fruit Selector
+    
+    - title: Configuration
       properties:
-        fruit_type:
-          title: Choose a fruit
-          type: string
-          enum: ["apple", "orange"]
-          enumNames: ["Apple", "Orange"]
-          ui:widget: radio
+        # --- First Boolean Field: Controls Advanced Options ---
+        enableAdvancedOptions:
+          title: Enable advanced options?
+          type: boolean
+          description: Check this box to show additional configuration fields.
+          default: false
+
+        # --- Second Boolean Field: Controls Database Settings ---
+        enableDatabase:
+          title: Include a database?
+          type: boolean
+          description: Check this box to configure database settings.
+          default: false
+      
+      # --- Dependencies for the FIRST boolean field ---
       dependencies:
-        fruit_type:
+        enableAdvancedOptions:
           oneOf:
             - properties:
-                fruit_type:
-                  enum: ["apple"]
-                apple_variety:
-                  title: Apple Variety
+                enableAdvancedOptions:
+                  enum: [true]
+                secretKey:
+                  title: Secret Key
                   type: string
-                  description: What kind of apple?
-                apple_color:
-                  title: Apple Color
+                  description: Your API key for advanced functionality.
+                logLevel:
+                  title: Log Level
                   type: string
-                  enum: ["red", "green", "yellow"]
+                  enum: ["debug", "info", "warn", "error"]
+                  default: "info"
             - properties:
-                fruit_type:
-                  enum: ["orange"]
-                orange_variety:
-                  title: Orange Variety
+                enableAdvancedOptions:
+                  enum: [false]
+
+        # --- Dependencies for the SECOND boolean field ---
+        enableDatabase:
+          oneOf:
+            - properties:
+                enableDatabase:
+                  enum: [true]
+                dbType:
+                  title: Database Type
                   type: string
-                  description: What kind of orange?
-                orange_juice_type:
-                  title: Juice Type
+                  enum: ["postgresql", "mysql"]
+                  default: "postgresql"
+                dbPassword:
+                  title: Database Password
                   type: string
-                  enum: ["pulp-free", "with-pulp"]
+                  ui:widget: password
+                  description: The root password for the database.
+                  
+            - properties:
+                enableDatabase:
+                  enum: [false]
+  
+
+    # - title: Fruit Selector
+    #   properties:
+    #     fruit_type:
+    #       title: Choose a fruit
+    #       type: string
+    #       enum: ["apple", "orange"]
+    #       enumNames: ["Apple", "Orange"]
+    #       ui:widget: radio
+    #   dependencies:
+    #     fruit_type:
+    #       oneOf:
+    #         - properties:
+    #             fruit_type:
+    #               enum: ["apple"]
+    #             apple_variety:
+    #               title: Apple Variety
+    #               type: string
+    #               description: What kind of apple?
+    #             apple_color:
+    #               title: Apple Color
+    #               type: string
+    #               enum: ["red", "green", "yellow"]
+    #         - properties:
+    #             fruit_type:
+    #               enum: ["orange"]
+    #             orange_variety:
+    #               title: Orange Variety
+    #               type: string
+    #               description: What kind of orange?
+    #             orange_juice_type:
+    #               title: Juice Type
+    #               type: string
+    #               enum: ["pulp-free", "with-pulp"]
+
+
+
+
+
     # - title: Choose A Repository Location
     #   required:
     #     - repoUrl
