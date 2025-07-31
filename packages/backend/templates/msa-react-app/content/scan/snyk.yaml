@@ -1,14 +1,20 @@
 parameters:
   - name: source
     type: string
-  - name: enabled
+  - name: scanFrontend
     type: boolean
-    default: true
+    default: false
+  - name: scanCodeBackend
+    type: boolean
+    default: false
+  - name: scanContainerBackend
+    type: boolean
+    default: false
   - name: serviceConnectionEndpoint
     type: string
 jobs:
-  - job: snykScan
-    displayName: Snyk Scan
+  - job: snykScanFrontend
+    displayName: Snyk Scan (Frontend)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
@@ -18,11 +24,11 @@ jobs:
         inputs:
           {% raw %}serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}{% endraw %}
           testType: 'code'
-          {%- if values.parameters.snykConfig.testType == 'app' %}
+          {%- if values.parameters.snykFrontendConfig.testType == 'app' %}
           targetFile: $(targetFile)
           monitorWhen: $(monitorWhen)
           {%- endif %}
-          {%- if values.parameters.snykConfig.testType == 'container' %}
+          {%- if values.parameters.snykFrontendConfig.testType == 'container' %}
           dockerImageName: $(dockerImageName)
           dockerfilePath: $(dockerfilePath)
           monitorWhen: $(monitorWhen)
@@ -31,4 +37,22 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-     
+
+  - job: snykScanBacked
+    displayName: Snyk Scan (Backend)
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
+      {%- if values.parameters.snyKDotnetConfig.configMode == 'manual' %}
+        - task: SnykSecurityScan@1
+          inputs:
+            serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+            testType: $(testType)
+            dockerImageName: $(dockerImageName)
+            monitorWhen: $(monitorWhen)
+            failOnIssues: $(failOnIssues)
+            projectName: $(projectName)
+            organization: $(organization)
+      {%- endif %}

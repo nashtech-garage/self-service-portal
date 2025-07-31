@@ -1,0 +1,65 @@
+trigger: none
+parameters:
+  - name: sourceAlias
+    default: ${{ values.parameters.sourceRepoAlias }}
+  {%- if values.parameters.useSnykCode %}
+  - name: runSnykCode
+    type: boolean
+    default: true
+    displayName: Run Snyk Code Scan
+  {%- endif %}
+  {%- if values.parameters.useSonarCode %}
+  - name: runSonarCode
+    type: boolean
+    default: true
+    displayName: Run SonarQube Code Scan
+  {%- endif %}
+  {%- if values.parameters.useTrivyCode %}
+  - name: runTrivyCode
+    type: boolean
+    default: true
+    displayName: Run Trivy Code Scan
+  {%- endif %}
+
+resources:
+  repositories: 
+    - repository: ${{ values.parameters.sourceRepoAlias }}
+      type: git
+      name: ${{ values.parameters.sourceRepoName }}
+      ref: ${{ values.parameters.scanBranch }}
+
+stages:
+  {%- if values.parameters.useSnykCode %}
+  - stage: SnykScan
+      condition: 
+      dependsOn: []
+      jobs:
+        - template: snyk.yaml
+          parameters:
+            enabled: true
+            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+            serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
+      variables:
+        - group: ${{ values.parameters.snykCodeVariableGroupName }}   
+  {%- endif %}
+  {%- if values.parameters.useSonarCode %}
+    - stage: SonarScanCode
+      dependsOn: []
+      jobs:
+        - template: sonar.yaml
+          parameters:
+            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+            SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
+      variables:
+        - group: ${{ values.parameters.sonarCodeVariableGroupName }}
+  {%- endif %}
+  {%- if values.parameters.useTrivyCode %}
+   - stage: TrivyScanCode
+      dependsOn: []
+      jobs:
+        - template: trivy.yaml
+          parameters:
+            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+      variables:
+        - group: ${{ values.parameters.trivyCodeVariableGroupName }}
+  {%- endif %}

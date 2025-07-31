@@ -3,8 +3,8 @@ kind: Template
 metadata:
   name: react-app
   title: Creates and initializes a new React SPA
-  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Frontend, Backend, and Database.
-  tags: 
+  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
+  tags:
     - application
 spec:
   owner: user:le.caothihoang
@@ -23,11 +23,11 @@ spec:
               secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
                 github:
-                - repo  # Allows creating repositories
-                - workflow  # Allows managing GitHub Actions
+                  - repo # Allows creating repositories
+                  - workflow # Allows managing GitHub Actions
                 azure:
-                - email
-                - openid
+                  - email
+                  - openid
             allowedHosts:
               - github.com
               - dev.azure.com
@@ -62,17 +62,17 @@ spec:
           description: The name of the branch to be used for the pipeline
       uiSchema:
         project:
-          "ui:autofocus": true
-          "ui:placeholder": "Enter project name"
+          'ui:autofocus': true
+          'ui:placeholder': 'Enter project name'
         folder:
-          "ui:placeholder": "Enter folder path"
+          'ui:placeholder': 'Enter folder path'
         PipelineName:
-          "ui:placeholder": "Enter pipeline name"
+          'ui:placeholder': 'Enter pipeline name'
         RepositoryName:
-          "ui:placeholder": "Enter repository name"
+          'ui:placeholder': 'Enter repository name'
         branchName:
-          "ui:placeholder": "Enter branch name"
-    
+          'ui:placeholder': 'Enter branch name'
+
     - title: Source Repository Configuration
       properties:
         sourceRepoAlias:
@@ -91,104 +91,55 @@ spec:
           description: Git branch to pull from for scanning
           default: main
 
-    # - title: Basic React Configuration
-    #   required:
-    #     - appName
-    #     - backendName
-    #     - backendImageName
-    #     - frontendName
-    #     - frontendImageName
-    #   properties:
-    #     appName:
-    #       title: Application Name
-    #       type: string
-    #       description: The name of the msa react application
-    #       ui:autofocus: true
-    #     backendName:
-    #       title: Backend Name
-    #       type: string
-    #       description: The name of the backend service
-    #       ui:autofocus: true
-    #     backendImageName:
-    #       title: Backend Container Image Name
-    #       type: string
-    #       description: The name of your backend container image
-    #     frontendName:
-    #       title: Frontend Name
-    #       type: string
-    #       description: The name of the frontend service
-    #       ui:autofocus: true
-    #     frontendImageName:
-    #       title: Fronent Container Image Name
-    #       type: string
-    #       description: The name of your frontent container image
-    
-    # - title: Choose UserName of Docker Hub
-    #   required:
-    #     - dockerHubUserName
-    #   properties:
-    #     dockerHubUserName:
-    #       title: Username of Docker Hub
-    #       type: string
-    #       description: Username of Docker Hub
-    #       ui:autofocus: true
-    # - title: Scan
-    #   properties:
-    #     Tools:
-    #       type: object
-    #       title: Tools
-    #       properties:
-    #         checkboxFieldSnyk:
-    #           title: Snyk
-    #           type: boolean
-    #         checkboxFieldSonar:
-    #           title: Sonar
-    #           type: boolean
-    #         checkboxFieldTrivy:
-    #           title: Trivy
-    #           type: boolean
-
     - title: Select scan tools
       properties:
-        useSnyk:
+        useSonarCode:
           type: boolean
-          title: Run Snyk
+          title: Scan source code with SonarQube
           default: false
-        useSonar:
+        useTrivyCode:
           type: boolean
-          title: Run Sonar
+          title: Scan source code with Trivy
           default: false
-        useTrivy:
+        useSnykCode:
           type: boolean
-          title: Run Trivy
+          title: Scan source code with Snyk
           default: false
-  
+        useSnykImage:
+          type: boolean
+          title: Scan .NET container with Snyk
+          default: false
+        useTrivyImage:
+          type: boolean
+          title: Scan .NET container with Trivy
+          default: false
+
     - title: Variables Group Mapping
       properties:
-        snykVariableGroupName:
+        snykCodeVariableGroupName:
           type: string
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarVariableGroupName:
+        sonarCodeVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
-        trivyVariableGroupName:
+        trivyCodeVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
-    
-    - title: Snyk Security Scan
+
+    - title: Snyk configuration for code scan
       type: object
       properties:
-        snykConfig:
+        snykCodeConfig:
           type: object
           ui:options:
             visibleIf:
-              useSnyk: true
+              useSnykCode: true
           properties:
             testType:
               title: Scan Type
@@ -250,22 +201,21 @@ spec:
               type: string
               default: ''
               description: Azure DevOps service connection used to authenticate with Snyk.
-            
+
             organization:
               title: Organization Identifier
               type: string
               default: ''
               description: The Snyk organization ID under which scans and monitoring actions are performed.
 
-    
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarConfig:
+        sonarCodeConfig:
           type: object
           ui:options:
             visibleIf:
-              useSonarQube: true
+              useSonarCode: true
           properties:
             SonarQube:
               title: SonarQube
@@ -320,15 +270,15 @@ spec:
               type: string
               default: ''
               description: Name of the organization performing or responsible for the scan.
-              
-    - title: Trivy Container Scan
+
+    - title: Trivy Code Scan
       type: object
       properties:
-        trivyConfig:
+        trivyCodeConfig:
           type: object
           ui:options:
             visibleIf:
-              useTrivy: true
+              useTrivyCode: true
           properties:
             version:
               title: version
@@ -419,50 +369,27 @@ spec:
               type: string
               default: ''
               description: Templates used to customize the report output (sbom/system mode only).
-    
-    # - title: Environments
-    #   properties:
-    #     name:
-    #       title: Select environments
-    #       type: array
-    #       items:
-    #         type: string
-    #         enum:
-    #           - production
-    #           - staging
-    #           - development
-    #       uniqueItems: true
-    #       ui:widget: checkboxes
 
-    
   steps:
-    
     - id: validate
       name: Validate Token
       action: custom:get-secret
       input:
         secretKey: AZURE_PAT
-    
+
     - id: fetch-base
       name: Fetch template for Azure DevOps repository
-      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === 'dev.azure.com' }}
       action: fetch:template
       input:
         url: ./content/scan
-        values: 
+        values:
           parameters: ${{ parameters }}
-          # appName: ${{ parameters.appName }}
-          # backendName: ${{ parameters.backendName }}
-          # backendImageName: ${{ parameters.backendImageName }}                 
-          # frontendName: ${{ parameters.frontendName }}
-          # frontendImageName: ${{ parameters.frontendImageName }}       
-          # dockerHubUserName: ${{ parameters.dockerHubUserName }}    
           repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
-    
-       
+
     - id: publish
       name: Publish to Azure DevOps
-      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === 'dev.azure.com' }}
       action: publish:azure
       input:
         allowedHosts: ['dev.azure.com']
@@ -472,7 +399,7 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: '${{ steps.validate.output.value }}'
-    
+
     - id: getRepoId
       name: Get repository ID
       action: azure:get-repo-id
@@ -481,7 +408,7 @@ spec:
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         repositoryName: ${{ parameters.pipelineRepositoryName }}
         token: '${{ steps.validate.output.value }}'
-    
+
     - id: createPipeline
       name: Create Azure Pipeline
       action: azure:pipeline:create
@@ -495,7 +422,7 @@ spec:
         branchName: ${{ parameters.branchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
-    
+
     # - id: runAzurePipeline
     #   name: Run Azure Pipeline
     #   action: azure:pipeline:run
@@ -518,46 +445,46 @@ spec:
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.snykConfig }}
+        group: ${{ parameters.snykCodeConfig }}
 
-    - id: ensure-snyk-group
+    - id: ensure-snyk-group-code
       name: Ensure Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.snykVariableGroupName }}
+        groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnyk.output.flattened }}
 
-    - id: flattenSonar
+    - id: flattenSonarCode
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarConfig }}
+        group: ${{ parameters.sonarCodeConfig }}
 
-    - id: ensure-sonar-group
+    - id: ensureSonarGroupCode
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarVariableGroupName }}
+        groupName: ${{ parameters.sonarCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSonar.output.flattened }}
 
-    - id: flattenTrivy
+    - id: flattenTrivyCode
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.trivyConfig }}
+        group: ${{ parameters.trivyCodeConfig }}
 
-    - id: ensure-trivy-group
+    - id: ensureTrivyGroupCode
       name: Ensure Trivy Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.trivyVariableGroupName }}
+        groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivy.output.flattened }}

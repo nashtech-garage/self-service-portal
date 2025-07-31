@@ -1,0 +1,380 @@
+.content-wrapper {
+  padding: 10px 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  .page-header {
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #d32f2f;
+    align-self: flex-start;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 800px;
+  }
+}
+
+.form-top-position {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.create-user-form {
+  .form-group {
+    align-items: flex-start;
+
+    .form-label {
+      text-align: left;
+      font-weight: 500;
+      color: #212529;
+      padding-right: 10px;
+      min-width: 120px;
+      height: 2rem;
+    }
+
+    .form-input {
+      flex: 1;
+
+      .input-field-wrapper {
+        width: 100%;
+      }
+    }
+
+    &>div {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .p-inputtext,
+    .base-input-container,
+    .p-calendar,
+    .p-dropdown {
+      width: 100%;
+      border-radius: 6px;
+
+      &:hover {
+        border-color: #d32f2f !important;
+      }
+
+      &:focus,
+      &.p-focus,
+      &:focus-within {
+        border-color: #ced4da !important;
+        box-shadow: 0 0 0 1px #ced4da !important;
+      }
+    }
+
+    .p-dropdown-panel,
+    .p-datepicker {
+
+      .p-dropdown-item.p-highlight,
+      .p-datepicker-today>span.p-highlight,
+      .p-datepicker-today.p-highlight {
+        background-color: #f8f9fa !important;
+        color: #212529 !important;
+      }
+    }
+
+    .p-error {
+      display: block;
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-top: 2px;
+    }
+
+    small {
+      color: #d32f2f !important;
+      font-weight: 500;
+      margin-top: 4px !important;
+      min-height: 0.8rem !important;
+      line-height: 1.5 !important;
+      display: block;
+      white-space: normal;
+      word-break: break-word;
+      flex-basis: 100%;
+      transition: all 0.2s ease;
+    }
+
+    &.error-field {
+      margin-bottom: 8px;
+
+      small {
+        min-height: 1.5rem !important;
+        padding-bottom: 4px;
+      }
+    }
+  }
+
+  /* Button group positioned as the last row, spanning 2 columns */
+  .button-group {
+    .p-button {
+      min-width: 80px;
+
+      &.p-button-danger:hover {
+        background-color: #c62828 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+
+      &.p-button-outlined {
+        border: 1px solid #ced4da !important;
+
+        &:hover {
+          background-color: #f8f9fa !important;
+          border-color: #d32f2f !important;
+          color: #d32f2f !important;
+        }
+      }
+    }
+  }
+
+  /* Custom Calendar Container */
+  .custom-calendar-container {
+    .custom-calendar {
+      input {
+        padding-right: 2.5rem;
+        width: 100%;
+        height: 2rem;
+      }
+
+      /* Make calendar overlay higher z-index */
+      .p-datepicker {
+        z-index: 1000 !important;
+      }
+    }
+
+    /* Fix for calendar button */
+    .calendar-icon-button {
+      &:hover {
+        background-color: #f8f9fa;
+        border-color: #d32f2f !important;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+        /* Prevent svg from catching events */
+      }
+    }
+  }
+
+  /* Fix for potential overlapping elements */
+  .p-calendar.custom-calendar {
+    .p-inputtext {
+      box-sizing: border-box;
+    }
+
+    /* Ensure calendar component doesn't block button clicks */
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 2.5rem;
+      height: 100%;
+      pointer-events: none;
+    }
+  }
+
+  /* Customize PrimeReact components to match design */
+  :deep(.p-calendar-w-btn) {
+    width: 100%;
+    max-width: 350px;
+
+    .p-datepicker-trigger {
+      background-color: #f8f9fa;
+      border-color: #ced4da;
+      color: #6c757d;
+
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+  }
+
+  :deep(.p-dropdown) {
+    width: 100%;
+    max-width: 350px;
+
+    &:hover {
+      border-color: #d32f2f !important;
+    }
+  }
+
+  :deep(.p-dropdown-trigger) {
+    color: #6c757d;
+  }
+
+  .p-invalid {
+    border-color: #d32f2f !important;
+  }
+}
+
+.custom-modal-footer {
+  .p-button.p-button-text {
+    .p-button-icon.pi.pi-times {
+      display: none !important;
+    }
+  }
+
+  .p-button:not(.p-button-text) {
+    .p-button-icon.pi.pi-check {
+      display: none !important;
+    }
+  }
+}
+
+/* Overriding PrimeReact default focus colors */
+.p-calendar .p-inputtext:focus,
+.p-dropdown:focus,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-datepicker table td>span.p-highlight {
+  border-color: #ced4da !important;
+  box-shadow: 0 0 0 1px #ced4da !important;
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+
+/* Dropdown specific fixes */
+.p-dropdown {
+  display: flex !important;
+  align-items: center !important;
+
+  .p-dropdown-label {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+
+  &.h-2rem .p-dropdown-label {
+    padding: 0.5rem 1rem !important;
+  }
+
+  .p-dropdown-trigger {
+    padding: 0 0.75rem !important;
+  }
+}
+
+/* Gender options special styling */
+.gender-options {
+  flex-wrap: nowrap !important;
+  height: 2rem;
+  align-items: center;
+
+  .gender-option {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Password Display Modal styling */
+.password-copy-button {
+  min-width: 80px !important;
+  height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 0px !important;
+
+  .p-button {
+    height: 100% !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* Ẩn icon nếu có */
+    .p-button-icon {
+      display: none !important;
+    }
+
+    /* Căn giữa label và dịch trái 10px */
+    .p-button-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+      width: 100%;
+      transform: translateX(-10px);
+    }
+  }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .create-user-form {
+    grid-template-columns: 1fr;
+    width: 100%;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+
+      .form-label {
+        margin-bottom: 5px;
+        min-width: 100%;
+        height: auto;
+      }
+    }
+
+    .button-group {
+      grid-column: 1;
+      justify-content: flex-end;
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .content-wrapper {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .create-user-form {
+    gap: 10px;
+    width: 100%;
+
+    .p-inputtext,
+    .base-input-container,
+    .p-calendar,
+    .p-dropdown {
+      max-width: 100%;
+    }
+
+    .gender-options {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .gender-option {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+
+    .button-group {
+      flex-direction: column;
+
+      .p-button {
+        width: 100%;
+      }
+    }
+  }
+}

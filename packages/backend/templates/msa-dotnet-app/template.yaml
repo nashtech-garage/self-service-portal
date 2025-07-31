@@ -1,0 +1,546 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: react-app
+  title: Creates and initializes a new React SPA
+  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Frontend, Backend, and Database.
+  tags:
+    - application
+spec:
+  owner: user:le.caothihoang
+  type: application
+  parameters:
+    - title: Choose A Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository location for your new  React application
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - repo # Allows creating repositories
+                  - workflow # Allows managing GitHub Actions
+                azure:
+                  - email
+                  - openid
+            allowedHosts:
+              - github.com
+              - dev.azure.com
+
+    - title: Pipeline Configuration
+      required:
+        - branchName
+        - project
+        - folder
+        - pipelineRepositoryName
+        - pipelineName
+      properties:
+        project:
+          type: string
+          title: Project
+          description: Azure DevOps project name
+        folder:
+          type: string
+          title: Folder
+          description: Pipeline folder path
+        pipelineName:
+          type: string
+          title: Pipeline Name
+          description: Name for the new pipeline
+        pipelineRepositoryName:
+          type: string
+          title: Repository Name
+          description: Name of the repository
+        branchName:
+          type: string
+          title: Branch Name
+          description: The name of the branch to be used for the pipeline
+      uiSchema:
+        project:
+          'ui:autofocus': true
+          'ui:placeholder': 'Enter project name'
+        folder:
+          'ui:placeholder': 'Enter folder path'
+        PipelineName:
+          'ui:placeholder': 'Enter pipeline name'
+        RepositoryName:
+          'ui:placeholder': 'Enter repository name'
+        branchName:
+          'ui:placeholder': 'Enter branch name'
+
+    - title: Source Repository Configuration
+      properties:
+        sourceRepoAlias:
+          title: Repository Alias
+          type: string
+          description: Alias to refer to the source repository in the pipeline
+          default: Source
+        sourceRepoName:
+          title: Repository Name
+          type: string
+          description: Full path of the repository in Azure DevOps (e.g. ProjectName/repo-name)
+          default: Source
+        scanBranch:
+          title: Branch to Scan
+          type: string
+          description: Git branch to pull from for scanning
+          default: main
+
+    - title: Select scan tools
+      properties:
+        frontendScan:
+          type: object
+          title: Frontend Scan Tools
+          properties:
+            useSnyk:
+              type: boolean
+              title: Run Snyk (Frontend)
+              default: false
+            useSonar:
+              type: boolean
+              title: Run Sonar (Frontend)
+              default: false
+            useTrivy:
+              type: boolean
+              title: Run Trivy (Frontend)
+              default: false
+
+        backendScan:
+          type: object
+          title: Backend (.NET Container) Scan Tools
+          properties:
+            useSonarCodeBackend:
+              type: boolean
+              title: Scan source code with SonarQube
+              default: false
+
+            useTrivyCodeBackend:
+              type: boolean
+              title: Scan source code with Trivy
+              default: false
+
+            useSnykCode:
+              type: boolean
+              title: Scan source code with Snyk
+              default: false
+
+            useSnykDonetContainer:
+              type: boolean
+              title: Scan .NET container with Snyk
+              default: false
+
+            useTrivyDonetContainer:
+              type: boolean
+              title: Scan .NET container with Trivy
+              default: false
+
+    - title: Variables Group Mapping
+      properties:
+        snykCodeVariableGroupName:
+          type: string
+          title: Snyk Variable Group Name
+          description: Name of the variable group to use for Snyk scanning
+          default: snyk
+        sonarCodeVariableGroupName:
+          type: string
+          title: Sonar Variable Group Name
+          description: Name of the variable group to use for SonarQube scanning
+          default: sonar
+        trivyCodeVariableGroupName:
+          type: string
+          title: Trivy Variable Group Name
+          description: Name of the variable group to use for Trivy scanning
+          default: trivy
+        snykImageVariableGroupName:
+          type: string
+          title: Snyk Image Variable Group Name
+          description: Name of the variable group to use for Snyk image scanning
+          default: snyk-image
+
+        trivyImageVariableGroupName:
+          type: string
+          title: Trivy Image Variable Group Name
+          description: Name of the variable group to use for Trivy image scanning
+          default: trivy-image
+
+    - title: Snyk configuration (Frontend)
+      type: object
+      properties:
+        snykFrontendConfig:
+          type: object
+          ui:options:
+            visibleIf:
+              useSnyk: true
+          properties:
+            testType:
+              title: Scan Type
+              type: string
+              enum: [app, container, code]
+              default: app
+              description: Type of security scan to run — application, container, or code analysis.
+
+            monitor:
+              title: Upload Results to Snyk
+              type: boolean
+              default: false
+              description: If true, scan results will be uploaded to Snyk for ongoing monitoring.
+
+            projectName:
+              title: Snyk Project Name
+              type: string
+              default: ''
+              description: Display name for the project in Snyk. Used for organizing scan reports.
+
+            additionalArguments:
+              title: Extra CLI Arguments
+              type: string
+              default: ''
+              description: Any additional arguments passed to the Snyk CLI.
+
+            targetFile:
+              title: Target File (app scan only)
+              type: string
+              default: ''
+              description: Path to the manifest or configuration file for the application scan.
+
+            monitorWhen:
+              title: Monitor Trigger (used in app/container scan)
+              type: string
+              default: ''
+              description: Specifies when Snyk should trigger monitoring — for example, post-build or on deploy.
+
+            dockerImageName:
+              title: Docker Image Name (container scan only)
+              type: string
+              default: 'ghcr.io/aquasecurity/trivy:latest'
+              description: Name of the Docker image used to run the Trivy vulnerability scanner.
+
+            dockerfilePath:
+              title: Dockerfile Path (container scan only)
+              type: string
+              default: ''
+              description: Path to the Dockerfile associated with the container image.
+
+            failOnIssues:
+              title: Fail on Issues
+              type: boolean
+              default: false
+              description: If true, the pipeline will fail when vulnerabilities are found.
+
+            serviceConnectionEndpoint:
+              title: Service Connection Endpoint
+              type: string
+              default: ''
+              description: Azure DevOps service connection used to authenticate with Snyk.
+
+            organization:
+              title: Organization Identifier
+              type: string
+              default: ''
+              description: The Snyk organization ID under which scans and monitoring actions are performed.
+
+    - title: SonarQube Code Analysis
+      type: object
+      properties:
+        sonarCodeConfig:
+          type: object
+          ui:options:
+            visibleIf:
+              useSonar: true
+          properties:
+            SonarQube:
+              title: SonarQube
+              type: string
+              default: ''
+              description: The Azure DevOps SonarQube service connection name.
+
+            scannerMode:
+              title: Scanner Mode
+              type: string
+              default: 'cli'
+              description: Mode used for scanning, such as CLI or MSBuild.
+
+            cliScannerVersion:
+              title: CLI Scanner Version
+              type: string
+              default: ''
+              description: Version of the CLI scanner to use.
+
+            configMode:
+              title: Config Mode
+              type: string
+              enum: [file, manual]
+              default: file
+              description: Determines whether configuration is read from a file or set manually.
+
+            cliProjectKey:
+              title: cliProjectKey
+              type: string
+              default: ''
+              description: Project key used for identifying the SonarQube project (manual mode only).
+
+            cliProjectName:
+              title: cliProjectName
+              type: string
+              default: ''
+              description: Name of the SonarQube project (manual mode only).
+
+            cliSources:
+              title: cliSources
+              type: string
+              default: ''
+              description: Path to the source code files for the scanner to analyze.
+
+            extraProperties:
+              title: extraProperties
+              type: string
+              default: ''
+              description: Additional properties for configuring the scan.
+            organization:
+              title: Organization
+              type: string
+              default: ''
+              description: Name of the organization performing or responsible for the scan.
+
+    - title: Trivy Container Scan
+      type: object
+      properties:
+        trivyCodeConfig:
+          type: object
+          ui:options:
+            visibleIf:
+              useTrivy: true
+          properties:
+            version:
+              title: version
+              type: string
+              default: 'latest'
+              description: Version of Trivy to use for scanning.
+
+            method:
+              title: method
+              type: string
+              default: ''
+              description: Execution method for Trivy (e.g., docker or system).
+
+            image:
+              title: image
+              type: string
+              default: 'aquasec/trivy:latest'
+              description: Docker image name used to run Trivy in containerized mode.
+
+            options:
+              title: options
+              type: string
+              default: ''
+              description: Additional CLI options passed to the Trivy scan.
+
+            type:
+              title: type
+              type: string
+              default: ''
+              description: Type of scan to run — filesystem, image, repository, or sbom.
+
+            target:
+              title: target
+              type: string
+              default: ''
+              description: Path or target of the scan (e.g., directory or image reference).
+
+            scanners:
+              title: scanners
+              type: string
+              default: ''
+              description: Types of vulnerabilities to scan for (e.g., vuln, config).
+
+            severities:
+              title: severities
+              type: string
+              default: ''
+              description: Severity levels to filter results by (e.g., CRITICAL,HIGH).
+
+            ignoreUnfixed:
+              title: ignoreUnfixed
+              type: boolean
+              default: false
+              description: If true, ignores vulnerabilities that haven’t been fixed yet.
+
+            showSuppressed:
+              title: showSuppressed
+              type: boolean
+              default: false
+              description: If true, includes suppressed vulnerabilities in scan results.
+
+            ignoreScanErrors:
+              title: ignoreScanErrors
+              type: boolean
+              default: false
+              description: If true, scan errors won’t fail the pipeline.
+
+            failOnSeverityThreshold:
+              title: failOnSeverityThreshold
+              type: string
+              default: ''
+              description: If set, fails the pipeline when vulnerabilities meet or exceed this severity.
+
+            reports:
+              title: reports
+              type: string
+              default: ''
+              description: Report formats to generate (e.g., json, sarif).
+
+            publish:
+              title: publish
+              type: boolean
+              default: false
+              description: If true, publishes scan results as pipeline artifacts.
+
+            templates:
+              title: templates
+              type: string
+              default: ''
+              description: Templates used to customize the report output (sbom/system mode only).
+
+    # - title: Environments
+    #   properties:
+    #     name:
+    #       title: Select environments
+    #       type: array
+    #       items:
+    #         type: string
+    #         enum:
+    #           - production
+    #           - staging
+    #           - development
+    #       uniqueItems: true
+    #       ui:widget: checkboxes
+
+  steps:
+    - id: validate
+      name: Validate Token
+      action: custom:get-secret
+      input:
+        secretKey: AZURE_PAT
+
+    - id: fetch-base
+      name: Fetch template for Azure DevOps repository
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: fetch:template
+      input:
+        url: ./content/scan
+        values:
+          parameters: ${{ parameters }}
+          # appName: ${{ parameters.appName }}
+          # backendName: ${{ parameters.backendName }}
+          # backendImageName: ${{ parameters.backendImageName }}
+          # frontendName: ${{ parameters.frontendName }}
+          # frontendImageName: ${{ parameters.frontendImageName }}
+          # dockerHubUserName: ${{ parameters.dockerHubUserName }}
+          repoURL: https://${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}@dev.azure.com/${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}/${{ parameters.repoUrl | parseRepoUrl | pick('project') }}/_git/${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+
+    - id: publish
+      name: Publish to Azure DevOps
+      if: ${{ parameters.repoUrl | parseRepoUrl | pick('host') === "dev.azure.com" }}
+      action: publish:azure
+      input:
+        allowedHosts: ['dev.azure.com']
+        description: This is ${{ parameters.clusterName }}
+        repoUrl: ${{ parameters.repoUrl }}
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repo: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
+        token: '${{ steps.validate.output.value }}'
+
+    - id: getRepoId
+      name: Get repository ID
+      action: azure:get-repo-id
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        token: '${{ steps.validate.output.value }}'
+
+    - id: createPipeline
+      name: Create Azure Pipeline
+      action: azure:pipeline:create
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        folder: ${{ parameters.folder }}
+        name: ${{ parameters.pipelineName }}
+        repositoryId: ${{ steps.getRepoId.output.repositoryId }}
+        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        branchName: ${{ parameters.branchName }}
+        token: '${{ steps.validate.output.value }}'
+        yamlPath: ./scans.yaml
+
+    # - id: runAzurePipeline
+    #   name: Run Azure Pipeline
+    #   action: azure:pipeline:run
+    #   input:
+    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+
+    # - id: permitAzurePipeline
+    #   name: Change Azure Pipeline Permissions
+    #   action: azure:pipeline:permit
+    #   input:
+    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+    #     resourceId: <serviceEndpointId>
+    #     resourceType: endpoint
+    #     authorized: true
+    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+    - id: flattenSnyk
+      name: Flatten Snyk Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.snykFrontendConfig }}
+
+    - id: ensure-snyk-group-frontend
+      name: Ensure Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.snykFrontendVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSnyk.output.flattened }}
+
+    - id: flattenSonarFrontend
+      name: Flatten Sonar Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.sonarFrontendConfig }}
+
+    - id: ensureSonarGroupFrontend
+      name: Ensure Sonar Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.sonarFrontendVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSonar.output.flattened }}
+
+    - id: flattenTrivyFrontend
+      name: Flatten Trivy Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.trivyFrontendConfig }}
+
+    - id: ensureTrivyGroupFrontend
+      name: Ensure Trivy Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.project }}
+        groupName: ${{ parameters.trivyFrontendVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenTrivy.output.flattened }}

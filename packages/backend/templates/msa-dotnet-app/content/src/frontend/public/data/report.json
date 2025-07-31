@@ -1,0 +1,80 @@
+{
+  "states": [
+    {
+      "id": 1,
+      "name": "Available"
+    },
+    {
+      "id": 2,
+      "name": "Not available"
+    },
+    {
+      "id": 3,
+      "name": "Assigned"
+    },
+    {
+      "id": 4,
+      "name": "Waiting for recycling"
+    },
+    {
+      "id": 5,
+      "name": "Recycled"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Monitor Monitor Monitor Monitor Monitor Monitor Monitor Monitor Monitor Monitor ",
+      "total": 1526,
+      "states": [
+        {
+          "id": 1,
+          "quantity": 1200
+        },
+        {
+          "id": 2,
+          "quantity": 0
+        },
+        {
+          "id": 3,
+          "quantity": 200
+        },
+        {
+          "id": 4,
+          "quantity": 1
+        },
+        {
+          "id": 5,
+          "quantity": 125
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Mouse",
+      "total": 659,
+      "states": [
+        {
+          "id": 1,
+          "quantity": 333
+        },
+        {
+          "id": 2,
+          "quantity": 0
+        },
+        {
+          "id": 3,
+          "quantity": 200
+        },
+        {
+          "id": 4,
+          "quantity": 1
+        },
+        {
+          "id": 5,
+          "quantity": 125
+        }
+      ]
+    }
+  ]
+}

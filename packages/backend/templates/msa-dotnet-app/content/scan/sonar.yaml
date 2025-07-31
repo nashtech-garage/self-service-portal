@@ -1,0 +1,77 @@
+parameters:
+  - name: source
+    type: string
+  - name: scanCode
+    type: boolean
+    default: false
+  - name: SonarQube
+    type: string
+  - name: jdkVersion
+    type: string
+    default: 17
+jobs:
+  - job: sonarScan
+    displayName: SonarQube Scan
+    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      {% raw %}- checkout: ${{ parameters.source }}
+      - task: JavaToolInstaller@1
+        inputs:
+          versionSpec: '${{ parameters.jdkVersion }}'
+          jdkArchitectureOption: 'x64'
+          jdkSourceOption: 'PreInstalled'
+        displayName: 'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
+      
+      - task: SonarCloudPrepare@3
+        inputs:
+          {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
+          scannerMode: cli
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
+          cliSources: $(cliSources)
+          extraProperties: $(extraProperties)
+          organization: $(organization)
+          {%- endif %}
+      - script: |
+          for d in */; do
+            if [ -f "$d/package.json" ]; then
+              echo "📦 Installing in $d"
+              npm install --prefix "$d"
+              npm run --prefix "$d" build || echo "⚠️ No build script in $d"
+            fi
+          done
+        displayName: 'Install and Build Angular App'
+      - task: SonarCloudAnalyze@3
+        inputs:
+          jdkversion: 'JAVA_HOME_17_X64'
+      - task: SonarCloudPublish@3
+        inputs:
+          pollingTimeoutSec: '300'
+
+{%- if false %}
+###This piece of code will never run
+- task: SonarQubePrepare@7
+        inputs:
+          {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
+          scannerMode: $(scannerMode)
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
+          cliSources: $(cliSources)
+          extraProperties: $(extraProperties)
+          {%- endif %}
+- task: SonarQubeAnalyze@5
+        displayName: 'Run SonarQube Analysis'
+
+      - task: SonarQubePublish@5
+        inputs:
+          pollingTimeoutSec: '300'
+        displayName: 'Publish SonarQube Results'
+{%- endof %}

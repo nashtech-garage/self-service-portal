@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-${{ values.appName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    name: mongo-${{ values.appName }}
+spec:
+  selector:
+    name: mongo-${{ values.appName }}
+  ports:
+    - port: 27017
+      protocol: TCP
+      targetPort: 27017
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config-${{ values.appName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+data:
+  MONGODB_INITDB_ROOT_USERNAME: "user"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secrets-${{ values.appName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+type: Opaque
+data:
+  MONGODB_INITDB_ROOT_PASSWORD: cGFzc3dvcmQK
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-sf-${{ values.appName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  selector:
+    matchLabels:
+      name: mongo-${{ values.appName }}
+  serviceName: "mongo-${{ values.appName }}"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongo-${{ values.appName }}
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo
+        ports:
+          - containerPort: 27017
+        envFrom:
+         - configMapRef:             
+               name: mongo-config-${{ values.appName }}
+         - secretRef:
+             name: mongo-secrets-${{ values.appName }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data-volume-${{ values.appName }}
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
+
+
