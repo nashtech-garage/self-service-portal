@@ -10,27 +10,60 @@ spec:
   owner: user:le.caothihoang
   type: application
   parameters:
-    - title: Choose A Repository Location
-      required:
-        - repoUrl
+    - title: Fruit Selector
       properties:
-        repoUrl:
-          title: Repository location for your new  React application
+        fruit_type:
+          title: Choose a fruit
           type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            requestUserCredentials:
-              secretsKey: USER_OAUTH_TOKEN
-              additionalScopes:
-                github:
-                  - repo # Allows creating repositories
-                  - workflow # Allows managing GitHub Actions
-                azure:
-                  - email
-                  - openid
-            allowedHosts:
-              - github.com
-              - dev.azure.com
+          enum: ["apple", "orange"]
+          enumNames: ["Apple", "Orange"]
+          ui:widget: radio
+      dependencies:
+        fruit_type:
+          oneOf:
+            - properties:
+                fruit_type:
+                  enum: ["apple"]
+                apple_variety:
+                  title: Apple Variety
+                  type: string
+                  description: What kind of apple?
+                apple_color:
+                  title: Apple Color
+                  type: string
+                  enum: ["red", "green", "yellow"]
+            - properties:
+                fruit_type:
+                  enum: ["orange"]
+                orange_variety:
+                  title: Orange Variety
+                  type: string
+                  description: What kind of orange?
+                orange_juice_type:
+                  title: Juice Type
+                  type: string
+                  enum: ["pulp-free", "with-pulp"]
+    # - title: Choose A Repository Location
+    #   required:
+    #     - repoUrl
+    #   properties:
+    #     repoUrl:
+    #       title: Repository location for your new  React application
+    #       type: string
+    #       ui:field: RepoUrlPicker
+    #       ui:options:
+    #         requestUserCredentials:
+    #           secretsKey: USER_OAUTH_TOKEN
+    #           additionalScopes:
+    #             github:
+    #               - repo # Allows creating repositories
+    #               - workflow # Allows managing GitHub Actions
+    #             azure:
+    #               - email
+    #               - openid
+    #         allowedHosts:
+    #           - github.com
+    #           - dev.azure.com
 
     - title: Pipeline Configuration
       required:
