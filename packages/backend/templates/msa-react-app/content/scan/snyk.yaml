@@ -7,7 +7,7 @@ parameters:
   - name: scanCodeBackend
     type: boolean
     default: false
-  - name: scanContainerBackend
+  - name: scanImageBackend
     type: boolean
     default: false
   - name: serviceConnectionEndpoint

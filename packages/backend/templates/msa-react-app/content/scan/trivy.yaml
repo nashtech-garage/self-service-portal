@@ -11,7 +11,7 @@ parameters:
 jobs:
   - job: trivyScanCode
     displayName: Trivy Scan (Code)
-    {% raw %}condition: eq('${{ parameters.scanImage }}', true){% endraw %}
+    {% raw %}condition: eq('${{ parameters.scanCode }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps: 

@@ -1,80 +1,83 @@
 trigger: none
+
 parameters:
   - name: sourceAlias
     default: ${{ values.parameters.sourceRepoAlias }}
-  {%- if values.parameters.frontendScan.useSnyk %}
-  - name: runSnykCode
-    type: boolean
-    default: true
-    displayName: Run Snyk Scan
-  {%- endif %}
-  {%- if values.parameters.frontendScan.useSonar %}
+  {%- if values.parameters.useSonarCode %}
   - name: runSonarCode
     type: boolean
     default: true
     displayName: Run SonarQube Scan
   {%- endif %}
-  {%- if values.parameters.frontendScan.useTrivy %}
+  {%- if values.parameters.useTrivyCode %}
   - name: runTrivyCode
     type: boolean
     default: true
-    displayName: Run Trivy Scan
+    displayName: Run Trivy Code Scan
+  {%- endif %}
+  {%- if values.parameters.useSnykCode %}
+  - name: runSnykCode
+    type: boolean
+    default: true
+    displayName: Run Snyk Code Scan
+  {%- endif %}
+  {%- if values.parameters.useSnykImage %}
+  - name: runSnykImage
+    type: boolean
+    default: true
+    displayName: Scan Image with Snyk
+  {%- endif %}
+  {%- if values.parameters.useTrivyImage %}
+  - name: runTrivyImage
+    type: boolean
+    default: true
+    displayName: Scan Image with Trivy
   {%- endif %}
 
 resources:
-  repositories: 
+  repositories:
     - repository: ${{ values.parameters.sourceRepoAlias }}
       type: git
       name: ${{ values.parameters.sourceRepoName }}
       ref: ${{ values.parameters.scanBranch }}
 
 stages:
-  {%- if values.parameters.frontendScan.useSnyk 
-    or values.parameters.backendScan.useSnykCode 
-    or values.parameters.backendScan.useSnykDonetContainer %}
-  - stage: SnykScanCode
-      condition: 
-      dependsOn: []
-      jobs:
-        - template: snyk.yaml
-          parameters:
-            enabled: true
-            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
-            {%- if values.parameters.frontendScan.useSnyk %}scanCode: true{%- endif %}
-            {%- if values.parameters.backendScan.useSnykCode %}scanCodeBackend: true{%- endif %}
-            {%- if values.parameters.backendScan.useSnykDonetContainer %}scanContainerBackend: true{%- endif %}
-      variables:
-        - group: ${{ values.parameters.snykCodeVariableGroupName }}   
+  {%- if values.parameters.useSnykCode or values.parameters.useSnykImage %}
+  - stage: SnykScan
+    dependsOn: []
+    jobs:
+      - template: snyk.yaml
+        parameters:
+          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
+          {%- if values.parameters.useSnykCode %}scanCode: true{%- endif %}
+          {%- if values.parameters.useSnykImage %}scanImage: true{%- endif %}
+    variables:
+      - group: ${{ values.parameters.snykCodeVariableGroupName }}
   {%- endif %}
-  {%- if values.parameters.frontendScan.useSonar 
-      or values.parameters.backendScan.useSonarCode 
-      or values.parameters.backendScan.useSonarContainer %}
-    - stage: SonarScanCode
-      dependsOn: []
-      jobs:
-        - template: sonar.yaml
-          parameters:
-            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
-            {%- if values.parameters.frontendScan.useSonar %}scanCodeSonar: true{%- endif %}
-            {%- if values.parameters.backendScan.useSonarCode %}scanCodeBackendSonar: true{%- endif %}
-            {%- if values.parameters.backendScan.useSonarContainer %}scanContainerBackendSonar: true{%- endif %}
-      variables:
-        - group: ${{ values.parameters.sonarCodeVariableGroupName }}
+
+  {%- if values.parameters.useSonarCode %}
+  - stage: SonarScan
+    dependsOn: []
+    jobs:
+      - template: sonar.yaml
+        parameters:
+          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
+          scanCodeSonar: true
+    variables:
+      - group: ${{ values.parameters.sonarCodeVariableGroupName }}
   {%- endif %}
-  {%- if values.parameters.frontendScan.useTrivy 
-      or values.parameters.backendScan.useTrivyCode 
-      or values.parameters.backendScan.useTrivyContainer %}
-    - stage: TrivyScanCode
-      dependsOn: []
-      jobs:
-        - template: trivy.yaml
-          parameters:
-            {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-            {%- if values.parameters.frontendScan.useTrivy %}scanCodeTrivy: true{%- endif %}
-            {%- if values.parameters.backendScan.useTrivyCode %}scanCodeBackendTrivy: true{%- endif %}
-            {%- if values.parameters.backendScan.useTrivyContainer %}scanContainerBackendTrivy: true{%- endif %}
-      variables:
-        - group: ${{ values.parameters.trivyCodeVariableGroupName }}
+
+  {%- if values.parameters.useTrivyCode or values.parameters.useTrivyImage %}
+  - stage: TrivyScan
+    dependsOn: []
+    jobs:
+      - template: trivy.yaml
+        parameters:
+          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          {%- if values.parameters.useTrivyCode %}scanCodeTrivy: true{%- endif %}
+          {%- if values.parameters.useTrivyImage %}scanImageTrivy: true{%- endif %}
+    variables:
+      - group: ${{ values.parameters.trivyCodeVariableGroupName }}
   {%- endif %}
