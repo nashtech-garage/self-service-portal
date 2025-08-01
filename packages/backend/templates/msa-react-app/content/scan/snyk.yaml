@@ -1,7 +1,7 @@
 parameters:
   - name: source
     type: string
-  - name: scanFrontend
+  - name: scanCode
     type: boolean
     default: false
   - name: scanCodeBackend
@@ -13,8 +13,8 @@ parameters:
   - name: serviceConnectionEndpoint
     type: string
 jobs:
-  - job: snykScanFrontend
-    displayName: Snyk Scan (Frontend)
+  - job: snykScanCode
+    displayName: Snyk Scan (Code)
     {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
@@ -24,11 +24,11 @@ jobs:
         inputs:
           {% raw %}serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}{% endraw %}
           testType: 'code'
-          {%- if values.parameters.snykFrontendConfig.testType == 'app' %}
+          {%- if values.parameters.snykCodeConfig.testType == 'app' %}
           targetFile: $(targetFile)
           monitorWhen: $(monitorWhen)
           {%- endif %}
-          {%- if values.parameters.snykFrontendConfig.testType == 'container' %}
+          {%- if values.parameters.snykCodeConfig.testType == 'container' %}
           dockerImageName: $(dockerImageName)
           dockerfilePath: $(dockerfilePath)
           monitorWhen: $(monitorWhen)

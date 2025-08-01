@@ -69,65 +69,65 @@ spec:
                   enum: [false]
   
 
-    # - title: Fruit Selector
-    #   properties:
-    #     fruit_type:
-    #       title: Choose a fruit
-    #       type: string
-    #       enum: ["apple", "orange"]
-    #       enumNames: ["Apple", "Orange"]
-    #       ui:widget: radio
-    #   dependencies:
-    #     fruit_type:
-    #       oneOf:
-    #         - properties:
-    #             fruit_type:
-    #               enum: ["apple"]
-    #             apple_variety:
-    #               title: Apple Variety
-    #               type: string
-    #               description: What kind of apple?
-    #             apple_color:
-    #               title: Apple Color
-    #               type: string
-    #               enum: ["red", "green", "yellow"]
-    #         - properties:
-    #             fruit_type:
-    #               enum: ["orange"]
-    #             orange_variety:
-    #               title: Orange Variety
-    #               type: string
-    #               description: What kind of orange?
-    #             orange_juice_type:
-    #               title: Juice Type
-    #               type: string
-    #               enum: ["pulp-free", "with-pulp"]
+    - title: Fruit Selector
+      properties:
+        fruit_type:
+          title: Choose a fruit
+          type: string
+          enum: ["apple", "orange"]
+          enumNames: ["Apple", "Orange"]
+          ui:widget: radio
+      dependencies:
+        fruit_type:
+          oneOf:
+            - properties:
+                fruit_type:
+                  enum: ["apple"]
+                apple_variety:
+                  title: Apple Variety
+                  type: string
+                  description: What kind of apple?
+                apple_color:
+                  title: Apple Color
+                  type: string
+                  enum: ["red", "green", "yellow"]
+            - properties:
+                fruit_type:
+                  enum: ["orange"]
+                orange_variety:
+                  title: Orange Variety
+                  type: string
+                  description: What kind of orange?
+                orange_juice_type:
+                  title: Juice Type
+                  type: string
+                  enum: ["pulp-free", "with-pulp"]
 
 
 
 
 
-    # - title: Choose A Repository Location
-    #   required:
-    #     - repoUrl
-    #   properties:
-    #     repoUrl:
-    #       title: Repository location for your new  React application
-    #       type: string
-    #       ui:field: RepoUrlPicker
-    #       ui:options:
-    #         requestUserCredentials:
-    #           secretsKey: USER_OAUTH_TOKEN
-    #           additionalScopes:
-    #             github:
-    #               - repo # Allows creating repositories
-    #               - workflow # Allows managing GitHub Actions
-    #             azure:
-    #               - email
-    #               - openid
-    #         allowedHosts:
-    #           - github.com
-    #           - dev.azure.com
+    - title: Choose A Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository location for your new  React application
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - repo # Allows creating repositories
+                  - workflow # Allows managing GitHub Actions
+                azure:
+                  - email
+                  - openid
+            allowedHosts:
+              - github.com
+              - dev.azure.com
 
     - title: Pipeline Configuration
       required:
@@ -308,65 +308,81 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        sonarCodeConfig:
-          type: object
-          ui:options:
-            visibleIf:
-              useSonarCode: true
-          properties:
-            SonarQube:
-              title: SonarQube
-              type: string
-              default: ''
-              description: The Azure DevOps SonarQube service connection name.
+        useSonarCode:
+          title: Use SonarQube?
+          type: boolean
+          default: false
+          description: Toggle to enable SonarQube code analysis.
+      dependencies:
+        useSonarCode:
+          oneOf:
+            - properties:
+                useSonarCode:
+                  enum: [true]
+                sonarCodeConfig:
+                  type: object
+                  properties:
+                    SonarQube:
+                      title: SonarQube
+                      type: string
+                      default: ''
+                      description: The Azure DevOps SonarQube service connection name.
 
-            scannerMode:
-              title: Scanner Mode
-              type: string
-              default: 'cli'
-              description: Mode used for scanning, such as CLI or MSBuild.
+                    scannerMode:
+                      title: Scanner Mode
+                      type: string
+                      default: 'cli'
+                      description: Mode used for scanning, such as CLI or MSBuild.
 
-            cliScannerVersion:
-              title: CLI Scanner Version
-              type: string
-              default: ''
-              description: Version of the CLI scanner to use.
+                    cliScannerVersion:
+                      title: CLI Scanner Version
+                      type: string
+                      default: ''
+                      description: Version of the CLI scanner to use.
 
-            configMode:
-              title: Config Mode
-              type: string
-              enum: [file, manual]
-              default: file
-              description: Determines whether configuration is read from a file or set manually.
-
-            cliProjectKey:
-              title: cliProjectKey
-              type: string
-              default: ''
-              description: Project key used for identifying the SonarQube project (manual mode only).
-
-            cliProjectName:
-              title: cliProjectName
-              type: string
-              default: ''
-              description: Name of the SonarQube project (manual mode only).
-
-            cliSources:
-              title: cliSources
-              type: string
-              default: ''
-              description: Path to the source code files for the scanner to analyze.
-
-            extraProperties:
-              title: extraProperties
-              type: string
-              default: ''
-              description: Additional properties for configuring the scan.
-            organization:
-              title: Organization
-              type: string
-              default: ''
-              description: Name of the organization performing or responsible for the scan.
+                    configMode:
+                      title: Config Mode
+                      type: string
+                      enum: [file, manual]
+                      default: file
+                      description: Determines whether configuration is read from a file or set manually.
+                  dependencies:
+                    configMode:
+                      oneOf:
+                        - properties:
+                            configMode:
+                              enum: [manual]
+                            cliProjectKey:
+                              title: cliProjectKey
+                              type: string
+                              default: ''
+                              description: Project key used for identifying the SonarQube project (manual mode only).
+                            cliProjectName:
+                              title: cliProjectName
+                              type: string
+                              default: ''
+                              description: Name of the SonarQube project (manual mode only).
+                            cliSources:
+                              title: cliSources
+                              type: string
+                              default: ''
+                              description: Path to the source code files for the scanner to analyze.
+                            extraProperties:
+                              title: extraProperties
+                              type: string
+                              default: ''
+                              description: Additional properties for configuring the scan.
+                            organization:
+                              title: Organization
+                              type: string
+                              default: ''
+                              description: Name of the organization performing or responsible for the scan.
+                        - properties:
+                            configMode:
+                              enum: [file]
+            - properties:
+                useSonarCode:
+                  enum: [false]
 
     - title: Trivy Code Scan
       type: object
@@ -520,24 +536,25 @@ spec:
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
 
-    # - id: runAzurePipeline
-    #   name: Run Azure Pipeline
-    #   action: azure:pipeline:run
-    #   input:
-    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
-    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
-    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+    - id: runAzurePipeline
+      name: Run Azure Pipeline
+      action: azure:pipeline:run
+      input:
+        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
 
-    # - id: permitAzurePipeline
-    #   name: Change Azure Pipeline Permissions
-    #   action: azure:pipeline:permit
-    #   input:
-    #     organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
-    #     project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
-    #     resourceId: <serviceEndpointId>
-    #     resourceType: endpoint
-    #     authorized: true
-    #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+    - id: permitAzurePipeline
+      name: Change Azure Pipeline Permissions
+      action: azure:pipeline:permit
+      input:
+        organization: ${{ (parameters.repoUrl | parseRepoUrl)['organization'] }}
+        project: ${{ (parameters.repoUrl | parseRepoUrl)['owner'] }}
+        resourceId: <serviceEndpointId>
+        resourceType: endpoint
+        authorized: true
+        pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
+
     - id: flattenSnyk
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
