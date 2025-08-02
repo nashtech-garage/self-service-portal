@@ -92,28 +92,28 @@ spec:
           description: Git branch to pull from for scanning
           default: main
 
-    - title: Select scan tools
-      properties:
-        useSonarCode:
-          type: boolean
-          title: Scan source code with SonarQube
-          default: false
-        useTrivyCode:
-          type: boolean
-          title: Scan source code with Trivy
-          default: false
-        useSnykCode:
-          type: boolean
-          title: Scan source code with Snyk
-          default: false
-        useSnykImage:
-          type: boolean
-          title: Scan .NET container with Snyk
-          default: false
-        useTrivyImage:
-          type: boolean
-          title: Scan .NET container with Trivy
-          default: false
+    # - title: Select scan tools
+    #   properties:
+    #     useSonarCode:
+    #       type: boolean
+    #       title: Scan source code with SonarQube
+    #       default: false
+    #     useTrivyCode:
+    #       type: boolean
+    #       title: Scan source code with Trivy
+    #       default: false
+    #     useSnykCode:
+    #       type: boolean
+    #       title: Scan source code with Snyk
+    #       default: false
+    #     useSnykImage:
+    #       type: boolean
+    #       title: Scan .NET container with Snyk
+    #       default: false
+    #     useTrivyImage:
+    #       type: boolean
+    #       title: Scan .NET container with Trivy
+    #       default: false
 
     - title: Variables Group Mapping
       properties:
