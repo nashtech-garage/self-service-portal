@@ -11,102 +11,6 @@ spec:
   type: application
   parameters:
     
-    - title: Configuration
-      properties:
-        # --- First Boolean Field: Controls Advanced Options ---
-        enableAdvancedOptions:
-          title: Enable advanced options?
-          type: boolean
-          description: Check this box to show additional configuration fields.
-          default: false
-
-        # --- Second Boolean Field: Controls Database Settings ---
-        enableDatabase:
-          title: Include a database?
-          type: boolean
-          description: Check this box to configure database settings.
-          default: false
-      
-      # --- Dependencies for the FIRST boolean field ---
-      dependencies:
-        enableAdvancedOptions:
-          oneOf:
-            - properties:
-                enableAdvancedOptions:
-                  enum: [true]
-                secretKey:
-                  title: Secret Key
-                  type: string
-                  description: Your API key for advanced functionality.
-                logLevel:
-                  title: Log Level
-                  type: string
-                  enum: ["debug", "info", "warn", "error"]
-                  default: "info"
-            - properties:
-                enableAdvancedOptions:
-                  enum: [false]
-
-        # --- Dependencies for the SECOND boolean field ---
-        enableDatabase:
-          oneOf:
-            - properties:
-                enableDatabase:
-                  enum: [true]
-                dbType:
-                  title: Database Type
-                  type: string
-                  enum: ["postgresql", "mysql"]
-                  default: "postgresql"
-                dbPassword:
-                  title: Database Password
-                  type: string
-                  ui:widget: password
-                  description: The root password for the database.
-                  
-            - properties:
-                enableDatabase:
-                  enum: [false]
-  
-
-    - title: Fruit Selector
-      properties:
-        fruit_type:
-          title: Choose a fruit
-          type: string
-          enum: ["apple", "orange"]
-          enumNames: ["Apple", "Orange"]
-          ui:widget: radio
-      dependencies:
-        fruit_type:
-          oneOf:
-            - properties:
-                fruit_type:
-                  enum: ["apple"]
-                apple_variety:
-                  title: Apple Variety
-                  type: string
-                  description: What kind of apple?
-                apple_color:
-                  title: Apple Color
-                  type: string
-                  enum: ["red", "green", "yellow"]
-            - properties:
-                fruit_type:
-                  enum: ["orange"]
-                orange_variety:
-                  title: Orange Variety
-                  type: string
-                  description: What kind of orange?
-                orange_juice_type:
-                  title: Juice Type
-                  type: string
-                  enum: ["pulp-free", "with-pulp"]
-
-
-
-
-
     - title: Choose A Repository Location
       required:
         - repoUrl
@@ -411,101 +315,119 @@ spec:
     - title: Trivy Code Scan
       type: object
       properties:
-        trivyCodeConfig:
-          type: object
-          ui:options:
-            visibleIf:
-              useTrivyCode: true
-          properties:
-            version:
-              title: version
-              type: string
-              default: 'latest'
-              description: Version of Trivy to use for scanning.
+        useTrivyCode:
+          title: Use Trivy?
+          type: boolean
+          default: false
+          description: Toggle to enable Trivy vulnerability scanning.
+      dependencies:
+        useTrivyCode:
+          oneOf:
+            - properties:
+                useTrivyCode:
+                  enum: [true]
+                trivyCodeConfig:
+                  type: object
+                  properties:
+                    version:
+                      title: version
+                      type: string
+                      default: 'latest'
+                      description: Version of Trivy to use for scanning.
 
-            method:
-              title: method
-              type: string
-              default: ''
-              description: Execution method for Trivy (e.g., docker or system).
+                    method:
+                      title: method
+                      type: string
+                      default: ''
+                      description: Execution method for Trivy (e.g., docker or system).
 
-            image:
-              title: image
-              type: string
-              default: 'aquasec/trivy:latest'
-              description: Docker image name used to run Trivy in containerized mode.
+                    options:
+                      title: options
+                      type: string
+                      default: ''
+                      description: Additional CLI options passed to the Trivy scan.
 
-            options:
-              title: options
-              type: string
-              default: ''
-              description: Additional CLI options passed to the Trivy scan.
+                    type:
+                      title: type
+                      type: string
+                      default: ''
+                      description: Type of scan to run — filesystem, image, repository, or sbom.
 
-            type:
-              title: type
-              type: string
-              default: ''
-              description: Type of scan to run — filesystem, image, repository, or sbom.
+                    target:
+                      title: target
+                      type: string
+                      default: ''
+                      description: Path or target of the scan (e.g., directory or image reference).
 
-            target:
-              title: target
-              type: string
-              default: ''
-              description: Path or target of the scan (e.g., directory or image reference).
+                    scanners:
+                      title: scanners
+                      type: string
+                      default: ''
+                      description: Types of vulnerabilities to scan for (e.g., vuln, config).
 
-            scanners:
-              title: scanners
-              type: string
-              default: ''
-              description: Types of vulnerabilities to scan for (e.g., vuln, config).
+                    severities:
+                      title: severities
+                      type: string
+                      default: ''
+                      description: Severity levels to filter results by (e.g., CRITICAL,HIGH).
 
-            severities:
-              title: severities
-              type: string
-              default: ''
-              description: Severity levels to filter results by (e.g., CRITICAL,HIGH).
+                    ignoreUnfixed:
+                      title: ignoreUnfixed
+                      type: boolean
+                      default: false
+                      description: If true, ignores vulnerabilities that haven’t been fixed yet.
 
-            ignoreUnfixed:
-              title: ignoreUnfixed
-              type: boolean
-              default: false
-              description: If true, ignores vulnerabilities that haven’t been fixed yet.
+                    showSuppressed:
+                      title: showSuppressed
+                      type: boolean
+                      default: false
+                      description: If true, includes suppressed vulnerabilities in scan results.
 
-            showSuppressed:
-              title: showSuppressed
-              type: boolean
-              default: false
-              description: If true, includes suppressed vulnerabilities in scan results.
+                    ignoreScanErrors:
+                      title: ignoreScanErrors
+                      type: boolean
+                      default: false
+                      description: If true, scan errors won’t fail the pipeline.
 
-            ignoreScanErrors:
-              title: ignoreScanErrors
-              type: boolean
-              default: false
-              description: If true, scan errors won’t fail the pipeline.
+                    failOnSeverityThreshold:
+                      title: failOnSeverityThreshold
+                      type: string
+                      default: ''
+                      description: If set, fails the pipeline when vulnerabilities meet or exceed this severity.
 
-            failOnSeverityThreshold:
-              title: failOnSeverityThreshold
-              type: string
-              default: ''
-              description: If set, fails the pipeline when vulnerabilities meet or exceed this severity.
+                    reports:
+                      title: reports
+                      type: string
+                      default: ''
+                      description: Report formats to generate (e.g., json, sarif).
 
-            reports:
-              title: reports
-              type: string
-              default: ''
-              description: Report formats to generate (e.g., json, sarif).
-
-            publish:
-              title: publish
-              type: boolean
-              default: false
-              description: If true, publishes scan results as pipeline artifacts.
-
-            templates:
-              title: templates
-              type: string
-              default: ''
-              description: Templates used to customize the report output (sbom/system mode only).
+                    publish:
+                      title: publish
+                      type: boolean
+                      default: false
+                      description: If true, publishes scan results as pipeline artifacts.
+                  dependencies:
+                    method:
+                      oneOf:
+                        - properties:
+                            method:
+                              enum: [docker]
+                            image:
+                              title: image
+                              type: string
+                              default: 'aquasec/trivy:latest'
+                              description: Docker image name used to run Trivy in containerized mode.
+                        - properties:
+                            method:
+                              enum: [system]
+                            templates:
+                              title: templates
+                              type: string
+                              default: ''
+                              description: Templates used to customize the report output (sbom/system mode only).
+            - properties:
+                useTrivyCode:
+                  enum: [false]
 
   steps:
     - id: validate
