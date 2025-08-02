@@ -150,13 +150,7 @@ spec:
                 snykCodeConfig:
                   type: object
                   properties:
-                    testType:
-                      title: Scan Type
-                      type: string
-                      enum: [app, container, code]
-                      default: app
-                      description: Type of security scan to run — application, container, or code analysis.
-
+                    
                     monitor:
                       title: Upload Results to Snyk
                       type: boolean
@@ -192,47 +186,7 @@ spec:
                       type: string
                       default: ''
                       description: The Snyk organization ID under which scans and monitoring actions are performed.
-                  dependencies:
-                    testType:
-                      oneOf:
-                        - properties:
-                            testType:
-                              enum: [app]
-                            targetFile:
-                              title: Target File (app scan only)
-                              type: string
-                              default: ''
-                              description: Path to the manifest or configuration file for the application scan.
-                            monitorWhen:
-                              title: Monitor Trigger (used in app/container scan)
-                              type: string
-                              default: ''
-                              description: Specifies when Snyk should trigger monitoring — for example, post-build or on deploy.
-                        - properties:
-                            testType:
-                              enum: [container]
-                            dockerImageName:
-                              title: Docker Image Name (container scan only)
-                              type: string
-                              default: 'ghcr.io/aquasecurity/trivy:latest'
-                              description: Name of the Docker image used to run the Trivy vulnerability scanner.
-                            dockerfilePath:
-                              title: Dockerfile Path (container scan only)
-                              type: string
-                              default: ''
-                              description: Path to the Dockerfile associated with the container image.
-                            monitorWhen:
-                              title: Monitor Trigger (used in app/container scan)
-                              type: string
-                              default: ''
-                              description: Specifies when Snyk should trigger monitoring — for example, post-build or on deploy.
-                        - properties:
-                            testType:
-                              enum: [code]
-            - properties:
-                useSnykCode:
-                  enum: [false]
-
+                  
     - title: SonarQube Code Analysis
       type: object
       properties:
