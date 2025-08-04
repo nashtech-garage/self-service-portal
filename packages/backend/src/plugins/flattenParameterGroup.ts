@@ -3,7 +3,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
 export const flattenParameterGroup = () =>
   createTemplateAction<{
-    group: JsonObject;
+    group?: JsonObject; // Changed type to optional
   }>({
     id: 'util:flatten-parameter-group',
     description:
@@ -11,7 +11,7 @@ export const flattenParameterGroup = () =>
     schema: {
       input: {
         type: 'object',
-        required: ['group'],
+        // The 'group' property is no longer required.
         properties: {
           group: {
             type: 'object',
@@ -21,7 +21,15 @@ export const flattenParameterGroup = () =>
       },
     },
     async handler(ctx) {
-      const rawGroup = ctx.input.group;
+      // De-structure with a default value to handle undefined gracefully
+      const { group: rawGroup = {} } = ctx.input;
+
+      if (!rawGroup || Object.keys(rawGroup).length === 0) {
+        ctx.logger.warn('⚠️ Input group is undefined, null, or empty. Skipping variable group creation.');
+        ctx.output('flattened', {}); // Output an empty object to prevent downstream errors
+        return;
+      }
+
       const flattened: Record<string, string> = {};
 
       for (const [key, value] of Object.entries(rawGroup)) {
@@ -34,8 +42,8 @@ export const flattenParameterGroup = () =>
 
       ctx.logger.info(`✅ Flattened ${Object.keys(flattened).length} values.`);
       for (const [key, value] of Object.entries(flattened)) {
-            ctx.logger.info(`   🔹 ${key}: ${value}`);
-        }
+        ctx.logger.info(`   🔹 ${key}: ${value}`);
+      }
 
       ctx.output('flattened', flattened);
     },
