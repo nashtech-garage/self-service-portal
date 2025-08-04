@@ -48,10 +48,11 @@ stages:
     jobs:
       - template: snyk.yaml
         parameters:
-          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
           serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
-          {%- if values.parameters.useSnykCode %}scanCode: true{%- endif %}
-          {%- if values.parameters.useSnykImage %}scanImage: true{%- endif %}
+          {% if values.parameters.useTrivyCode %}scanCode: true{%- endif %}
+          {% if values.parameters.useTrivyImage %}scanImage: true{%- endif %}
+          scanCode: true
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
 {%- endif %}
@@ -61,9 +62,9 @@ stages:
     jobs:
       - template: sonar.yaml
         parameters:
-          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
           SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
-          scanCodeSonar: true
+          {% raw %}enabled: ${{ parameters.runSonarCode }}{% endraw %}
     variables:
       - group: ${{ values.parameters.sonarCodeVariableGroupName }}
 {%- endif %}

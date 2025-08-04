@@ -1,7 +1,7 @@
 parameters:
   - name: source
     type: string
-  - name: runSonarCode
+  - name: enabled
     type: boolean
     default: false
   - name: SonarQube
@@ -13,7 +13,7 @@ parameters:
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
-    condition: {% raw %}eq('${{ parameters.runSonarCode }}', true){% endraw %}
+    condition: {% raw %}eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:
