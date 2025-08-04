@@ -42,7 +42,7 @@ resources:
       ref: ${{ values.parameters.scanBranch }}
 
 stages:
-  {%- if values.parameters.useSnykCode or values.parameters.useSnykImage %}
+{%- if values.parameters.useSnykCode or values.parameters.useSnykImage %}
   - stage: SnykScan
     dependsOn: []
     jobs:
@@ -54,9 +54,8 @@ stages:
           {%- if values.parameters.useSnykImage %}scanImage: true{%- endif %}
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
-  {%- endif %}
-
-  {%- if values.parameters.useSonarCode %}
+{%- endif %}
+{%- if values.parameters.useSonarCode %}
   - stage: SonarScan
     dependsOn: []
     jobs:
@@ -67,17 +66,17 @@ stages:
           scanCodeSonar: true
     variables:
       - group: ${{ values.parameters.sonarCodeVariableGroupName }}
-  {%- endif %}
+{%- endif %}
 
-  {%- if values.parameters.useTrivyCode or values.parameters.useTrivyImage %}
+{%- if values.parameters.useTrivyCode or values.parameters.useTrivyImage %}
   - stage: TrivyScan
     dependsOn: []
     jobs:
       - template: trivy.yaml
         parameters:
-          {%- raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-          {%- if values.parameters.useTrivyCode %}scanCodeTrivy: true{%- endif %}
-          {%- if values.parameters.useTrivyImage %}scanImageTrivy: true{%- endif %}
+          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          {% if values.parameters.useTrivyCode %}scanCode: true{% endif %}
+          {% if values.parameters.useTrivyImage %}scanImage: true{% endif %}
     variables:
       - group: ${{ values.parameters.trivyCodeVariableGroupName }}
-  {%- endif %}
+{%- endif %}
