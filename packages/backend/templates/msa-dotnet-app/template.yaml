@@ -37,7 +37,7 @@ spec:
         - pipelineBranchName
         - project
         - folder
-        - pipelineRepositoryName
+        # - pipelineRepositoryName
         - pipelineName
       properties:
         project:
@@ -52,10 +52,10 @@ spec:
           type: string
           title: Pipeline Name
           description: Name for the new pipeline
-        pipelineRepositoryName:
-          type: string
-          title: Repository Name
-          description: Name of the repository
+        # pipelineRepositoryName:
+        #   type: string
+        #   title: Repository Name
+        #   description: Name of the repository
         pipelineBranchName:
           type: string
           title: Branch Name
@@ -85,7 +85,7 @@ spec:
           title: Repository Name
           type: string
           description: Full path of the repository in Azure DevOps (e.g. ProjectName/repo-name)
-          default: Source
+          default: "dotnet-source"
         scanBranch:
           title: Branch to Scan
           type: string
@@ -258,11 +258,6 @@ spec:
                               type: string
                               default: ''
                               description: Name of the SonarQube project (manual mode only).
-                            cliSources:
-                              title: cliSources
-                              type: string
-                              default: ''
-                              description: Path to the source code files for the scanner to analyze.
                             extraProperties:
                               title: extraProperties
                               type: string
@@ -465,7 +460,7 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: '${{ steps.validate.output.value }}'
 
     - id: createPipeline

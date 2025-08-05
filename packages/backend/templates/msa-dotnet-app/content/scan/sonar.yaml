@@ -23,17 +23,14 @@ jobs:
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: 'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
-
       - task: SonarCloudPrepare@3
         inputs:
           {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
-          scannerMode: cli
-          cliScannerVersion: $(cliScannerVersion)
+          scannerMode: dotnet
+          dotnetScannerVersion: $(dotnetScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
-          cliProjectKey: $(cliProjectKey)
-          cliProjectName: $(cliProjectName)
-          cliSources: $(cliSources)
+          projectKey: $(projectKey)
+          projectName: $(projectName)
           extraProperties: $(extraProperties)
           organization: $(organization)
           {%- endif %}
