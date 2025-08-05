@@ -34,7 +34,7 @@ spec:
 
     - title: Pipeline Configuration
       required:
-        - branchName
+        - pipelineBranchName
         - project
         - folder
         - pipelineRepositoryName
@@ -56,21 +56,22 @@ spec:
           type: string
           title: Repository Name
           description: Name of the repository
-        branchName:
+        pipelineBranchName:
           type: string
           title: Branch Name
           description: The name of the branch to be used for the pipeline
+          default: master
       uiSchema:
-        project:
+        Project:
           'ui:autofocus': true
           'ui:placeholder': 'Enter project name'
-        folder:
+        Folder:
           'ui:placeholder': 'Enter folder path'
         PipelineName:
           'ui:placeholder': 'Enter pipeline name'
         RepositoryName:
           'ui:placeholder': 'Enter repository name'
-        branchName:
+        BranchName:
           'ui:placeholder': 'Enter branch name'
 
     - title: Source Repository Configuration
@@ -89,7 +90,7 @@ spec:
           title: Branch to Scan
           type: string
           description: Git branch to pull from for scanning
-          default: main
+          default: master
 
     - title: Select scan tools
       properties:
