@@ -1,15 +1,18 @@
 parameters:
   - name: source
     type: string
-  - name: enabled
+  - name: scanCode
     type: boolean
-    default: true
+    default: false
+  - name: scanImage
+    type: boolean
+    default: false
   - name: serviceConnectionEndpoint
     type: string
 jobs:
-  - job: snykScan
-    displayName: Snyk Scan
-    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+  - job: snykScanCode
+    displayName: Snyk Scan (Code)
+    {% raw %}condition: eq('${{ parameters.scanCode }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -18,17 +21,26 @@ jobs:
         inputs:
           {% raw %}serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}{% endraw %}
           testType: 'code'
-          {%- if values.parameters.snykConfig.testType == 'app' %}
-          targetFile: $(targetFile)
-          monitorWhen: $(monitorWhen)
-          {%- endif %}
-          {%- if values.parameters.snykConfig.testType == 'container' %}
-          dockerImageName: $(dockerImageName)
-          dockerfilePath: $(dockerfilePath)
-          monitorWhen: $(monitorWhen)
-          {%- endif %}
           failOnIssues: $(failOnIssues)
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-     
+
+  # - job: snykScanBacked
+  #   displayName: Snyk Scan (Backend)
+  #   {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #     {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
+  #     {%- if values.parameters.snyKDotnetConfig.configMode == 'manual' %}
+  #       - task: SnykSecurityScan@1
+  #         inputs:
+  #           serviceConnectionEndpoint: $(serviceConnectionEndpoint)
+  #           testType: $(testType)
+  #           dockerImageName: $(dockerImageName)
+  #           monitorWhen: $(monitorWhen)
+  #           failOnIssues: $(failOnIssues)
+  #           projectName: $(projectName)
+  #           organization: $(organization)
+  #     {%- endif %}

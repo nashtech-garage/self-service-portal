@@ -97,9 +97,6 @@ export const createOrSkipVariableGroup = () =>
             ],
           };
 
-
-          ctx.logger.info(`📦 Update Payload:\n${JSON.stringify(updatePayload, null, 2)}`);
-
           const updateRes = await fetch(updateUrl, {
             method: 'PUT',
             headers: {
@@ -133,7 +130,6 @@ export const createOrSkipVariableGroup = () =>
           };
 
           ctx.logger.info(`🚀 Creating new variable group "${groupName}"`);
-          ctx.logger.debug(`📦 Create Payload:\n${JSON.stringify(createPayload, null, 2)}`);
 
           const createRes = await fetch(getUrl, {
             method: 'POST',
@@ -150,6 +146,7 @@ export const createOrSkipVariableGroup = () =>
 
           ctx.logger.info(`🎉 Variable group "${groupName}" created.`);
         }
+
       } catch (err) {
         ctx.logger.error(`❌ Could not manage variable group: ${err instanceof Error ? err.message : String(err)}`);
         throw new Error(`Could not manage variable group: ${err}`);
