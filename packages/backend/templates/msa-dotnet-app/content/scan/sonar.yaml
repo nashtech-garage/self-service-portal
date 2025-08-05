@@ -1,7 +1,7 @@
 parameters:
   - name: source
     type: string
-  - name: scanCode
+  - name: enabled
     type: boolean
     default: false
   - name: SonarQube
@@ -23,7 +23,7 @@ jobs:
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: 'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
-      
+
       - task: SonarCloudPrepare@3
         inputs:
           {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
@@ -37,15 +37,12 @@ jobs:
           extraProperties: $(extraProperties)
           organization: $(organization)
           {%- endif %}
-      - script: |
-          for d in */; do
-            if [ -f "$d/package.json" ]; then
-              echo "📦 Installing in $d"
-              npm install --prefix "$d"
-              npm run --prefix "$d" build || echo "⚠️ No build script in $d"
-            fi
-          done
-        displayName: 'Install and Build Angular App'
+      - task: DotNetCoreCLI@2
+        displayName: 'Build'
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          arguments: '--configuration Release'
       - task: SonarCloudAnalyze@3
         inputs:
           jdkversion: 'JAVA_HOME_17_X64'
@@ -74,4 +71,4 @@ jobs:
         inputs:
           pollingTimeoutSec: '300'
         displayName: 'Publish SonarQube Results'
-{%- endof %}
+{%- endif %}
