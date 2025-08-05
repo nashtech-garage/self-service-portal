@@ -146,6 +146,7 @@ export const createOrSkipVariableGroup = () =>
 
           ctx.logger.info(`🎉 Variable group "${groupName}" created.`);
         }
+
       } catch (err) {
         ctx.logger.error(`❌ Could not manage variable group: ${err instanceof Error ? err.message : String(err)}`);
         throw new Error(`Could not manage variable group: ${err}`);
