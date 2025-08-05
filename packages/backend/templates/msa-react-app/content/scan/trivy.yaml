@@ -16,14 +16,6 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps: 
       {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
-      - script: |
-          for d in */; do
-            if [ -f "$d/package.json" ]; then
-              echo "📦 Installing in $d"
-              npm install --prefix "$d"
-            fi
-          done
-        displayName: 'Run a multi-line script'
       - task: trivy@2
         inputs:
           {%- if values.parameters.trivyCodeConfig.method == 'docker' %}

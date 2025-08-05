@@ -96,22 +96,24 @@ spec:
       properties:
         scanToolsSummary:
           type: string
-          title: Security and Quality Scans
-          default:: |
+          title: ' '
+          default: |
             The following security scans will be automatically included in your pipeline:
 
-            - Scan source code with SonarQube:
-              Analyzes code for bugs, vulnerabilities, and code smells.
-            - Scan source code with Trivy:
-              Scans dependencies, misconfigurations, and secrets.
-            - Scan source code with Snyk:
-              Performs static analysis and dependency vulnerability checks.
-            - Scan .NET container with Snyk:
-              Analyzes the container image for known vulnerabilities.
-            - Scan .NET container with Trivy:
-              Detects vulnerabilities, secrets, and misconfigurations in the container image.
+            1. Scan source code with SonarQube:
+               Analyzes code for bugs, vulnerabilities, and code smells.
+            2. Scan source code with Trivy:
+               Scans dependencies, misconfigurations, and secrets.
+            3. Scan source code with Snyk:
+               Performs static analysis and dependency vulnerability checks.
+            4. Scan container with Snyk:
+               Analyzes the container image for known vulnerabilities.
+            5. Scan container with Trivy:
+               Detects vulnerabilities, secrets, and misconfigurations in the container image.
+          ui:widget: textarea
           ui:options:
             readonly: true
+            rows: 15
     
     - title: Variables Group Mapping
       properties:
