@@ -8,8 +8,8 @@ parameters:
     default: true
     displayName: Run Snyk Code Scan
   {%- endif %}
-  {%- if values.parameters.useSonarCode %}
-  - name: runSonarCode
+  {%- if values.parameters.useSonar %}
+  - name: runSonar
     type: boolean
     default: true
     displayName: Run SonarQube Code Scan
@@ -42,17 +42,17 @@ stages:
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
 {%- endif %}
-{%- if values.parameters.useSonarCode %}
+{%- if values.parameters.useSonar %}
   - stage: SonarScan
     dependsOn: []
     jobs:
       - template: sonar.yaml
         parameters:
           {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
-          SonarQube: ${{ values.parameters.sonarCodeConfig.SonarQube }}
-          {% raw %}enabled: ${{ parameters.runSonarCode }}{% endraw %}
+          SonarQube: ${{ values.parameters.sonarConfig.SonarQube }}
+          {% raw %}enabled: ${{ parameters.runSonar }}{% endraw %}
     variables:
-      - group: ${{ values.parameters.sonarCodeVariableGroupName }}
+      - group: ${{ values.parameters.sonarVariableGroupName }}
 {%- endif %}
 
 {%- if values.parameters.useTrivyCode or values.parameters.useTrivyImage %}

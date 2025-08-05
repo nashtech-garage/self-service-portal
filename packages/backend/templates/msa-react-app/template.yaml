@@ -120,7 +120,7 @@ spec:
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarCodeVariableGroupName:
+        sonarVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
@@ -191,18 +191,18 @@ spec:
     - title: SonarQube Code Analysis
       type: object
       properties:
-        useSonarCode:
+        useSonar:
           title: Use SonarQube?
           type: boolean
           default: false
           description: Toggle to enable SonarQube code analysis.
       dependencies:
-        useSonarCode:
+        useSonar:
           oneOf:
             - properties:
-                useSonarCode:
+                useSonar:
                   enum: [true]
-                sonarCodeConfig:
+                sonarConfig:
                   type: object
                   properties:
                     SonarQube:
@@ -264,7 +264,7 @@ spec:
                             configMode:
                               enum: [file]
             - properties:
-                useSonarCode:
+                useSonar:
                   enum: [false]
                 Warning:
                   type: string
@@ -491,21 +491,21 @@ spec:
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnykCode.output.flattened }}
 
-    - id: flattenSonarCode
+    - id: flattenSonar
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarCodeConfig }}
+        group: ${{ parameters.sonarConfig }}
 
-    - id: ensureSonarGroupCode
+    - id: ensureSonarGroup
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarCodeVariableGroupName }}
+        groupName: ${{ parameters.sonarVariableGroupName }}
         token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flattenSonarCode.output.flattened }}
+        variables: ${{ steps.flattenSonar.output.flattened }}
 
     - id: flattenTrivyCode
       name: Flatten Trivy Group
