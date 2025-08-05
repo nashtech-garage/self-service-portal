@@ -52,7 +52,6 @@ stages:
           serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
           {% if values.parameters.useTrivyCode %}scanCode: true{%- endif %}
           {% if values.parameters.useTrivyImage %}scanImage: true{%- endif %}
-          scanCode: true
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
 {%- endif %}

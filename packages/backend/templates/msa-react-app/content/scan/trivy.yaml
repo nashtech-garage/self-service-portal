@@ -36,7 +36,7 @@ jobs:
           {%- endif %}
           version: $(version)
           options: $(options)
-          type: $(type)
+          type: repository
           target: $(target)
           scanners: $(scanners)
           severities: $(severities)

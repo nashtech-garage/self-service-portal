@@ -299,36 +299,34 @@ spec:
                       type: string
                       default: 'latest'
                       description: Version of Trivy to use for scanning.
-                    method:
-                      title: method
-                      type: string
-                      default: ''
-                      description: Execution method for Trivy (e.g., docker or system).
                     options:
                       title: options
                       type: string
                       default: ''
                       description: Additional CLI options passed to the Trivy scan.
-                    type:
-                      title: type
-                      type: string
-                      default: ''
-                      description: Type of scan to run — filesystem, image, repository, or sbom.
                     target:
                       title: target
                       type: string
-                      default: ''
+                      default: '.'
                       description: Path or target of the scan (e.g., directory or image reference).
                     scanners:
                       title: scanners
-                      type: string
-                      default: ''
-                      description: Types of vulnerabilities to scan for (e.g., vuln, config).
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Types of vulnerabilities to scan for. Select one or more.
+                      items:
+                        type: string
+                        enum: ['vuln', 'misconfig', 'secret', 'license']
                     severities:
                       title: severities
-                      type: string
-                      default: ''
+                      type: array
+                      default: []
+                      uniqueItems: true
                       description: Severity levels to filter results by (e.g., CRITICAL,HIGH).
+                      items:
+                        type: string
+                        enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
                     ignoreUnfixed:
                       title: ignoreUnfixed
                       type: string
@@ -352,23 +350,34 @@ spec:
                       type: string
                       default: ''
                       description: If set, fails the pipeline when vulnerabilities meet or exceed this severity.
+                      enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
                     reports:
                       title: reports
-                      type: string
-                      default: ''
+                      type: array
+                      default: []
+                      uniqueItems: true
                       description: Report formats to generate (e.g., json, sarif).
+                      items:
+                        type: string
+                        enum: ['asff', 'cosign', 'cyclonedx', 'github', 'html', 'junit', 'sarif', 'spdx', 'spdxjson', 'table']
                     publish:
                       title: publish
                       type: string
-                      default: "false"
+                      default: "true"
                       description: If true, publishes scan results as pipeline artifacts.
                       enum: ["true", "false"]
+                    method:
+                      title: method
+                      type: string
+                      default: 'install'
+                      description: Execution method for Trivy (e.g., docker or system).
+                      enum: ["install", "docker", "system"]
                   dependencies:
                     method:
                       oneOf:
                         - properties:
                             method:
-                              enum: [docker]
+                              enum: ["docker"]
                             image:
                               title: image
                               type: string
@@ -376,12 +385,15 @@ spec:
                               description: Docker image name used to run Trivy in containerized mode.
                         - properties:
                             method:
-                              enum: [system]
+                              enum: ["system"]
                             templates:
                               title: templates
                               type: string
                               default: ''
                               description: Templates used to customize the report output (sbom/system mode only).
+                        - properties:
+                            method:
+                              enum: ["install"]
             - properties:
                 useTrivyCode:
                   enum: [false]
@@ -466,7 +478,7 @@ spec:
     #     authorized: true
     #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
 
-    - id: flattenSnyk
+    - id: flattenSnykCode
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
@@ -480,7 +492,7 @@ spec:
         project: ${{ parameters.project }}
         groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flattenSnyk.output.flattened }}
+        variables: ${{ steps.flattenSnykCode.output.flattened }}
 
     - id: flattenSonarCode
       name: Flatten Sonar Group
@@ -512,4 +524,4 @@ spec:
         project: ${{ parameters.project }}
         groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flattenTrivy.output.flattened }}
+        variables: ${{ steps.flattenTrivyCode.output.flattened }}
