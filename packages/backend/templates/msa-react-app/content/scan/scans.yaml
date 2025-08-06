@@ -1,4 +1,5 @@
 trigger: none
+
 parameters:
   - name: sourceAlias
     default: ${{ values.parameters.sourceRepoAlias }}
@@ -8,11 +9,11 @@ parameters:
     default: true
     displayName: Run Snyk Code Scan
   {%- endif %}
-  {%- if values.parameters.useSonar %}
-  - name: runSonar
+  {%- if values.parameters.useSnykImage %}
+  - name: runSnykImage
     type: boolean
     default: true
-    displayName: Run SonarQube Scan
+    displayName: Scan Image with Snyk
   {%- endif %}
   {%- if values.parameters.useTrivyCode %}
   - name: runTrivyCode
