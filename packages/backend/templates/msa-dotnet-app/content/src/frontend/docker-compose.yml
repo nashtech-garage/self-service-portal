@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build:
+      context: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - node
+    restart: always
+
+  node:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3035:3000"
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  node_modules:

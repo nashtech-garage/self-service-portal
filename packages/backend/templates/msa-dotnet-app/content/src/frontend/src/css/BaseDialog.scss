@@ -1,0 +1,66 @@
+@use "variables" as v;
+@use "mixins" as m;
+@use "theme" as t;
+@use "prime-override";
+
+.base-dialog {
+  .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 8px !important;
+    border-width: 1px !important;
+    overflow: hidden;
+    border-style: solid;
+  }
+
+
+  .base-dialog-content {
+    padding: 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .base-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    background-color: white;
+    border-radius: 0 0 8px 8px;
+    margin: 0 -1px -1px -1px;
+  }
+
+  .status-pill {
+    font-weight: 500;
+  }
+}
+
+.dialog-custom-header {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: "#333";
+
+  .header-title {
+    padding-left: 0.5rem;
+  }
+
+  .header-close-button {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    outline: none;
+    box-shadow: none;
+  }
+}

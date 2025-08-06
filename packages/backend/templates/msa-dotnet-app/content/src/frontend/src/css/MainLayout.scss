@@ -1,0 +1,79 @@
+@use "theme" as *;
+@use "mixins" as m;
+
+.navbar {
+  z-index: 5;
+  background-color: var(--color-primary);
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .p-menubar {
+    .p-icon.p-submenu-icon {
+      color: white;
+    }
+
+    :hover {
+      background-color: transparent;
+    }
+  }
+
+  .p-menubar.p-component {
+    border: none;
+  }
+
+  .p-menuitem-content a {
+    font-weight: bold;
+  }
+
+  .p-menuitem-text {
+    color: white;
+  }
+
+  .p-menuitem-active > .p-submenu-list {
+    background-color: white;
+  }
+
+  .p-menubar .p-menuitem.p-highlight > .p-menuitem-content {
+    background-color: transparent;
+  }
+
+  .p-submenu-list {
+    :hover {
+      background-color: white;
+    }
+
+    .p-menuitem-text {
+      color: black;
+    }
+  }
+}
+
+.menubar {
+  max-width: 250px;
+  min-width: 200px;
+  color: var(--color-primary);
+  img {
+    max-width: 85px;
+  }
+
+  li {
+    background-color: rgba(239, 241, 245, 1);
+    color: black;
+
+    &:hover {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    &.active-menu {
+      background-color: var(--color-primary);
+      color: white;
+    }
+  }
+}
+
+

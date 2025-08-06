@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{ values.frontendName }}-deployment
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  selector:
+    matchLabels:
+      app: ${{ values.frontendName }}-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ${{ values.frontendName }}-deployment
+    spec:
+      containers:
+        - name: ${{ values.frontendName }}
+          image: ${{ values.dockerHubUserName }}/${{ values.frontendImageName }}:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000

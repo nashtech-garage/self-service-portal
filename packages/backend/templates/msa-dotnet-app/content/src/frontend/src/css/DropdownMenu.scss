@@ -1,0 +1,30 @@
+@use "theme" as *;
+.navbar__dropdown {
+  position: absolute;
+  top: 27px;
+  right: 0;
+  display: block;
+  width: 250px;
+  padding: 0;
+  background-color: #f6f7fb;
+}
+
+.navbar__dropdown li {
+  color: #222;
+  text-decoration: none;
+  list-style: none;
+  font-size: var(--font-size-base);
+  margin: 0;
+  padding: 18px 0 18px 32px;
+  border-bottom: white 1px solid;
+
+  &.active {
+    @extend .bg-primary;
+    color: var(--color-text-white);
+  }
+  &:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    text-decoration: none;
+  }
+}

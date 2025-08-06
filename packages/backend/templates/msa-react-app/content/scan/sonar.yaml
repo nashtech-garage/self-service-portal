@@ -10,6 +10,7 @@ parameters:
     type: string
     default: 17
 
+
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
@@ -19,21 +20,27 @@ jobs:
     steps:
       - checkout: {% raw %}${{ parameters.source }}{% endraw %}
 
+      - checkout: {% raw %}${{ parameters.source }}{% endraw %}
+
       - task: JavaToolInstaller@1
         inputs:
+          versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
 
+        displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
+
       - task: SonarCloudPrepare@3
         inputs:
+          SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
 
-          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)
@@ -67,7 +74,7 @@ jobs:
           scannerMode: $(scannerMode)
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          {%- if values.parameters.sonarCodeConfig.configMode == 'manual' %}
+          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
           cliSources: $(cliSources)

@@ -1,0 +1,53 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+@use 'theme' as t;
+@use 'prime-override';
+
+
+.container-user {
+    padding-left: 3%;
+    padding-right: 3%;
+
+    &__search-filter {
+        position: relative;
+
+        .search-bar {
+            width: 50%;
+        }
+    }
+
+    &__table {
+        &__pop-up {
+            width: 80%;
+        }
+    }
+}
+
+.base-input-container .base-input {
+    height: 2.5rem;
+}
+
+.p-sortable-column-icon {
+    display: none;
+}
+
+.p-multiselect {
+    height: 2rem;
+    background: none !important;
+}
+
+.p-multiselect:not(.p-disabled).p-focus {
+    border-color: black !important;
+    box-shadow: 0 0 0 0 black !important;
+}
+
+.p-inputtext:enabled:focus {
+    border-color: white 1px !important;
+    box-shadow: 0 0 0 0 white !important;
+}
+
+.p-inputgroup-addon {
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+}

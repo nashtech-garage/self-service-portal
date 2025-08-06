@@ -1,0 +1,114 @@
+@use "variables" as v;
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Responsive mixins
+@mixin mobile {
+  @media (max-width: #{v.$breakpoint-md - 1}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{v.$breakpoint-md}) and (max-width: #{v.$breakpoint-xxl - 1}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{v.$breakpoint-xxl}) {
+    @content;
+  }
+}
+
+// Typography mixins
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-size($size: base) {
+  @if $size == xs { 
+    font-size: var(--font-size-xs);
+  } @else if $size == sm {
+    font-size: var(--font-size-sm);
+  } @else if $size == lg {
+    font-size: var(--font-size-lg);
+  } @else if $size == xl { 
+    font-size: var(--font-size-xl);
+  } @else {
+    font-size: var(--font-size-base);
+  }
+}
+
+@mixin text-title {
+  @include text-size(base);
+
+  @include tablet { 
+    @include text-size(lg);
+  }
+
+  @include desktop { 
+    @include text-size(xl);
+  }
+}
+
+@mixin text-body {
+  @include text-size(xs);
+
+  @include tablet {
+    @include text-size(base);
+  }
+
+  @include desktop {
+    @include text-size(base);
+  }
+}
+
+@mixin text-secondary {
+  @include text-size(xs); // same on all sizes (optional change)
+  
+  @include tablet {
+    @include text-size(sm);
+  }
+
+  @include desktop {
+    @include text-size(sm);
+  }
+}
+
+
+// Button mixins
+@mixin button-base {
+  padding: v.$padding-button;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+// Spacing mixins
+@mixin margin($space) {
+  margin: var(--spacing-#{$space});
+}
+
+@mixin padding($space) {
+  padding: var(--spacing-#{$space});
+}
