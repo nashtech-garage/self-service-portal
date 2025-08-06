@@ -33,7 +33,6 @@ jobs:
           projectName: $(projectName)
           extraProperties: $(extraProperties)
           organization: $(organization)
-          {%- endif %}
       - task: DotNetCoreCLI@2
         displayName: 'Build'
         inputs:

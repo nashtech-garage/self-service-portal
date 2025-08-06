@@ -37,8 +37,8 @@ stages:
         parameters:
           {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
           serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
-          {% if values.parameters.useTrivyCode %}scanCode: true{%- endif %}
-          {% if values.parameters.useTrivyImage %}scanImage: true{%- endif %}
+          {% if values.parameters.useSnykCode %}scanCode: true{%- endif %}
+          {% if values.parameters.useSnykImage %}scanImage: true{%- endif %}
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
 {%- endif %}

@@ -35,15 +35,9 @@ spec:
     - title: Pipeline Configuration
       required:
         - pipelineBranchName
-        - project
         - folder
-        # - pipelineRepositoryName
         - pipelineName
       properties:
-        project:
-          type: string
-          title: Project
-          description: Azure DevOps project name
         folder:
           type: string
           title: Folder
@@ -224,53 +218,32 @@ spec:
                       default: ''
                       description: The Azure DevOps SonarQube service connection name.
 
-                    scannerMode:
-                      title: Scanner Mode
-                      type: string
-                      default: 'cli'
-                      description: Mode used for scanning, such as CLI or MSBuild.
-
-                    cliScannerVersion:
-                      title: CLI Scanner Version
+                    ScannerVersion:
+                      title: Scanner Version
                       type: string
                       default: ''
-                      description: Version of the CLI scanner to use.
+                      description: Version of the scanner to use.
 
-                    configMode:
-                      title: Config Mode
+                    projectKey:
+                      title: ProjectKey
                       type: string
-                      enum: [file, manual]
-                      default: file
-                      description: Determines whether configuration is read from a file or set manually.
-                  dependencies:
-                    configMode:
-                      oneOf:
-                        - properties:
-                            configMode:
-                              enum: [manual]
-                            cliProjectKey:
-                              title: cliProjectKey
-                              type: string
-                              default: ''
-                              description: Project key used for identifying the SonarQube project (manual mode only).
-                            cliProjectName:
-                              title: cliProjectName
-                              type: string
-                              default: ''
-                              description: Name of the SonarQube project (manual mode only).
-                            extraProperties:
-                              title: extraProperties
-                              type: string
-                              default: ''
-                              description: Additional properties for configuring the scan.
-                            organization:
-                              title: Organization
-                              type: string
-                              default: ''
-                              description: Name of the organization performing or responsible for the scan.
-                        - properties:
-                            configMode:
-                              enum: [file]
+                      default: ''
+                      description: Project key used for identifying the SonarQube project
+                    projectName:
+                      title: ProjectName
+                      type: string
+                      default: ''
+                      description: Name of the SonarQube project
+                    extraProperties:
+                      title: extraProperties
+                      type: string
+                      default: ''
+                      description: Additional properties for configuring the scan.
+                    organization:
+                      title: Organization
+                      type: string
+                      default: ''
+                      description: Name of the organization performing or responsible for the scan.
             - properties:
                 useSonar:
                   enum: [false]
@@ -472,7 +445,7 @@ spec:
         folder: ${{ parameters.folder }}
         name: ${{ parameters.pipelineName }}
         repositoryId: ${{ steps.getRepoId.output.repositoryId }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         branchName: ${{ parameters.pipelineBranchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
@@ -507,7 +480,7 @@ spec:
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnykCode.output.flattened }}
@@ -523,7 +496,7 @@ spec:
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.sonarVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSonar.output.flattened }}
@@ -539,7 +512,7 @@ spec:
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyCode.output.flattened }}
