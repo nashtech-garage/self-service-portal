@@ -25,16 +25,12 @@ jobs:
       - task: JavaToolInstaller@1
         inputs:
           versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
-          versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
 
-        displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
-
       - task: SonarCloudPrepare@3
         inputs:
-          SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
@@ -80,7 +76,7 @@ jobs:
           cliSources: $(cliSources)
           extraProperties: $(extraProperties)
           {%- endif %}
-- task: SonarQubeAnalyze@5
+      - task: SonarQubeAnalyze@5
         displayName: 'Run SonarQube Analysis'
 
       - task: SonarQubePublish@5

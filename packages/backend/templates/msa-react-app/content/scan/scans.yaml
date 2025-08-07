@@ -9,12 +9,13 @@ parameters:
     default: true
     displayName: Run Snyk Code Scan
   {%- endif %}
-  {%- if values.parameters.useSnykImage %}
-  - name: runSnykImage
+  {%- if values.parameters.useSonar %}
+  - name: runSonar
     type: boolean
     default: true
-    displayName: Scan Image with Snyk
+    displayName: Run Trivy Code Scan
   {%- endif %}
+
   {%- if values.parameters.useTrivyCode %}
   - name: runTrivyCode
     type: boolean
@@ -27,6 +28,13 @@ parameters:
     default: true
     displayName: Scan Image with Snyk
   {%- endif %}
+  {%- if values.parameters.useSnykImage %}
+  - name: runSnykImage
+    type: boolean
+    default: true
+    displayName: Scan Image with Snyk
+  {%- endif %}
+
   {%- if values.parameters.useTrivyImage %}
   - name: runTrivyImage
     type: boolean

@@ -31,8 +31,6 @@ spec:
                 azure:
                   - email
                   - openid
-                  - email
-                  - openid
             allowedHosts:
               - github.com
               - dev.azure.com
@@ -40,16 +38,9 @@ spec:
     - title: Pipeline Configuration
       required:
         - pipelineBranchName
-        - pipelineBranchName
-        - project
         - folder
-        - pipelineRepositoryName
         - pipelineName
       properties:
-        project:
-          type: string
-          title: Project
-          description: Azure DevOps project name
         folder:
           type: string
           title: Folder
@@ -58,10 +49,6 @@ spec:
           type: string
           title: Pipeline Name
           description: Name for the new pipeline
-        pipelineRepositoryName:
-          type: string
-          title: Repository Name
-          description: Name of the repository
         pipelineBranchName:
           type: string
           title: Branch Name
@@ -128,7 +115,7 @@ spec:
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarCodeVariableGroupName:
+        sonarVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
@@ -139,7 +126,6 @@ spec:
           description: Name of the variable group to use for Trivy scanning
           default: trivy
 
-    - title: Snyk configuration for code scan
 
     - title: Snyk configuration for code scan
       type: object
@@ -197,6 +183,7 @@ spec:
                   description: "This scan is currently diesable"
                   ui:readonly: true
                   default: ""
+
     - title: SonarQube Code Analysis
       type: object
       properties:
@@ -219,12 +206,6 @@ spec:
                       type: string
                       default: ''
                       description: The Azure DevOps SonarQube service connection name.
-
-                    scannerMode:
-                      title: Scanner Mode
-                      type: string
-                      default: 'cli'
-                      description: Mode used for scanning, such as CLI or MSBuild.
 
                     cliScannerVersion:
                       title: CLI Scanner Version
@@ -256,7 +237,7 @@ spec:
                             cliSources:
                               title: cliSources
                               type: string
-                              default: ''
+                              default: '.'
                               description: Path to the source code files for the scanner to analyze.
                             extraProperties:
                               title: extraProperties
@@ -447,7 +428,7 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: '${{ steps.validate.output.value }}'
 
     - id: createPipeline
@@ -459,7 +440,7 @@ spec:
         folder: ${{ parameters.folder }}
         name: ${{ parameters.pipelineName }}
         repositoryId: ${{ steps.getRepoId.output.repositoryId }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         branchName: ${{ parameters.pipelineBranchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
@@ -484,41 +465,37 @@ spec:
     #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
 
     - id: flattenSnykCode
-
-    - id: flattenSnykCode
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
         group: ${{ parameters.snykCodeConfig }}
 
     - id: ensure-snyk-group-code
-    - id: ensure-snyk-group-code
       name: Ensure Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnykCode.output.flattened }}
 
-    - id: flattenSonarCode
+    - id: flattenSonar
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarCodeConfig }}
+        group: ${{ parameters.sonarConfig }}
 
     - id: ensureSonarGroup
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarCodeVariableGroupName }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.sonarVariableGroupName }}
         token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flattenSonarCode.output.flattened }}
+        variables: ${{ steps.flattenSonar.output.flattened }}
 
-    - id: flattenTrivyCode
     - id: flattenTrivyCode
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
@@ -526,12 +503,11 @@ spec:
         group: ${{ parameters.trivyCodeConfig }}
 
     - id: ensureTrivyGroupCode
-    - id: ensureTrivyGroupCode
       name: Ensure Trivy Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyCode.output.flattened }}
