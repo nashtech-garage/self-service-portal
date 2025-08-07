@@ -5,8 +5,6 @@ metadata:
   title: Creates and initializes a new React SPA
   description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
   tags:
-  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
-  tags:
     - application
 spec:
   owner: user:le.caothihoang
