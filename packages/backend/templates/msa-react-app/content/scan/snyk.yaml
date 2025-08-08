@@ -1,18 +1,11 @@
 parameters:
   - name: source
     type: string
-  - name: scanCode
-    type: boolean
-    default: false
-  - name: scanImage
-    type: boolean
-    default: false
   - name: serviceConnectionEndpoint
     type: string
 jobs:
   - job: snykScanCode
     displayName: Snyk Scan (Code)
-    {% raw %}condition: eq('${{ parameters.scanCode }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:

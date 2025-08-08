@@ -13,7 +13,7 @@ parameters:
   - name: runSonar
     type: boolean
     default: true
-    displayName: Run Trivy Code Scan
+    displayName: Run Sonar Scan
   {%- endif %}
   {%- if values.parameters.useTrivyCode %}
   - name: runTrivyCode
@@ -42,52 +42,55 @@ resources:
       ref: ${{ values.parameters.scanBranch }}
 
 stages:
-{%- if values.parameters.useSnykCode or values.parameters.useSnykImage %}
-  - stage: SnykScan
+  {%- if values.parameters.useSnykCode or values.parameters.useSnykImage %}
+  - stage: SnykScanCode
     dependsOn: []
+    condition: ${{ parameters.runSnykCode }}
     jobs:
       - template: snyk.yaml
         parameters:
-          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          source: ${{ parameters.sourceAlias }}
           serviceConnectionEndpoint: ${{ values.parameters.snykCodeConfig.serviceConnectionEndpoint }}
-          {% if values.parameters.useTrivyCode %}scanCode: true{%- endif %}
-          {% if values.parameters.useTrivyImage %}scanImage: true{%- endif %}
     variables:
       - group: ${{ values.parameters.snykCodeVariableGroupName }}
-{%- endif %}
-{%- if values.parameters.useSonar %}
+  {%- endif %}
+
+  {%- if values.parameters.useSonar %}
   - stage: SonarScan
     dependsOn: []
+    condition: ${{ parameters.runSonar }}
     jobs:
       - template: sonar.yaml
         parameters:
-          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          source: ${{ parameters.sourceAlias }}
           SonarQube: ${{ values.parameters.sonarConfig.SonarQube }}
-          {% raw %}enabled: ${{ parameters.runSonar }}{% endraw %}
+          enabled: ${{ parameters.runSonar }}
     variables:
       - group: ${{ values.parameters.sonarVariableGroupName }}
-{%- endif %}
+  {%- endif %}
 
-{%- if values.parameters.useTrivyCode %}
+  {%- if values.parameters.useTrivyCode %}
   - stage: TrivyScan
     dependsOn: []
+    condition: ${{ parameters.runTrivyCode }}
     jobs:
       - template: trivy.yaml
         parameters:
-          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          source: ${{ parameters.sourceAlias }}
           {% if values.parameters.useTrivyCode %}scanCode: true{% endif %}
           {% if values.parameters.useTrivyImage %}scanImage: true{% endif %}
     variables:
       - group: ${{ values.parameters.trivyCodeVariableGroupName }}
-{%- endif %}
-{%- if values.parameters.useTrivyImage %}
+  {%- endif %}
+
+  {%- if values.parameters.useTrivyImage %}
   - stage: TrivyImageScan
     dependsOn: []
     condition: ${{ parameters.runTrivyImage }}
     jobs:
       - template: trivy-image.yaml
         parameters:
-          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+          source: ${{ parameters.sourceAlias }}
     variables:
-      - group: trivy
-{%- endif %}
+      - group: ${{ values.parameters.trivyImageVariableGroupName }}
+  {%- endif %}

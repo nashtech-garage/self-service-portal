@@ -1,9 +1,6 @@
 parameters:
   - name: source
     type: string
-  - name: enabled
-    type: boolean
-    default: false
   - name: SonarQube
     type: string
   - name: jdkVersion
