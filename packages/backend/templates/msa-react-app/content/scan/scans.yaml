@@ -15,7 +15,6 @@ parameters:
     default: true
     displayName: Run Trivy Code Scan
   {%- endif %}
-
   {%- if values.parameters.useTrivyCode %}
   - name: runTrivyCode
     type: boolean
@@ -28,13 +27,6 @@ parameters:
     default: true
     displayName: Scan Image with Snyk
   {%- endif %}
-  {%- if values.parameters.useSnykImage %}
-  - name: runSnykImage
-    type: boolean
-    default: true
-    displayName: Scan Image with Snyk
-  {%- endif %}
-
   {%- if values.parameters.useTrivyImage %}
   - name: runTrivyImage
     type: boolean
@@ -76,7 +68,7 @@ stages:
       - group: ${{ values.parameters.sonarVariableGroupName }}
 {%- endif %}
 
-{%- if values.parameters.useTrivyCode or values.parameters.useTrivyImage %}
+{%- if values.parameters.useTrivyCode %}
   - stage: TrivyScan
     dependsOn: []
     jobs:
@@ -87,4 +79,15 @@ stages:
           {% if values.parameters.useTrivyImage %}scanImage: true{% endif %}
     variables:
       - group: ${{ values.parameters.trivyCodeVariableGroupName }}
+{%- endif %}
+{%- if values.parameters.useTrivyImage %}
+  - stage: TrivyImageScan
+    dependsOn: []
+    condition: ${{ parameters.runTrivyImage }}
+    jobs:
+      - template: trivy-image.yaml
+        parameters:
+          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
+    variables:
+      - group: trivy
 {%- endif %}

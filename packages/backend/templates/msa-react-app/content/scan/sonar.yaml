@@ -19,9 +19,6 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: {% raw %}${{ parameters.source }}{% endraw %}
-
-      - checkout: {% raw %}${{ parameters.source }}{% endraw %}
-
       - task: JavaToolInstaller@1
         inputs:
           versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
