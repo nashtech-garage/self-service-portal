@@ -7,11 +7,9 @@ parameters:
     type: string
     default: 17
 
-
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
-    condition: {% raw %}eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:
