@@ -90,7 +90,7 @@ stages:
     jobs:
       - template: trivy-image.yaml
         parameters:
-          source: ${{ parameters.sourceAlias }}
+          {% raw %}source: ${{ parameters.sourceAlias }}{% endraw %}
     variables:
       - group: ${{ values.parameters.trivyImageVariableGroupName }}
   {%- endif %}
