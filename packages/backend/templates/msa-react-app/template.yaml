@@ -395,6 +395,57 @@ spec:
                   ui:readonly: true
                   default: ""
 
+    - title: Snyk Image Scan
+      type: object
+      properties:
+        useSnykImage:
+          title: Enable Snyk Image Scan?
+          type: boolean
+          default: false
+          description: Toggle to enable vulnerability scanning with Snyk.
+      dependencies:
+        useSnykImage:
+          oneOf:
+            - properties:
+                useSnykImage:
+                  enum: [true]
+                snykImageConfig:
+                  title: Snyk Scan Parameters
+                  type: object
+                  properties:
+                    serviceConnectionEndpoint:
+                      title: Service Connection Endpoint
+                      type: string
+                      description: Name of the Azure DevOps service connection to use for Snyk.
+                    monitorWhen:
+                      title: Monitor When
+                      type: string
+                      description: Condition to trigger monitoring.
+                      enum: ["always", "onFailure", "onSuccess"]
+                      default: "always"
+                    failOnIssues:
+                      title: Fail on Issues
+                      type: boolean
+                      description: Determines if the pipeline should fail if issues are found.
+                      default: false
+                    projectName:
+                      title: Project Name
+                      type: string
+                      description: The project name for the Snyk scan.
+                    organization:
+                      title: Snyk Organization
+                      type: string
+                      description: The Snyk organization name to use for the scan.
+            - properties:
+                useSnykImage:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "Snyk image scanning is currently disabled."
+                  ui:readonly: true
+                  default: ""
+    
     - title: Trivy Image Scan
       type: object
       properties:
@@ -622,6 +673,22 @@ spec:
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyCode.output.flattened }}
 
+    - id: flattenSnykImage
+      name: Flatten Snyk Image Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.snykImageConfig }}
+
+    - id: ensureSnykGroupImage
+      name: Ensure Snyk Image Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.snykImageVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSnykImage.output.flattened }}
+
     - id: flattenTrivyImage
       name: Flatten Trivy Image Group
       action: util:flatten-parameter-group
@@ -637,3 +704,4 @@ spec:
         groupName: ${{ parameters.trivyImageVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyImage.output.flattened }}
+    
