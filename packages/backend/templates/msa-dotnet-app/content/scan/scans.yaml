@@ -44,7 +44,7 @@ stages:
   {%- if values.parameters.useSnykCode %}
   - stage: SnykScanCode
     dependsOn: []
-    condition: ${{ parameters.runSnykCode }}
+    condition: {% raw %}${{ parameters.runSnykCode }}{% endraw %}
     jobs:
       - template: snyk.yaml
         parameters:
@@ -56,7 +56,7 @@ stages:
   {%- if values.parameters.useSonar %}
   - stage: SonarScan
     dependsOn: []
-    condition: ${{ parameters.runSonar }}
+    condition: {% raw %}${{ parameters.runSonar }}{% endraw %}
     jobs:
       - template: sonar.yaml
         parameters:
@@ -69,7 +69,7 @@ stages:
   {%- if values.parameters.useTrivyCode %}
   - stage: TrivyScan
     dependsOn: []
-    condition: ${{ parameters.runTrivyCode }}
+    condition: {% raw %}${{ parameters.runTrivyCode }}{% endraw %}
     jobs:
       - template: trivy.yaml
         parameters:
@@ -80,7 +80,7 @@ stages:
   {%- if values.parameters.useSnykImage %}
   - stage: SnykScanImage
     dependsOn: []
-    condition: ${{ parameters.runSnykImage }}
+    condition: {% raw %}${{ parameters.runSnykImage }}{% endraw %}
     jobs:
       - template: snyk-image.yaml
         parameters:
@@ -93,7 +93,7 @@ stages:
   {%- if values.parameters.useTrivyImage %}
   - stage: TrivyImageScan
     dependsOn: []
-    condition: ${{ parameters.runTrivyImage }}
+    condition: {% raw %}${{ parameters.runTrivyImage }}{% endraw %}
     jobs:
       - template: trivy-image.yaml
         parameters:
