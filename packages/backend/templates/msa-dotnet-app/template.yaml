@@ -118,17 +118,16 @@ spec:
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
-        # snykImageVariableGroupName:
-        #   type: string
-        #   title: Snyk Image Variable Group Name
-        #   description: Name of the variable group to use for Snyk image scanning
-        #   default: snyk-image
-
-        # trivyImageVariableGroupName:
-        #   type: string
-        #   title: Trivy Image Variable Group Name
-        #   description: Name of the variable group to use for Trivy image scanning
-        #   default: trivy-image
+        snykImageVariableGroupName:
+          type: string
+          title: Snyk Image Variable Group Name
+          description: Name of the variable group to use for Snyk image scanning
+          default: snyk-image
+        trivyImageVariableGroupName:
+          type: string
+          title: Trivy Image Variable Group Name
+          description: Name of the variable group to use for Trivy image scanning
+          default: trivy-image
 
     - title: Snyk configuration for code scan
       type: object
