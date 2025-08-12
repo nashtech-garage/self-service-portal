@@ -244,8 +244,6 @@ spec:
                   description: "This scan is currently diesable"
                   ui:readonly: true
                   default: ""
-
-                
     - title: Trivy Code Scan
       type: object
       properties:
@@ -277,7 +275,7 @@ spec:
                       title: target
                       type: string
                       default: '.'
-                      description: Path or target of the scan (e.g., directory or image reference).
+                      description: Path or target of the scan (e.g., directory reference).
                     scanners:
                       title: scanners
                       type: array
@@ -373,19 +371,162 @@ spec:
                   ui:readonly: true
                   default: ""
 
-    # - title: Environments
-    #   properties:
-    #     name:
-    #       title: Select environments
-    #       type: array
-    #       items:
-    #         type: string
-    #         enum:
-    #           - production
-    #           - staging
-    #           - development
-    #       uniqueItems: true
-    #       ui:widget: checkboxes
+    - title: Snyk Image Scan
+      type: object
+      properties:
+        useSnykImage:
+          title: Enable Snyk Image Scan?
+          type: boolean
+          default: false
+          description: Toggle to enable vulnerability scanning with Snyk.
+      dependencies:
+        useSnykImage:
+          oneOf:
+            - properties:
+                useSnykImage:
+                  enum: [true]
+                snykImageConfig:
+                  title: Snyk Scan Parameters
+                  type: object
+                  properties:
+                    serviceConnectionEndpoint:
+                      title: Service Connection Endpoint
+                      type: string
+                      description: Name of the Azure DevOps service connection to use for Snyk.
+                    monitorWhen:
+                      title: Monitor When
+                      type: string
+                      description: Condition to trigger monitoring.
+                      enum: ["always", "onFailure", "onSuccess"]
+                      default: "always"
+                    failOnIssues:
+                      title: Fail on Issues
+                      type: boolean
+                      description: Determines if the pipeline should fail if issues are found.
+                      default: false
+                    projectName:
+                      title: Project Name
+                      type: string
+                      description: The project name for the Snyk scan.
+                    organization:
+                      title: Snyk Organization
+                      type: string
+                      description: The Snyk organization name to use for the scan.
+            - properties:
+                useSnykImage:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "Snyk image scanning is currently disabled."
+                  ui:readonly: true
+                  default: ""
+    
+    - title: Trivy Image Scan
+      type: object
+      properties:
+        useTrivyImage:
+          title: Use Trivy Image Scan?
+          type: boolean
+          default: false
+          description: Toggle to enable Trivy image vulnerability scanning.
+      dependencies:
+        useTrivyImage:
+          oneOf:
+            - properties:
+                useTrivyImage:
+                  enum: [true]
+                trivyImageConfig:
+                  type: object
+                  properties:
+                    method:
+                      title: method
+                      type: string
+                      default: 'install'
+                      description: Execution method for Trivy (e.g., docker or system).
+                      enum: ["install", "docker", "system"]
+                    version:
+                      title: version
+                      type: string
+                      default: 'latest'
+                      description: Version of Trivy to use for scanning.
+                    scanners:
+                      title: scanners
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Types of vulnerabilities to scan for.
+                      items:
+                        type: string
+                        enum: ['vuln', 'misconfig', 'secret', 'license']
+                    severities:
+                      title: severities
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Severity levels to filter results by.
+                      items:
+                        type: string
+                        enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                    ignoreUnfixed:
+                      title: ignoreUnfixed
+                      type: string
+                      default: "false"
+                      description: Ignore vulnerabilities that haven’t been fixed yet.
+                      enum: ["true", "false"]
+                    failOnSeverityThreshold:
+                      title: failOnSeverityThreshold
+                      type: string
+                      default: ''
+                      description: Fail pipeline if vulnerabilities meet or exceed this severity.
+                      enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                    reports:
+                      title: reports
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Report formats to generate.
+                      items:
+                        type: string
+                        enum: ['asff', 'cosign', 'cyclonedx', 'github', 'html', 'junit', 'sarif', 'spdx', 'spdxjson', 'table']
+                    publish:
+                      title: publish
+                      type: string
+                      default: "true"
+                      description: Publish scan results as pipeline artifacts.
+                      enum: ["true", "false"]
+                  dependencies:
+                    method:
+                      oneOf:
+                        - properties:
+                            method:
+                              enum: ["docker"]
+                            image:
+                              title: image
+                              type: string
+                              default: 'aquasec/trivy:latest'
+                              description: Docker image used to run Trivy.
+                        - properties:
+                            method:
+                              enum: ["system"]
+                            templates:
+                              title: templates
+                              type: string
+                              default: ''
+                              description: Templates used to customize report output.
+                        - properties:
+                            method:
+                              enum: ["install"]
+            - properties:
+                useTrivyImage:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "Image scan is currently disabled"
+                  ui:readonly: true
+                  default: ""
+
 
   steps:
     - id: validate
@@ -507,3 +648,36 @@ spec:
         groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyCode.output.flattened }}
+
+    - id: flattenSnykImage
+      name: Flatten Snyk Image Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.snykImageConfig }}
+
+    - id: ensureSnykGroupImage
+      name: Ensure Snyk Image Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.snykImageVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSnykImage.output.flattened }}
+
+    - id: flattenTrivyImage
+      name: Flatten Trivy Image Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.trivyImageConfig }}
+
+    - id: ensureTrivyGroupImage
+      name: Ensure Trivy Image Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.trivyImageVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenTrivyImage.output.flattened }}
+    
