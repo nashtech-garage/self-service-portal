@@ -1,9 +1,6 @@
 parameters:
   - name: source
     type: string
-  - name: enabled
-    type: boolean
-    default: false
   - name: SonarQube
     type: string
   - name: jdkVersion
@@ -12,7 +9,6 @@ parameters:
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
-    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:

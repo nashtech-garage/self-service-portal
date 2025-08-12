@@ -10,7 +10,6 @@ spec:
   owner: user:le.caothihoang
   type: application
   parameters:
-    
     - title: Choose A Repository Location
       required:
         - repoUrl
@@ -129,8 +128,6 @@ spec:
           title: Trivy Image Variable Group Name
           description: Name of the variable group to use for Trivy image scanning
           default: trivy-image
-
-
 
     - title: Snyk configuration for code scan
       type: object

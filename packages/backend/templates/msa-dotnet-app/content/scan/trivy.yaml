@@ -1,17 +1,9 @@
 parameters:
   - name: source
     type: string
-  - name: scanCode
-    type: boolean
-    default: false
-  - name: scanImage
-    type: boolean
-    default: false
-
 jobs:
   - job: trivyScanCode
     displayName: Trivy Scan Code
-    {% raw %}condition: eq('${{ parameters.scanCode }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps: 
@@ -35,26 +27,6 @@ jobs:
           ignoreUnfixed: $(ignoreUnfixed)
           showSuppressed: $(showSuppressed)
           ignoreScanErrors: $(ignoreScanErrors)
-          failOnSeverityThreshold: $(failOnSeverityThreshold)
-          reports: $(reports)
-          publish: $(publish)
-
-  - job: trivyImageScan
-    displayName: Trivy Image Scan 
-    {% raw %}condition: eq('${{ parameters.scanImage }}', true){% endraw %}
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps: 
-      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
-      - task: trivy@2
-        inputs:
-          method: $(method)
-          version: $(version)
-          type: $(type)
-          target: $(target)
-          scanners: $(scanners)
-          severities: $(severities)
-          ignoreUnfixed: $(ignoreUnfixed)
           failOnSeverityThreshold: $(failOnSeverityThreshold)
           reports: $(reports)
           publish: $(publish)
