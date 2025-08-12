@@ -15,21 +15,17 @@ spec:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository location for your new  Dotnet application
+          title: Repository location for pipeline templates
           type: string
           ui:field: RepoUrlPicker
           ui:options:
             requestUserCredentials:
               secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
-                github:
-                  - repo # Allows creating repositories
-                  - workflow # Allows managing GitHub Actions
                 azure:
                   - email
                   - openid
             allowedHosts:
-              - github.com
               - dev.azure.com
 
     - title: Pipeline Configuration
