@@ -18,5 +18,3 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-
-  
