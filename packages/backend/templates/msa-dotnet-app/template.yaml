@@ -87,15 +87,15 @@ spec:
             The following security scans will be automatically included in your pipeline:
 
             1. Scan source code with SonarQube:
-               Analyzes code for bugs, vulnerabilities, and code smells.
+                Analyzes code for bugs, vulnerabilities, and code smells.
             2. Scan source code with Trivy:
-               Scans dependencies, misconfigurations, and secrets.
+                Scans dependencies, misconfigurations, and secrets.
             3. Scan source code with Snyk:
-               Performs static analysis and dependency vulnerability checks.
+                Performs static analysis and dependency vulnerability checks.
             4. Scan container with Snyk:
-               Analyzes the container image for known vulnerabilities.
+                Analyzes the container image for known vulnerabilities.
             5. Scan container with Trivy:
-               Detects vulnerabilities, secrets, and misconfigurations in the container image.
+                Detects vulnerabilities, secrets, and misconfigurations in the container image.
           ui:widget: textarea
           ui:options:
             readonly: true
