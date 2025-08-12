@@ -12,7 +12,6 @@ parameters:
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
-    {% raw %}condition: eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:

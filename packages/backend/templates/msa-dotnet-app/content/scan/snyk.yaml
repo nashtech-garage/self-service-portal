@@ -12,7 +12,6 @@ parameters:
 jobs:
   - job: snykScanCode
     displayName: Snyk Scan Code
-    {% raw %}condition: eq('${{ parameters.scanCode }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -25,22 +24,3 @@ jobs:
           projectName: $(projectName)
           organization: $(organization)
           additionalArguments: $(additionalArguments)
-
-  - job: snykScanImage
-    displayName: Snyk scan image
-    {% raw %}condition: eq('${{ parameters.scanImage }}', true){% endraw %}
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      {% raw %}- checkout: ${{ parameters.source }}{% endraw %}
-      {%- if values.parameters.snyKDotnetConfig.configMode == 'manual' %}
-        - task: SnykSecurityScan@1
-          inputs:
-            serviceConnectionEndpoint: $(serviceConnectionEndpoint)
-            testType: $(testType)
-            dockerImageName: $(dockerImageName)
-            monitorWhen: $(monitorWhen)
-            failOnIssues: $(failOnIssues)
-            projectName: $(projectName)
-            organization: $(organization)
-      {%- endif %}
