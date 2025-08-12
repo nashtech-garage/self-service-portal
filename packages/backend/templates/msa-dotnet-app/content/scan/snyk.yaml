@@ -1,12 +1,6 @@
 parameters:
   - name: source
     type: string
-  - name: scanCode
-    type: boolean
-    default: false
-  - name: scanImage
-    type: boolean
-    default: false
   - name: serviceConnectionEndpoint
     type: string
 jobs:

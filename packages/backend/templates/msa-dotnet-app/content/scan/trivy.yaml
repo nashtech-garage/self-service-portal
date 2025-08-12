@@ -1,7 +1,6 @@
 parameters:
   - name: source
     type: string
-
 jobs:
   - job: trivyScanCode
     displayName: Trivy Scan Code
