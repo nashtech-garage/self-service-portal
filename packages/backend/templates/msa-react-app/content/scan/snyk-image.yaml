@@ -32,5 +32,4 @@ jobs:
           failOnIssues: $(failOnIssues)
           projectName: $(projectName)
           organization: $(organization)
-      
 {% endraw %}
