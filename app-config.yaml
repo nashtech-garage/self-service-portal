@@ -147,8 +147,13 @@ catalog:
       target: ../../packages/backend/templates/msa-react-app/template.yaml
       rules:
         - allow: [Template]
+    # dotnet template
+    - type: file
+      target: ../../packages/backend/templates/msa-dotnet-app/template.yaml
+      rules:
+        - allow: [Template]
 
-      # microsoft dev box template
+    # microsoft dev box template
     - type: file
       target: ../../packages/backend/templates/dev-box/template.yaml
       rules:

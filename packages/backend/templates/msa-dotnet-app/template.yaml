@@ -46,10 +46,6 @@ spec:
           type: string
           title: Pipeline Name
           description: Name for the new pipeline
-        # pipelineRepositoryName:
-        #   type: string
-        #   title: Repository Name
-        #   description: Name of the repository
         pipelineBranchName:
           type: string
           title: Branch Name

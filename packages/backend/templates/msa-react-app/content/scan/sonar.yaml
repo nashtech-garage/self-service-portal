@@ -1,40 +1,28 @@
 parameters:
   - name: source
     type: string
-  - name: enabled
-    type: boolean
-    default: false
   - name: SonarQube
     type: string
   - name: jdkVersion
     type: string
     default: 17
 
-
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
-    condition: {% raw %}eq('${{ parameters.enabled }}', true){% endraw %}
     pool:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: {% raw %}${{ parameters.source }}{% endraw %}
-
-      - checkout: {% raw %}${{ parameters.source }}{% endraw %}
-
       - task: JavaToolInstaller@1
         inputs:
-          versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
 
-        displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
-
       - task: SonarCloudPrepare@3
         inputs:
-          SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
@@ -80,7 +68,7 @@ jobs:
           cliSources: $(cliSources)
           extraProperties: $(extraProperties)
           {%- endif %}
-- task: SonarQubeAnalyze@5
+      - task: SonarQubeAnalyze@5
         displayName: 'Run SonarQube Analysis'
 
       - task: SonarQubePublish@5

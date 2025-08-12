@@ -5,8 +5,6 @@ metadata:
   title: Creates and initializes a new React SPA
   description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
   tags:
-  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
-  tags:
     - application
 spec:
   owner: user:le.caothihoang
@@ -18,40 +16,25 @@ spec:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository location for your new  React application
+          title: Repository location for pipeline templates
           type: string
           ui:field: RepoUrlPicker
           ui:options:
             requestUserCredentials:
               secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
-                github:
-                  - repo # Allows creating repositories
-                  - workflow # Allows managing GitHub Actions
-                  - repo # Allows creating repositories
-                  - workflow # Allows managing GitHub Actions
                 azure:
                   - email
                   - openid
-                  - email
-                  - openid
             allowedHosts:
-              - github.com
               - dev.azure.com
 
     - title: Pipeline Configuration
       required:
         - pipelineBranchName
-        - pipelineBranchName
-        - project
         - folder
-        - pipelineRepositoryName
         - pipelineName
       properties:
-        project:
-          type: string
-          title: Project
-          description: Azure DevOps project name
         folder:
           type: string
           title: Folder
@@ -60,11 +43,6 @@ spec:
           type: string
           title: Pipeline Name
           description: Name for the new pipeline
-        pipelineRepositoryName:
-          type: string
-          title: Repository Name
-          description: Name of the repository
-        pipelineBranchName:
         pipelineBranchName:
           type: string
           title: Branch Name
@@ -78,12 +56,7 @@ spec:
           'ui:placeholder': 'Enter folder path'
         PipelineName:
           'ui:placeholder': 'Enter pipeline name'
-          'ui:placeholder': 'Enter pipeline name'
         RepositoryName:
-          'ui:placeholder': 'Enter repository name'
-        BranchName:
-          'ui:placeholder': 'Enter branch name'
-
           'ui:placeholder': 'Enter repository name'
         BranchName:
           'ui:placeholder': 'Enter branch name'
@@ -115,15 +88,15 @@ spec:
             The following security scans will be automatically included in your pipeline:
 
             1. Scan source code with SonarQube:
-               Analyzes code for bugs, vulnerabilities, and code smells.
+                Analyzes code for bugs, vulnerabilities, and code smells.
             2. Scan source code with Trivy:
-               Scans dependencies, misconfigurations, and secrets.
+                Scans dependencies, misconfigurations, and secrets.
             3. Scan source code with Snyk:
-               Performs static analysis and dependency vulnerability checks.
+                Performs static analysis and dependency vulnerability checks.
             4. Scan container with Snyk:
-               Analyzes the container image for known vulnerabilities.
+                Analyzes the container image for known vulnerabilities.
             5. Scan container with Trivy:
-               Detects vulnerabilities, secrets, and misconfigurations in the container image.
+                Detects vulnerabilities, secrets, and misconfigurations in the container image.
           ui:widget: textarea
           ui:options:
             readonly: true
@@ -136,77 +109,32 @@ spec:
           title: Snyk Variable Group Name
           description: Name of the variable group to use for Snyk scanning
           default: snyk
-        sonarCodeVariableGroupName:
+        sonarVariableGroupName:
           type: string
           title: Sonar Variable Group Name
           description: Name of the variable group to use for SonarQube scanning
           default: sonar
         trivyCodeVariableGroupName:
-        trivyCodeVariableGroupName:
           type: string
           title: Trivy Variable Group Name
           description: Name of the variable group to use for Trivy scanning
           default: trivy
+        snykImageVariableGroupName:
+          type: string
+          title: Snyk Image Variable Group Name
+          description: Name of the variable group to use for Snyk image scanning
+          default: snyk-image
+        trivyImageVariableGroupName:
+          type: string
+          title: Trivy Image Variable Group Name
+          description: Name of the variable group to use for Trivy image scanning
+          default: trivy-image
 
-    - title: Snyk configuration for code scan
+
 
     - title: Snyk configuration for code scan
       type: object
       properties:
-        useSnykCode:
-          title: Use Snyk?
-          type: boolean
-          default: false
-          description: Toggle to enable Snyk security scanning.
-      dependencies:
-        useSnykCode:
-          oneOf:
-            - properties:
-                useSnykCode:
-                  enum: [true]
-                snykCodeConfig:
-                  type: object
-                  properties:
-                    monitor:
-                      title: Upload Results to Snyk
-                      type: boolean
-                      default: false
-                      description: If true, scan results will be uploaded to Snyk for ongoing monitoring.
-                    projectName:
-                      title: Snyk Project Name
-                      type: string
-                      default: ''
-                      description: Display name for the project in Snyk. Used for organizing scan reports.
-                    additionalArguments:
-                      title: Extra CLI Arguments
-                      type: string
-                      default: ''
-                      description: Any additional arguments passed to the Snyk CLI.
-                    failOnIssues:
-                      title: Fail on Issues
-                      type: boolean
-                      default: false
-                      description: If true, the pipeline will fail when vulnerabilities are found.
-                    serviceConnectionEndpoint:
-                      title: Service Connection Endpoint
-                      type: string
-                      default: ''
-                      description: Azure DevOps service connection used to authenticate with Snyk.
-                    organization:
-                      title: Organization Identifier
-                      type: string
-                      default: ''
-                      description: The Snyk organization ID under which scans and monitoring actions are performed.
-            - properties:
-                useSnykCode:
-                  enum: [false]
-                Warning:
-                  type: string
-                  title: Note
-                  description: "This scan is currently diesable"
-                  ui:readonly: true
-                  default: ""
-
         useSnykCode:
           title: Use Snyk?
           type: boolean
@@ -284,28 +212,11 @@ spec:
                       default: ''
                       description: The Azure DevOps SonarQube service connection name.
 
-                    scannerMode:
-                      title: Scanner Mode
-                      type: string
-                      default: 'cli'
-                      description: Mode used for scanning, such as CLI or MSBuild.
-                    scannerMode:
-                      title: Scanner Mode
-                      type: string
-                      default: 'cli'
-                      description: Mode used for scanning, such as CLI or MSBuild.
-
                     cliScannerVersion:
                       title: CLI Scanner Version
                       type: string
                       default: ''
                       description: Version of the CLI scanner to use.
-                    cliScannerVersion:
-                      title: CLI Scanner Version
-                      type: string
-                      default: ''
-                      description: Version of the CLI scanner to use.
-
                     configMode:
                       title: Config Mode
                       type: string
@@ -331,7 +242,7 @@ spec:
                             cliSources:
                               title: cliSources
                               type: string
-                              default: ''
+                              default: '.'
                               description: Path to the source code files for the scanner to analyze.
                             extraProperties:
                               title: extraProperties
@@ -388,7 +299,7 @@ spec:
                       title: target
                       type: string
                       default: '.'
-                      description: Path or target of the scan (e.g., directory or image reference).
+                      description: Path or target of the scan (e.g., directory reference).
                     scanners:
                       title: scanners
                       type: array
@@ -484,6 +395,162 @@ spec:
                   ui:readonly: true
                   default: ""
 
+    - title: Snyk Image Scan
+      type: object
+      properties:
+        useSnykImage:
+          title: Enable Snyk Image Scan?
+          type: boolean
+          default: false
+          description: Toggle to enable vulnerability scanning with Snyk.
+      dependencies:
+        useSnykImage:
+          oneOf:
+            - properties:
+                useSnykImage:
+                  enum: [true]
+                snykImageConfig:
+                  title: Snyk Scan Parameters
+                  type: object
+                  properties:
+                    serviceConnectionEndpoint:
+                      title: Service Connection Endpoint
+                      type: string
+                      description: Name of the Azure DevOps service connection to use for Snyk.
+                    monitorWhen:
+                      title: Monitor When
+                      type: string
+                      description: Condition to trigger monitoring.
+                      enum: ["always", "onFailure", "onSuccess"]
+                      default: "always"
+                    failOnIssues:
+                      title: Fail on Issues
+                      type: boolean
+                      description: Determines if the pipeline should fail if issues are found.
+                      default: false
+                    projectName:
+                      title: Project Name
+                      type: string
+                      description: The project name for the Snyk scan.
+                    organization:
+                      title: Snyk Organization
+                      type: string
+                      description: The Snyk organization name to use for the scan.
+            - properties:
+                useSnykImage:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "Snyk image scanning is currently disabled."
+                  ui:readonly: true
+                  default: ""
+    
+    - title: Trivy Image Scan
+      type: object
+      properties:
+        useTrivyImage:
+          title: Use Trivy Image Scan?
+          type: boolean
+          default: false
+          description: Toggle to enable Trivy image vulnerability scanning.
+      dependencies:
+        useTrivyImage:
+          oneOf:
+            - properties:
+                useTrivyImage:
+                  enum: [true]
+                trivyImageConfig:
+                  type: object
+                  properties:
+                    method:
+                      title: method
+                      type: string
+                      default: 'install'
+                      description: Execution method for Trivy (e.g., docker or system).
+                      enum: ["install", "docker", "system"]
+                    version:
+                      title: version
+                      type: string
+                      default: 'latest'
+                      description: Version of Trivy to use for scanning.
+                    scanners:
+                      title: scanners
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Types of vulnerabilities to scan for.
+                      items:
+                        type: string
+                        enum: ['vuln', 'misconfig', 'secret', 'license']
+                    severities:
+                      title: severities
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Severity levels to filter results by.
+                      items:
+                        type: string
+                        enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                    ignoreUnfixed:
+                      title: ignoreUnfixed
+                      type: string
+                      default: "false"
+                      description: Ignore vulnerabilities that haven’t been fixed yet.
+                      enum: ["true", "false"]
+                    failOnSeverityThreshold:
+                      title: failOnSeverityThreshold
+                      type: string
+                      default: ''
+                      description: Fail pipeline if vulnerabilities meet or exceed this severity.
+                      enum: ["UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                    reports:
+                      title: reports
+                      type: array
+                      default: []
+                      uniqueItems: true
+                      description: Report formats to generate.
+                      items:
+                        type: string
+                        enum: ['asff', 'cosign', 'cyclonedx', 'github', 'html', 'junit', 'sarif', 'spdx', 'spdxjson', 'table']
+                    publish:
+                      title: publish
+                      type: string
+                      default: "true"
+                      description: Publish scan results as pipeline artifacts.
+                      enum: ["true", "false"]
+                  dependencies:
+                    method:
+                      oneOf:
+                        - properties:
+                            method:
+                              enum: ["docker"]
+                            image:
+                              title: image
+                              type: string
+                              default: 'aquasec/trivy:latest'
+                              description: Docker image used to run Trivy.
+                        - properties:
+                            method:
+                              enum: ["system"]
+                            templates:
+                              title: templates
+                              type: string
+                              default: ''
+                              description: Templates used to customize report output.
+                        - properties:
+                            method:
+                              enum: ["install"]
+            - properties:
+                useTrivyImage:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "Image scan is currently disabled"
+                  ui:readonly: true
+                  default: ""
+
 
   steps:
     - id: validate
@@ -522,7 +589,7 @@ spec:
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
         project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         token: '${{ steps.validate.output.value }}'
 
     - id: createPipeline
@@ -534,7 +601,7 @@ spec:
         folder: ${{ parameters.folder }}
         name: ${{ parameters.pipelineName }}
         repositoryId: ${{ steps.getRepoId.output.repositoryId }}
-        repositoryName: ${{ parameters.pipelineRepositoryName }}
+        repositoryName: ${{ parameters.repoUrl | parseRepoUrl | pick('repo') }}
         branchName: ${{ parameters.pipelineBranchName }}
         token: '${{ steps.validate.output.value }}'
         yamlPath: ./scans.yaml
@@ -559,60 +626,82 @@ spec:
     #     pipelineId: ${{ steps.createAzurePipeline.output.pipelineId }}
 
     - id: flattenSnykCode
-
-    - id: flattenSnykCode
       name: Flatten Snyk Group
       action: util:flatten-parameter-group
       input:
         group: ${{ parameters.snykCodeConfig }}
-        group: ${{ parameters.snykCodeConfig }}
 
-    - id: ensure-snyk-group-code
     - id: ensure-snyk-group-code
       name: Ensure Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: ${{ parameters.snykCodeVariableGroupName }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.snykCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenSnykCode.output.flattened }}
-        variables: ${{ steps.flattenSnykCode.output.flattened }}
 
-    - id: flattenSonarCode
+    - id: flattenSonar
       name: Flatten Sonar Group
       action: util:flatten-parameter-group
       input:
-        group: ${{ parameters.sonarCodeConfig }}
+        group: ${{ parameters.sonarConfig }}
 
     - id: ensureSonarGroup
       name: Ensure Sonar Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: ${{ parameters.sonarCodeVariableGroupName }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.sonarVariableGroupName }}
         token: ${{ steps.validate.output.value }}
-        variables: ${{ steps.flattenSonarCode.output.flattened }}
+        variables: ${{ steps.flattenSonar.output.flattened }}
 
-    - id: flattenTrivyCode
     - id: flattenTrivyCode
       name: Flatten Trivy Group
       action: util:flatten-parameter-group
       input:
         group: ${{ parameters.trivyCodeConfig }}
-        group: ${{ parameters.trivyCodeConfig }}
 
-    - id: ensureTrivyGroupCode
     - id: ensureTrivyGroupCode
       name: Ensure Trivy Variable Group Exists
       action: custom:create-or-skip-variable-group
       input:
         organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
-        project: ${{ parameters.project }}
-        groupName: ${{ parameters.trivyCodeVariableGroupName }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
         groupName: ${{ parameters.trivyCodeVariableGroupName }}
         token: ${{ steps.validate.output.value }}
         variables: ${{ steps.flattenTrivyCode.output.flattened }}
-        variables: ${{ steps.flattenTrivyCode.output.flattened }}
+
+    - id: flattenSnykImage
+      name: Flatten Snyk Image Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.snykImageConfig }}
+
+    - id: ensureSnykGroupImage
+      name: Ensure Snyk Image Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.snykImageVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenSnykImage.output.flattened }}
+
+    - id: flattenTrivyImage
+      name: Flatten Trivy Image Group
+      action: util:flatten-parameter-group
+      input:
+        group: ${{ parameters.trivyImageConfig }}
+
+    - id: ensureTrivyGroupImage
+      name: Ensure Trivy Image Variable Group Exists
+      action: custom:create-or-skip-variable-group
+      input:
+        organization: ${{ parameters.repoUrl | parseRepoUrl | pick('organization') }}
+        project: ${{ parameters.repoUrl | parseRepoUrl | pick('project') }}
+        groupName: ${{ parameters.trivyImageVariableGroupName }}
+        token: ${{ steps.validate.output.value }}
+        variables: ${{ steps.flattenTrivyImage.output.flattened }}
+    
