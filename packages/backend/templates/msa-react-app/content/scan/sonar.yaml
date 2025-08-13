@@ -40,8 +40,8 @@ jobs:
           scannerMode: 'cli'
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-          cliProjectKey: $(projectKey)
-          cliProjectName: $(projectName)
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
           extraProperties: $(extraProperties)
       {%- endif %}
       - script: |
