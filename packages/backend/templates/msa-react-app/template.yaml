@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: react-app
   title: Creates and initializes a new React SPA
-  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Code, Backend, and Database.
+  description: This template will generate a Single Page App and deploy it on a Cluster. This application consists of three parts - Frontend, Backend, and Database.
   tags:
     - application
 spec:
@@ -182,7 +182,7 @@ spec:
                 Warning:
                   type: string
                   title: Note
-                  description: "This scan is currently diesable"
+                  description: "This scan is currently disabled"
                   ui:readonly: true
                   default: ""
 
@@ -200,71 +200,134 @@ spec:
             - properties:
                 useSonar:
                   enum: [true]
-                sonarConfig:
-                  type: object
-                  properties:
-                    SonarQube:
-                      title: SonarQube
-                      type: string
-                      default: ''
-                      description: The Azure DevOps SonarQube service connection name.
+                sonarHost:
+                  title: SonarQube Host
+                  type: string
+                  enum: [Cloud, On-premise]
+                  default: Cloud
+                  description: Choose between SonarCloud or On-premise SonarQube.
+              dependencies:
+                sonarHost:
+                  oneOf:
+                    - properties:
+                        sonarHost:
+                          enum: [Cloud]
+                        sonarConfig:
+                          type: object
+                          properties:
+                            SonarQube:
+                              title: SonarQube
+                              type: string
+                              default: ''
+                              description: The Azure DevOps SonarQube service connection name.
+                            cliScannerVersion:
+                              title: CLI Scanner Version
+                              type: string
+                              default: ''
+                              description: Version of the CLI scanner to use.
+                            configMode:
+                              title: Config Mode
+                              type: string
+                              enum: [file, manual]
+                              default: file
+                              description: Determines whether configuration is read from a file or set manually.
+                          dependencies:
+                            configMode:
+                              oneOf:
+                                - properties:
+                                    configMode:
+                                      enum: [manual]
+                                    cliProjectKey:
+                                      title: cliProjectKey
+                                      type: string
+                                      default: ''
+                                      description: Project key used for identifying the SonarQube project (manual mode only).
+                                    cliProjectName:
+                                      title: cliProjectName
+                                      type: string
+                                      default: ''
+                                      description: Name of the SonarQube project (manual mode only).
+                                    cliSources:
+                                      title: cliSources
+                                      type: string
+                                      default: '.'
+                                      description: Path to the source code files for the scanner to analyze.
+                                    extraProperties:
+                                      title: extraProperties
+                                      type: string
+                                      default: ''
+                                      description: Additional properties for configuring the scan.
+                                    organization:
+                                      title: Organization
+                                      type: string
+                                      default: ''
+                                      description: Name of the organization performing or responsible for the scan.
+                                - properties:
+                                    configMode:
+                                      enum: [file]
 
-                    cliScannerVersion:
-                      title: CLI Scanner Version
-                      type: string
-                      default: ''
-                      description: Version of the CLI scanner to use.
-                    configMode:
-                      title: Config Mode
-                      type: string
-                      enum: [file, manual]
-                      default: file
-                      description: Determines whether configuration is read from a file or set manually.
-                  dependencies:
-                    configMode:
-                      oneOf:
-                        - properties:
+                    - properties:
+                        sonarHost:
+                          enum: [On-premise]
+                        sonarConfig:
+                          type: object
+                          properties:
+                            SonarQube:
+                              title: SonarQube
+                              type: string
+                              default: 'Sonar'
+                              description: The Azure DevOps SonarQube service connection name.
+                            cliScannerVersion:
+                              title: CLI Scanner Version
+                              type: string
+                              default: ''
+                              description: Version of the CLI scanner to use.
                             configMode:
-                              enum: [manual]
-                            cliProjectKey:
-                              title: cliProjectKey
+                              title: Config Mode
                               type: string
-                              default: ''
-                              description: Project key used for identifying the SonarQube project (manual mode only).
-                            cliProjectName:
-                              title: cliProjectName
-                              type: string
-                              default: ''
-                              description: Name of the SonarQube project (manual mode only).
-                            cliSources:
-                              title: cliSources
-                              type: string
-                              default: '.'
-                              description: Path to the source code files for the scanner to analyze.
-                            extraProperties:
-                              title: extraProperties
-                              type: string
-                              default: ''
-                              description: Additional properties for configuring the scan.
-                            organization:
-                              title: Organization
-                              type: string
-                              default: ''
-                              description: Name of the organization performing or responsible for the scan.
-                        - properties:
+                              enum: [file, manual]
+                              default: file
+                              description: Determines whether configuration is read from a file or set manually.
+                          dependencies:
                             configMode:
-                              enum: [file]
+                              oneOf:
+                                - properties:
+                                    configMode:
+                                      enum: [manual]
+                                    cliProjectKey:
+                                      title: cliProjectKey
+                                      type: string
+                                      default: ''
+                                      description: Project key used for identifying the SonarQube project.
+                                    cliProjectName:
+                                      title: cliProjectName
+                                      type: string
+                                      default: ''
+                                      description: Name of the SonarQube project.
+                                    cliSources:
+                                      title: cliSources
+                                      type: string
+                                      default: '.'
+                                      description: Path to the source code files for the scanner to analyze.
+                                    extraProperties:
+                                      title: extraProperties
+                                      type: string
+                                      default: ''
+                                      description: Additional properties for configuring the scan.
+                                - properties:
+                                    configMode:
+                                      enum: [file]
+
             - properties:
                 useSonar:
                   enum: [false]
                 Warning:
                   type: string
                   title: Note
-                  description: "This scan is currently diesable"
+                  description: "This scan is currently disabled"
                   ui:readonly: true
                   default: ""
 
-                
     - title: Trivy Code Scan
       type: object
       properties:

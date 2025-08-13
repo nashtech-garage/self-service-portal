@@ -32,10 +32,11 @@ jobs:
           cliSources: $(cliSources)
           extraProperties: $(extraProperties)
           organization: $(organization)
+          {%- endif %}
       {%- else %}
       - task: SonarQubePrepare@7
         inputs:
-          {% raw %}${{ parameters.SonarQube}}{% endraw %}
+          SonarQube: {% raw %}${{ parameters.SonarQube}}{% endraw %}
           scannerMode: 'cli'
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
@@ -55,16 +56,15 @@ jobs:
       {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudAnalyze@3
         inputs:
-          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw%}
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw %}
       - task: SonarCloudPublish@3
         inputs:
           pollingTimeoutSec: '300'
       {%- else %}
       - task: SonarQubeAnalyze@7
         inputs:
-          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw%}
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw %}
       - task: SonarQubePublish@7
         inputs:
           pollingTimeoutSec: '300'
-      {% endif %}
-
+      {%- endif %}
