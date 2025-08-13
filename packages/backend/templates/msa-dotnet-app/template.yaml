@@ -16,6 +16,7 @@ spec:
       properties:
         repoUrl:
           title: Repository location for pipeline templates
+          title: Repository location for pipeline templates
           type: string
           ui:field: RepoUrlPicker
           ui:options:
@@ -316,6 +317,7 @@ spec:
                       title: target
                       type: string
                       default: '.'
+                      description: Path or target of the scan (e.g., directory reference).
                       description: Path or target of the scan (e.g., directory reference).
                     scanners:
                       title: scanners
