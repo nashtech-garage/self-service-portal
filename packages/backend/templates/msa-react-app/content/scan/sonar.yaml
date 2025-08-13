@@ -6,7 +6,6 @@ parameters:
   - name: jdkVersion
     type: string
     default: 17
-
 jobs:
   - job: sonarScan
     displayName: SonarQube Scan
@@ -20,14 +19,13 @@ jobs:
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
         displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
-
+      {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudPrepare@3
         inputs:
           SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
           scannerMode: cli
           cliScannerVersion: $(cliScannerVersion)
           configMode: $(configMode)
-
           {%- if values.parameters.sonarConfig.configMode == 'manual' %}
           cliProjectKey: $(cliProjectKey)
           cliProjectName: $(cliProjectName)
@@ -35,7 +33,17 @@ jobs:
           extraProperties: $(extraProperties)
           organization: $(organization)
           {%- endif %}
-
+      {%- else %}
+      - task: SonarQubePrepare@7
+        inputs:
+          SonarQube: {% raw %}${{ parameters.SonarQube}}{% endraw %}
+          scannerMode: 'cli'
+          cliScannerVersion: $(cliScannerVersion)
+          configMode: $(configMode)
+          cliProjectKey: $(cliProjectKey)
+          cliProjectName: $(cliProjectName)
+          extraProperties: $(extraProperties)
+      {%- endif %}
       - script: |
           for d in */; do
             if [ -f "$d/package.json" ]; then
@@ -45,34 +53,18 @@ jobs:
             fi
           done
         displayName: 'Install and Build Angular App'
-
+      {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudAnalyze@3
         inputs:
-          jdkversion: 'JAVA_HOME_17_X64'
-
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw %}
       - task: SonarCloudPublish@3
         inputs:
           pollingTimeoutSec: '300'
-
-{%- if false %}
-###This piece of code will never run
-- task: SonarQubePrepare@7
+      {%- else %}
+      - task: SonarQubeAnalyze@7
         inputs:
-          SonarQube: {% raw %}${{ parameters.SonarQube }}{% endraw %}
-          scannerMode: $(scannerMode)
-          cliScannerVersion: $(cliScannerVersion)
-          configMode: $(configMode)
-          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
-          cliProjectKey: $(cliProjectKey)
-          cliProjectName: $(cliProjectName)
-          cliSources: $(cliSources)
-          extraProperties: $(extraProperties)
-          {%- endif %}
-      - task: SonarQubeAnalyze@5
-        displayName: 'Run SonarQube Analysis'
-
-      - task: SonarQubePublish@5
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw %}
+      - task: SonarQubePublish@7
         inputs:
           pollingTimeoutSec: '300'
-        displayName: 'Publish SonarQube Results'
-{%- endif %}
+      {%- endif %}

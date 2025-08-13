@@ -16,6 +16,7 @@ spec:
       properties:
         repoUrl:
           title: Repository location for pipeline templates
+          title: Repository location for pipeline templates
           type: string
           ui:field: RepoUrlPicker
           ui:options:
@@ -182,7 +183,7 @@ spec:
                 Warning:
                   type: string
                   title: Note
-                  description: "This scan is currently diesable"
+                  description: "This scan is currently disabled"
                   ui:readonly: true
                   default: ""
 
@@ -200,6 +201,26 @@ spec:
             - properties:
                 useSonar:
                   enum: [true]
+                sonarHost:
+                  title: SonarQube Host
+                  type: string
+                  enum: [Cloud, On-premise]
+                  default: Cloud
+                  description: Choose between SonarCloud or On-premise SonarQube.
+            - properties:
+                useSonar:
+                  enum: [false]
+                Warning:
+                  type: string
+                  title: Note
+                  description: "This scan is currently disabled"
+                  ui:readonly: true
+                  default: ""
+        sonarHost:
+          oneOf:
+            - properties:
+                sonarHost:
+                  enum: [Cloud]
                 sonarConfig:
                   type: object
                   properties:
@@ -208,13 +229,11 @@ spec:
                       type: string
                       default: ''
                       description: The Azure DevOps SonarQube service connection name.
-
                     ScannerVersion:
                       title: Scanner Version
                       type: string
                       default: ''
                       description: Version of the scanner to use.
-
                     projectKey:
                       title: ProjectKey
                       type: string
@@ -236,14 +255,37 @@ spec:
                       default: ''
                       description: Name of the organization performing or responsible for the scan.
             - properties:
-                useSonar:
-                  enum: [false]
-                Warning:
-                  type: string
-                  title: Note
-                  description: "This scan is currently diesable"
-                  ui:readonly: true
-                  default: ""
+                sonarHost:
+                  enum: [On-premise]
+                sonarConfig:
+                  type: object
+                  properties:
+                    SonarQube:
+                      title: SonarQube
+                      type: string
+                      default: 'Sonar'
+                      description: The Azure DevOps SonarQube service connection name.
+                    dotnetScannerVersion:
+                      title: Scanner Version
+                      type: string
+                      default: ''
+                      description: Version of the .NET scanner.
+                    projectKey:
+                      title: ProjectKey
+                      type: string
+                      default: ''
+                      description: Project key used for identifying the SonarQube project
+                    projectName:
+                      title: ProjectName
+                      type: string
+                      default: ''
+                      description: Name of the SonarQube project
+                    extraProperties:
+                      title: extraProperties
+                      type: string
+                      default: ''
+                      description: Additional properties for configuring the scan.
+
     - title: Trivy Code Scan
       type: object
       properties:
@@ -275,6 +317,7 @@ spec:
                       title: target
                       type: string
                       default: '.'
+                      description: Path or target of the scan (e.g., directory reference).
                       description: Path or target of the scan (e.g., directory reference).
                     scanners:
                       title: scanners
@@ -367,7 +410,7 @@ spec:
                 Warning:
                   type: string
                   title: Note
-                  description: "This scan is currently diesable"
+                  description: "This scan is currently disabled"
                   ui:readonly: true
                   default: ""
 
@@ -526,7 +569,6 @@ spec:
                   description: "Image scan is currently disabled"
                   ui:readonly: true
                   default: ""
-
 
   steps:
     - id: validate

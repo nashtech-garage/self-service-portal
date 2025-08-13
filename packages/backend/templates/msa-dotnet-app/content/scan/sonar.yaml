@@ -12,16 +12,17 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      {% raw %}- checkout: ${{ parameters.source }}
+      - checkout: {% raw %}${{ parameters.source }}{% endraw %}
       - task: JavaToolInstaller@1
         inputs:
-          versionSpec: '${{ parameters.jdkVersion }}'
+          versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
-        displayName: 'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
+        displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
+      {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudPrepare@3
         inputs:
-          {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
+          SonarQube: {% raw %}${{ parameters.SonarQube}}{% endraw %}
           scannerMode: dotnet
           dotnetScannerVersion: $(dotnetScannerVersion)
           configMode: $(configMode)
@@ -29,38 +30,36 @@ jobs:
           projectName: $(projectName)
           extraProperties: $(extraProperties)
           organization: $(organization)
+      {%- else %}
+      - task: SonarQubePrepare@7
+        inputs:
+          {% raw %}${{ parameters.SonarQube}}{% endraw %}
+          scannerMode: 'dotnet'
+          dotnetScannerVersion: $(dotnetScannerVersion)
+          configMode: $(configMode)
+          projectKey: $(projectKey)
+          projectName: $(projectName)
+          extraProperties: $(extraProperties)
+      {%- endif %}
       - task: DotNetCoreCLI@2
         displayName: 'Build'
         inputs:
           command: 'build'
           projects: '**/*.csproj'
           arguments: '--configuration Release'
+      {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudAnalyze@3
         inputs:
-          jdkversion: 'JAVA_HOME_17_X64'
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw%}
       - task: SonarCloudPublish@3
         inputs:
           pollingTimeoutSec: '300'
-
-{%- if false %}
-###This piece of code will never run
-- task: SonarQubePrepare@7
+      {%- else %}
+      - task: SonarQubeAnalyze@7
         inputs:
-          {% raw %}SonarQube: ${{ parameters.SonarQube}}{% endraw %}
-          scannerMode: $(scannerMode)
-          cliScannerVersion: $(cliScannerVersion)
-          configMode: $(configMode)
-          {%- if values.parameters.sonarConfig.configMode == 'manual' %}
-          cliProjectKey: $(cliProjectKey)
-          cliProjectName: $(cliProjectName)
-          cliSources: $(cliSources)
-          extraProperties: $(extraProperties)
-          {%- endif %}
-- task: SonarQubeAnalyze@5
-        displayName: 'Run SonarQube Analysis'
-
-      - task: SonarQubePublish@5
+          jdkversion: {% raw %}${{ parameters.jdkVersion }}{% endraw%}
+      - task: SonarQubePublish@7
         inputs:
           pollingTimeoutSec: '300'
-        displayName: 'Publish SonarQube Results'
-{%- endif %}
+      {% endif %}
+
