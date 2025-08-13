@@ -12,13 +12,13 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      {% raw %}- checkout: ${{ parameters.source }}
+      - checkout: {% raw %}${{ parameters.source }}{% endraw %}
       - task: JavaToolInstaller@1
         inputs:
-          versionSpec: '${{ parameters.jdkVersion }}'
+          versionSpec: {% raw %}'${{ parameters.jdkVersion }}'{% endraw %}
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
-        displayName: 'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
+        displayName: {% raw %}'Use Java ${{ parameters.jdkVersion }}'{% endraw %}
       {%- if values.parameters.sonarConfig.sonarHost == 'Cloud' %}
       - task: SonarCloudPrepare@3
         inputs:
@@ -62,3 +62,4 @@ jobs:
         inputs:
           pollingTimeoutSec: '300'
       {% endif %}
+
