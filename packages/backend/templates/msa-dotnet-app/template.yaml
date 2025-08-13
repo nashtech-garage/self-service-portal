@@ -186,64 +186,6 @@ spec:
                   ui:readonly: true
                   default: ""
 
-    # - title: SonarQube Code Analysis
-    #   type: object
-    #   properties:
-    #     useSonar:
-    #       title: Use SonarQube?
-    #       type: boolean
-    #       default: false
-    #       description: Toggle to enable SonarQube code analysis.
-    #   dependencies:
-    #     useSonar:
-    #       oneOf:
-    #         - properties:
-    #             useSonar:
-    #               enum: [true]
-    #             sonarConfig:
-    #               type: object
-    #               properties:
-    #                 SonarQube:
-    #                   title: SonarQube
-    #                   type: string
-    #                   default: ''
-    #                   description: The Azure DevOps SonarQube service connection name.
-
-    #                 ScannerVersion:
-    #                   title: Scanner Version
-    #                   type: string
-    #                   default: ''
-    #                   description: Version of the scanner to use.
-
-    #                 projectKey:
-    #                   title: ProjectKey
-    #                   type: string
-    #                   default: ''
-    #                   description: Project key used for identifying the SonarQube project
-    #                 projectName:
-    #                   title: ProjectName
-    #                   type: string
-    #                   default: ''
-    #                   description: Name of the SonarQube project
-    #                 extraProperties:
-    #                   title: extraProperties
-    #                   type: string
-    #                   default: ''
-    #                   description: Additional properties for configuring the scan.
-    #                 organization:
-    #                   title: Organization
-    #                   type: string
-    #                   default: ''
-    #                   description: Name of the organization performing or responsible for the scan.
-    #         - properties:
-    #             useSonar:
-    #               enum: [false]
-    #             Warning:
-    #               type: string
-    #               title: Note
-    #               description: "This scan is currently disabled"
-    #               ui:readonly: true
-    #               default: ""
     - title: SonarQube Code Analysis
       type: object
       properties:
@@ -273,7 +215,6 @@ spec:
                   description: "This scan is currently disabled"
                   ui:readonly: true
                   default: ""
-
         sonarHost:
           oneOf:
             - properties:
