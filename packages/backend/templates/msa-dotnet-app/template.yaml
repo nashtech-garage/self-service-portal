@@ -16,7 +16,6 @@ spec:
       properties:
         repoUrl:
           title: Repository location for pipeline templates
-          title: Repository location for pipeline templates
           type: string
           ui:field: RepoUrlPicker
           ui:options:
