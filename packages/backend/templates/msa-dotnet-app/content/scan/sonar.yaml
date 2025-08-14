@@ -33,7 +33,7 @@ jobs:
       {%- else %}
       - task: SonarQubePrepare@7
         inputs:
-          {% raw %}${{ parameters.SonarQube}}{% endraw %}
+          SonarQube: {% raw %}${{ parameters.SonarQube}}{% endraw %}
           scannerMode: 'dotnet'
           dotnetScannerVersion: $(dotnetScannerVersion)
           configMode: $(configMode)
