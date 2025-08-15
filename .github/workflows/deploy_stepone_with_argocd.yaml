@@ -238,4 +238,7 @@ jobs:
 
         echo "${{ secrets.PAT_TOKEN }}" | az devops login --organization https://dev.azure.com/triphanc/
 
+        ./trigger_azure_pipeline.sh
+
+
         
