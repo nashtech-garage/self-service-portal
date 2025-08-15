@@ -253,7 +253,7 @@ jobs:
               echo "subnet-${{ github.event.inputs.clusterName }}-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
               exit 1
             fi
-            
+
     - name: Create ArgoCD app for IAM
       run: |
           argocd app create iam-${{ github.event.inputs.clusterName }}-app \
@@ -376,6 +376,55 @@ jobs:
 
         if [[ "$STATUS" != "ACTIVE" ]]; then
           echo "EKS Cluster did not become ACTIVE within $TIMEOUT seconds. Exiting..."
+          exit 1
+        fi
+
+    - name: Create ArgoCD app for NodeGroup
+      run: |
+          argocd app create nodegroup-${{ github.event.inputs.clusterName }}-app \
+            --repo ${{ github.event.inputs.repoURLforArgo }} \
+            --path manifests/nodegroup \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace aws-provider \
+            --project default \
+            --sync-policy automated \
+            --sync-retry-limit 5 \
+            --upsert \
+            --grpc-web
+
+    - name: Wait for nodegroup-${{ github.event.inputs.clusterName }}-app to become synced
+      run: |
+        # Initialize time
+        TIMEOUT=660
+        INTERVAL=60
+        ELAPSED=0
+        # Loop until the app becomes healthy and synced or we hit the timeout
+        while [[ $ELAPSED -lt $TIMEOUT ]]; do
+          # Get the health status and sync status of the application
+          APP_STATUS=$(argocd app get nodegroup-${{ github.event.inputs.clusterName }}-app --output json)
+          HEALTH_STATUS=$(echo "$APP_STATUS" | jq -r '.status.health.status')
+          SYNC_STATUS=$(echo "$APP_STATUS" | jq -r '.status.sync.status')
+
+          echo "Application health status: $HEALTH_STATUS"
+          echo "Application sync status: $SYNC_STATUS"
+
+          # If the app is both healthy and synced, break out of the loop
+          if [[ "$HEALTH_STATUS" == "Healthy" && "$SYNC_STATUS" == "Synced" ]]; then
+            echo "nodegroup-${{ github.event.inputs.clusterName }}-app is healthy and synced. Proceeding..."
+            break
+          fi
+
+          # Wait for the interval duration before checking again
+          echo "Waiting for nodegroup-${{ github.event.inputs.clusterName }}-app to become healthy and synced..."
+          sleep $INTERVAL
+
+          # Increment the elapsed time
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        # If the app is still not healthy or synced after the timeout, exit with an error
+        if [[ "$HEALTH_STATUS" != "Healthy" || "$SYNC_STATUS" != "Synced" ]]; then
+          echo "nodegroup-${{ github.event.inputs.clusterName }}-app did not become healthy and synced within $TIMEOUT seconds. Exiting..."
           exit 1
         fi
 

@@ -1,0 +1,23 @@
+apiVersion: eks.aws.crossplane.io/v1alpha1
+kind: NodeGroup
+metadata:
+  name: nodegroup-${{ values.clusterName }}
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    clusterNameRef:
+      name: ${{ values.clusterName }}
+    nodeRoleRef:
+      name: eks-${{ values.clusterName }}-node-role
+    scalingConfig:
+      minSize: ${{ values.minSize }}
+      maxSize: ${{ values.maxSize }}
+      desiredSize: ${{ values.desiredSize }}
+    capacityType: ${{ values.capacityType }}
+    instanceTypes: [${{ values.instanceTypes }}]
+    diskSize: ${{ values.diskSize }}
+    subnetRefs:
+      - name: private-subnet-${{ values.clusterName }}-a
+      - name: private-subnet-${{ values.clusterName }}-b
+  providerConfigRef:
+    name: default
