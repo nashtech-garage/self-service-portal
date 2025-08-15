@@ -206,7 +206,7 @@ jobs:
 
     - name: Create ArgoCD app for Subnet
       run: |
-          argocd app create vpc-${{ github.event.inputs.clusterName }}-app \
+          argocd app create subnet-${{ github.event.inputs.clusterName }}-app \
               --repo ${{ github.event.inputs.repoURLforArgo }} \
               --path manifests/subnet \
               --dest-server https://kubernetes.default.svc \
