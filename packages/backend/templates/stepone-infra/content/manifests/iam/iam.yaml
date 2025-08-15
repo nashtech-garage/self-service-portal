@@ -59,6 +59,6 @@ spec:
   forProvider:
     policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
     roleNameRef:
-      name: eks-node-role
+      name: eks-${{ values.clusterName }}-node-role
   providerConfigRef:
     name: default
