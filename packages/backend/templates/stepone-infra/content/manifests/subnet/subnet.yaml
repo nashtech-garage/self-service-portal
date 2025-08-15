@@ -6,7 +6,7 @@ spec:
   forProvider:
     region: ${{ values.region }}
     vpcIdRef:
-      name: ${{ values.clusterName }}-vpc
+      name: vpc-${{ values.clusterName }}
     cidrBlock: ${{ values.cidrSubnetBlockA }}
     availabilityZone: ${{ values.region }}a
     mapPublicIPOnLaunch: false
@@ -21,7 +21,7 @@ spec:
   forProvider:
     region: ${{ values.region }}
     vpcIdRef:
-      name: ${{ values.cidrSubnetBlockA }}-vpc
+      name: vpc-${{ values.clusterName }}
     cidrBlock: ${{ values.cidrSubnetBlockB }}
     availabilityZone: ${{ values.region }}b
     mapPublicIPOnLaunch: false

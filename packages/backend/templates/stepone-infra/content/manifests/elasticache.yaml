@@ -8,7 +8,7 @@ spec:
     description: "Security group for ElastiCache"
     groupName: elasticache-${{ values.clusterName }}-sg
     vpcIdRef: 
-      name: stepone-vpc
+      name: vpc-${{ values.clusterName }}
     ingress:
       - fromPort: 6379
         toPort: 6379
