@@ -24,7 +24,7 @@ spec:
     region: ${{ values.region }}
     clusterNameRef:
       name: ${{ values.clusterName }}
-    nodeRoleArnRef:
+    nodeRoleRef:
       name: eks-${{ values.clusterName }}-node-role
     scalingConfig:
       minSize: ${{ values.minSize }}
