@@ -53,13 +53,13 @@ metadata:
 spec:
   forProvider:
     region: ${{ values.region }}
-    dbInstanceClass: [${{ values.dbInstanceClass }}]
+    dbInstanceClass: ${{ values.dbInstanceClass }}
     allocatedStorage: ${{ values.storage }}
     engine: postgres
     engineVersion: "16"
     masterUsername: root
     masterUserPasswordSecretRef:
-      namespace: crossplane-system
+      namespace: aws-provider
       name: rds-password
       key: password
     publiclyAccessible: false
