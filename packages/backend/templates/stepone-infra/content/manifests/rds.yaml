@@ -40,8 +40,8 @@ spec:
       name: sg-rds-${{ values.clusterName }}
     type: ingress
     protocol: tcp
-    fromPort: ${{ values.ingressFromPort }}
-    toPort: ${{ values.ingressToPort }}
+    fromPort: 5432
+    toPort: 5432
     cidrBlock: ${{ values.ingressCIDRBlock }}
   providerConfigRef:
     name: default
@@ -55,8 +55,8 @@ spec:
     region: ${{ values.region }}
     dbInstanceClass: [${{ values.dbInstanceClass }}]
     allocatedStorage: ${{ values.storage }}
-    engine: ${{ values.engine }}
-    engineVersion: ${{ values.engineVersion }}
+    engine: postgres
+    engineVersion: "16"
     masterUsername: root
     masterUserPasswordSecretRef:
       namespace: crossplane-system

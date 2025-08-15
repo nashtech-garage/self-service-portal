@@ -42,10 +42,10 @@ spec:
         - bucketName
         - dbInstanceClass
         - storage
-        - engine
-        - engineVersion
-        - ingressFromPort
-        - ingressToPort
+        # - engine
+        # - engineVersion
+        # - ingressFromPort
+        # - ingressToPort
         - ingressCIDRBlock
         - cacheNodeType
         - numCacheClusters
@@ -103,26 +103,26 @@ spec:
           type: string
           title: RDS storage
           description: RDS storage
-        engine:
-          enum:
-            - postgres
-          type: string
-          title: Choose engine for RDS 
-          description: RDS storage
-        engineVersion:
-          enum:
-            - "16"
-          type: string
-          title: Choose version engine for RDS 
-          description: version engine for RDS
-        ingressFromPort:
-          type: string
-          title: Allow range CIDR from port
-          description: Allow range CIDR from port
-        ingressToPort:
-          type: string
-          title: Allow range CIDR to port 
-          description: Allow range CIDR to port
+        # engine:
+        #   enum:
+        #     - postgres
+        #   type: string
+        #   title: Choose engine for RDS 
+        #   description: RDS storage
+        # engineVersion:
+        #   enum:
+        #     - "16"
+        #   type: string
+        #   title: Choose version engine for RDS 
+        #   description: version engine for RDS
+        # ingressFromPort:
+        #   type: string
+        #   title: Allow range CIDR from port
+        #   description: Allow range CIDR from port
+        # ingressToPort:
+        #   type: string
+        #   title: Allow range CIDR to port 
+        #   description: Allow range CIDR to port
         ingressCIDRBlock:
           enum:
             - 10.0.0.0/20
@@ -190,10 +190,10 @@ spec:
           cidrSubnetBlockB: ${{ parameters.cidrSubnetBlockB }}
           bucketName: ${{ parameters.bucketName }}      
           dbInstanceClass: ${{ parameters.dbInstanceClass }}
-          engine: ${{ parameters.engine }}      
-          engineVersion: ${{ parameters.engineVersion }}
-          ingressFromPort: ${{ parameters.ingressFromPort }}      
-          ingressToPort: ${{ parameters.ingressToPort }}
+          # engine: ${{ parameters.engine }}      
+          # engineVersion: ${{ parameters.engineVersion }}
+          # ingressFromPort: ${{ parameters.ingressFromPort }}      
+          # ingressToPort: ${{ parameters.ingressToPort }}
           ingressCIDRBlock: ${{ parameters.ingressCIDRBlock }}      
           cacheNodeType: ${{ parameters.cacheNodeType }}      
           numCacheClusters: ${{ parameters.numCacheClusters }}      

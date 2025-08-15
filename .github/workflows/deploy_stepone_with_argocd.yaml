@@ -86,7 +86,7 @@ jobs:
           else
             argocd app create aws-provider-app-step-one \
               --repo ${{ github.event.inputs.repoURLforArgo }} \
-              --path aws \
+              --path aws-provider \
               --dest-server https://kubernetes.default.svc \
               --dest-namespace aws-provider \
               --project default \
@@ -133,6 +133,33 @@ jobs:
               echo "aws-provider-app-step-one did not become healthy and synced within $TIMEOUT seconds. Exiting..."
               exit 1
             fi
+
+    - name: Create K8s secret for provider config
+      run: |
+          kubectl create secret generic aws-creds \
+            -n aws-provider \
+            --from-literal=creds="[default]
+          aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"  
+
+    - name: Create ArgoCD app for AWS provider config
+      run: |
+          # Check if the ArgoCD app exists
+          if argocd app get aws-provider-config-app-step-one > /dev/null 2>&1; then
+            echo "aws-provider-app-config already exists"
+          else
+            argocd app create aws-provider-config-app-step-one \
+              --repo ${{ github.event.inputs.repoURLforArgo }} \
+              --path aws \
+              --dest-server https://kubernetes.default.svc \
+              --dest-namespace aws-provider \
+              --project default \
+              --sync-policy automated \
+              --sync-option CreateNamespace=true \
+              --sync-retry-limit 5 \
+              --upsert \
+              --grpc-web
+          fi
 
     - name: Create ArgoCD app for EKS cluster
       run: |
@@ -208,3 +235,24 @@ jobs:
           echo "EKS Cluster did not become ACTIVE within $TIMEOUT seconds. Exiting..."
           exit 1
         fi
+
+    - name: Trigger Azure DevOps pipeline
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        az extension add --name azure-devops
+        az devops configure --defaults \
+          organization=https://dev.azure.com/triphanc \
+          project=DevSecOps
+
+        echo "${{ secrets.PAT_TOKEN }}" | az devops login --organization https://dev.azure.com/triphanc/
+
+        #Need DynamoDB Name & S3 bucket
+        az pipelines run --name "[__infra-code__] backend-cicd"
+
+        #Need ECR
+        az pipelines run --name "[__app-code__] communication-api__ci"
+        az pipelines run --name "[__app-code__] graph-gateway__ci"
+        az pipelines run --name "[__app-code__] master-data-api__ci"
+        az pipelines run --name "[__app-code__] user-management-api__ci"
+        az pipelines run --name "[__app-code__] web-apigw__ci"
+        az pipelines run --name "[__app-code__] webnext__ci"

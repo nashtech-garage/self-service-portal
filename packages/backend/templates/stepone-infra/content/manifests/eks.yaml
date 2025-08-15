@@ -31,10 +31,10 @@ spec:
       maxSize: ${{ values.maxSize }}
       desiredSize: ${{ values.desiredSize }}
     capacityType: ${{ values.capacityType }}
-    instanceTypes: ${{ values.instanceTypes }}
+    instanceTypes: [${{ values.instanceTypes }}]
     diskSize: ${{ values.diskSize }}
     subnetIdRefs:
       - name: private-subnet-${{ values.region }}a
-      - name: public-subnet-${{ values.region }}b
+      - name: private-subnet-${{ values.region }}b
   providerConfigRef:
     name: default
