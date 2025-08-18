@@ -62,3 +62,39 @@ spec:
       name: eks-${{ values.clusterName }}-node-role
   providerConfigRef:
     name: default
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: eks-${{ values.clusterName }}-node-role-attachment-1
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    roleNameRef:
+      name: eks-${{ values.clusterName }}-node-role
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: eks-${{ values.clusterName }}-node-role-attachment-2
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    roleNameRef:
+      name: eks-${{ values.clusterName }}-node-role
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: eks-${{ values.clusterName }}-node-role-attachment-3
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy
+    roleNameRef:
+      name: eks-${{ values.clusterName }}-node-role
+  providerConfigRef:
+    name: default
