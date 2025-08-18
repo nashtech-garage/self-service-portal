@@ -169,7 +169,7 @@ spec:
           description: Instance type for EKS
         diskSize:
           type: number
-          title: Size of disk EKS
+          title: Size of disk EKS. Minimal is 20GB
           description: Size of disk EKS
   steps:
     - id: validate-github-token

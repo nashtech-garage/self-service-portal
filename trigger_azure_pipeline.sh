@@ -1,28 +1,39 @@
-#Need ECR
-az pipelines run --name "[__app-code__] communication-api__ci"
-az pipelines run --name "[__app-code__] graph-gateway__ci"
-az pipelines run --name "[__app-code__] master-data-api__ci"
-az pipelines run --name "[__app-code__] user-management-api__ci"
-az pipelines run --name "[__app-code__] web-apigw__ci"
-az pipelines run --name "[__app-code__] webnext__ci"
-#Need DynamoDB Name & S3 bucket
-az pipelines run --name "[__infra-code__] backend-cicd"
+# #Need ECR
+# az pipelines run --name "[__app-code__] communication-api__ci"
+# az pipelines run --name "[__app-code__] graph-gateway__ci"
+# az pipelines run --name "[__app-code__] master-data-api__ci"
+# az pipelines run --name "[__app-code__] user-management-api__ci"
+# az pipelines run --name "[__app-code__] web-apigw__ci"
+# az pipelines run --name "[__app-code__] webnext__ci"
+# #Need DynamoDB Name & S3 bucket
+# az pipelines run --name "[__infra-code__] backend-cicd"
+
+awsAccountId='534694522453'
+awsRegion='ap-southeast-1'
+envName='dev'
+
+export repositoryEndpoint=$(aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text)
 
 
 app_code_ci=("[__app-code__] communication-api__ci" "[__app-code__] graph-gateway__ci" "[__app-code__] master-data-api__ci" "[__app-code__] user-management-api__ci" "[__app-code__] web-apigw__ci" "[__app-code__] webnext__ci")
 
 # Loop through each CI pipeline and trigger CD after success
-for ci_pipeline in "${some_ci[@]}"; do
+for ci_pipeline in "${app_code_ci[@]}"; do
     trigger_cd_pipeline_after_ci "$ci_pipeline"
 done
 
 trigger_cd_pipeline_after_ci() {
     CI_PIPELINE_NAME=$1
     CD_PIPELINE_NAME="${CI_PIPELINE_NAME%_ci}_cd"
+    serviceName="${ci_pipeline%__ci}"
 
     echo "Triggering CI pipeline: $CI_PIPELINE_NAME"
 
-    CI_RUN_ID=$(az pipelines run --name "$CI_PIPELINE_NAME" --query 'id' -o tsv)
+    CI_RUN_ID=$(az pipelines run --name "$CI_PIPELINE_NAME" --variables serviceName=$serviceName \
+        --variables awsRegion=$awsRegion \
+        --variables awsAccountId=$awsAccountId \
+        --variables repositoryEndpoint=$repositoryEndpoint \
+        --query 'id' -o tsv)
 
     if [ -z "$CI_RUN_ID" ]; then
         echo "Failed to trigger CI pipeline: $CI_PIPELINE_NAME"
