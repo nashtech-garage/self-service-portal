@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: backstage_postgres
+    restart: always
+    env_file:
+      - dev.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backstage:
+    build: .
+    container_name: backstage_app
+    env_file:
+      - dev.env
+    ports:
+      - "7007:7007"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
