@@ -177,5 +177,3 @@ catalog:
       target: ../../packages/backend/component/monitoring-component.yaml
       rules:
         - allow: [Component]
-
-
