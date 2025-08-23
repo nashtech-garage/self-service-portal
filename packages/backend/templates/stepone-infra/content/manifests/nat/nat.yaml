@@ -13,4 +13,4 @@ spec:
     allocationIdRef:
       name: eip-${{ values.clusterName }}
     subnetIdRef:
-        name: public-subnet-${{ values.region }}-b
+        name: public-subnet-${{ values.clusterName }}-b
