@@ -10,5 +10,6 @@ spec:
     resourcesVpcConfig:
       subnetIdRefs:
         - name: private-subnet-${{ values.clusterName }}-a
+        - name: public-subnet-${{ values.clusterName }}-a
   providerConfigRef:
     name: default
