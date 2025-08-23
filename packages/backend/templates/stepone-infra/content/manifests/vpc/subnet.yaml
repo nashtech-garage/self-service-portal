@@ -16,7 +16,7 @@ spec:
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: Subnet
 metadata:
-  name: private-subnet-${{ values.clusterName }}-b
+  name: public-subnet-${{ values.clusterName }}-b
 spec:
   forProvider:
     region: ${{ values.region }}

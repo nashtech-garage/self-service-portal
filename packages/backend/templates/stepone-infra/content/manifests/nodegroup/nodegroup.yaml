@@ -18,6 +18,5 @@ spec:
     diskSize: ${{ values.diskSize }}
     subnetRefs:
       - name: private-subnet-${{ values.clusterName }}-a
-      - name: private-subnet-${{ values.clusterName }}-b
   providerConfigRef:
     name: default

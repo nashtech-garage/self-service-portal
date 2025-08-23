@@ -1,0 +1,98 @@
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: private-rt-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    region: ${{ values.region }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: public-rt-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    region: ${{ values.region }}   
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Route
+metadata:
+  name: private-route-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    destinationCidrBlock: 0.0.0.0/0
+    natGatewayIdRef:
+      name: nat-${{ values.clusterName }}
+    region: ${{ values.region }}
+    routeTableIdRef:
+      name: private-rt-${{ values.clusterName }}
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Route
+metadata:
+  name: public-route-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: "SkipDryRunOnMissingResource=true"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    destinationCidrBlock: 0.0.0.0/0
+    gatewayIdRef:
+      name: igw-${{ values.clusterName }}
+    region: ${{ values.region }}
+    routeTableIdRef:
+      name: public-rt-${{ values.clusterName }}
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: private-rta-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    region: ${{ values.region }}
+    routeTableIdRef:
+      name: private-rt-${{ values.clusterName }}
+    subnetIdRef:
+      name: private-subnet-${{ values.region }}-a
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: public-rta-${{ values.clusterName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    region: ${{ values.region }}
+    routeTableIdRef:
+      name: public-rt-${{ values.clusterName }}
+    subnetIdRef:
+      name: public-subnet-${{ values.region }}-b
