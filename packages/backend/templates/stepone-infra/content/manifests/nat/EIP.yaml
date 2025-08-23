@@ -2,8 +2,6 @@ apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: Address
 metadata:
   name: eip-${{ values.clusterName }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   providerConfigRef:
     name: default

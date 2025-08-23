@@ -2,8 +2,6 @@ apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: InternetGateway
 metadata:
   name: igw-${{ values.clusterName }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   providerConfigRef:
     name: default

@@ -2,8 +2,6 @@ apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: NATGateway
 metadata:
   name: nat-${{ values.clusterName }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "4"
 spec:
   providerConfigRef:
     name: default
