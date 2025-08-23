@@ -1,12 +1,12 @@
-apiVersion: ec2.aws.upbound.io/v1beta1
-kind: EIP
-metadata:
-  name: eip-${{ values.clusterName }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-spec:
-  providerConfigRef:
-    name: default
-  forProvider:
-    region: ${{ values.region }}
-    vpc: true
+# apiVersion: ec2.aws.upbound.io/v1beta1
+# kind: EIP
+# metadata:
+#   name: eip-${{ values.clusterName }}
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "3"
+# spec:
+#   providerConfigRef:
+#     name: default
+#   forProvider:
+#     region: ${{ values.region }}
+#     vpc: true
