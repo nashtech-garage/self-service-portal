@@ -54,7 +54,7 @@ spec:
   forProvider:
     region: ${{ values.region }}
     dbInstanceClass: ${{ values.dbInstanceClass }}
-    allocatedStorage: ${{ values.storage }}
+    allocatedStorage: 20
     engine: postgres
     engineVersion: "16"
     masterUsername: root
