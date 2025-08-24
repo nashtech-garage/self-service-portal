@@ -1,7 +1,7 @@
 apiVersion: s3.aws.crossplane.io/v1beta1
 kind: Bucket
 metadata:
-  name: ${{ values.bucketName }}-{{ randomString(6) | lower }}
+  name: s3-${{ values.bucketName }}-${{ values.region }}-backend-stepone
 spec:
   forProvider:
     region: ${{ values.region }}
