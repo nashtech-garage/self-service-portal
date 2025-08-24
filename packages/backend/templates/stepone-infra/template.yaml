@@ -95,8 +95,8 @@ spec:
         dbInstanceClass:
           type: string
           enum:
-            - t3.medium
-            - t3.large
+            - db.t3.small
+            - db.t3.medium
           title: DB Instance Class for RDS
           description: DB Instance Class for RDS
         storage:
