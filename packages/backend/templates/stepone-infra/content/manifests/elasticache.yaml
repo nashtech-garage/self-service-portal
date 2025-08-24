@@ -1,59 +1,59 @@
-apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: SecurityGroup
-metadata:
-  name: elasticache-${{ values.clusterName }}-sg
-spec:
-  forProvider:
-    region: ${{ values.region }}
-    description: "Security group for ElastiCache"
-    groupName: elasticache-${{ values.clusterName }}-sg
-    vpcIdRef: 
-      name: vpc-${{ values.clusterName }}
-    ingress:
-      - fromPort: 6379
-        toPort: 6379
-        ipProtocol: tcp
-        ipRanges:
-          - cidrIp: 10.0.0.0/16
-    egress:
-      - fromPort: 0
-        toPort: 0
-        ipProtocol: "-1"
-        ipRanges:
-          - cidrIp: 0.0.0.0/0
-    tags:
-      - key: Name
-        value: sg-elasticache
-  providerConfigRef:
-    name: default
----
-apiVersion: cache.aws.crossplane.io/v1alpha1
-kind: CacheSubnetGroup
-metadata:
-  name: elasticache-${{ values.clusterName }}-subnet-group
-spec:
-  forProvider:
-    region: ${{ values.region }}
-    description: "Subnet group for ElastiCache"
-    subnetIdRefs: 
-      - name: private-subnet-${{ values.clusterName }}-a
-  providerConfigRef:
-    name: default
----
-apiVersion: cache.aws.crossplane.io/v1beta1
-kind: ReplicationGroup
-metadata:
-  name: elasticache-${{ values.clusterName }}
-spec:
-  forProvider:
-    region: ${{ values.region }}
-    applyModificationsImmediately: true
-    replicationGroupDescription: "ElastiCache ${{ values.clusterName }}"
-    engine: "redis"
-    cacheNodeType: ${{ values.cacheNodeType }}
-    numCacheClusters: ${{ values.numCacheClusters }}
-    cacheSubnetGroupName: elasticache-${{ values.clusterName }}-subnet-group
-    securityGroupIdRefs:
-      - name: elasticache-${{ values.clusterName }}-sg
-  providerConfigRef:
-    name: default
+# apiVersion: ec2.aws.crossplane.io/v1beta1
+# kind: SecurityGroup
+# metadata:
+#   name: elasticache-${{ values.clusterName }}-sg
+# spec:
+#   forProvider:
+#     region: ${{ values.region }}
+#     description: "Security group for ElastiCache"
+#     groupName: elasticache-${{ values.clusterName }}-sg
+#     vpcIdRef: 
+#       name: vpc-${{ values.clusterName }}
+#     ingress:
+#       - fromPort: 6379
+#         toPort: 6379
+#         ipProtocol: tcp
+#         ipRanges:
+#           - cidrIp: 10.0.0.0/16
+#     egress:
+#       - fromPort: 0
+#         toPort: 0
+#         ipProtocol: "-1"
+#         ipRanges:
+#           - cidrIp: 0.0.0.0/0
+#     tags:
+#       - key: Name
+#         value: sg-elasticache
+#   providerConfigRef:
+#     name: default
+# ---
+# apiVersion: cache.aws.crossplane.io/v1alpha1
+# kind: CacheSubnetGroup
+# metadata:
+#   name: elasticache-${{ values.clusterName }}-subnet-group
+# spec:
+#   forProvider:
+#     region: ${{ values.region }}
+#     description: "Subnet group for ElastiCache"
+#     subnetIdRefs: 
+#       - name: private-subnet-${{ values.clusterName }}-a
+#   providerConfigRef:
+#     name: default
+# ---
+# apiVersion: cache.aws.crossplane.io/v1beta1
+# kind: ReplicationGroup
+# metadata:
+#   name: elasticache-${{ values.clusterName }}
+# spec:
+#   forProvider:
+#     region: ${{ values.region }}
+#     applyModificationsImmediately: true
+#     replicationGroupDescription: "ElastiCache ${{ values.clusterName }}"
+#     engine: "redis"
+#     cacheNodeType: ${{ values.cacheNodeType }}
+#     numCacheClusters: ${{ values.numCacheClusters }}
+#     cacheSubnetGroupName: elasticache-${{ values.clusterName }}-subnet-group
+#     securityGroupIdRefs:
+#       - name: elasticache-${{ values.clusterName }}-sg
+#   providerConfigRef:
+#     name: default
