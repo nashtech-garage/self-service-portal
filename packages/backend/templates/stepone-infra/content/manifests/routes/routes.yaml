@@ -16,6 +16,25 @@ spec:
       name: vpc-${{ values.clusterName }}
   providerConfigRef:
     name: default
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: RouteTable
+metadata:
+  name: private-rt-${{ values.clusterName }}
+spec:
+  forProvider:
+    associations:
+      - subnetIdRef:
+          name: private-subnet-${{ values.clusterName }}-a
+    region: ${{ values.region }}
+    routes:
+      - destinationCidrBlock: 0.0.0.0/0
+        gatewayIdRef:
+          name: igw-${{ values.clusterName }}
+    vpcIdRef:
+      name: vpc-${{ values.clusterName }}
+  providerConfigRef:
+    name: default
 
 
 
