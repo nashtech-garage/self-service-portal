@@ -11,8 +11,8 @@
 awsAccountId='534694522453'
 awsRegion='ap-southeast-1'
 envName='dev'
-
-export repositoryEndpoint=$(aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text)
+repositoryEndpoint='ecr-test-1'
+# export repositoryEndpoint=$(aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text)
 
 
 trigger_cd_pipeline_after_ci() {
