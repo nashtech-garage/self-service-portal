@@ -1,9 +1,10 @@
 apiVersion: s3.aws.crossplane.io/v1beta1
 kind: Bucket
 metadata:
-  name: ${{ values.bucketName }}
+  name: ${{ values.bucketName }}-{{ randomString(6) | lower }}
 spec:
   forProvider:
+    region: ${{ values.region }}
     locationConstraint: ${{ values.region }}
     objectOwnership: BucketOwnerEnforced
   providerConfigRef:
