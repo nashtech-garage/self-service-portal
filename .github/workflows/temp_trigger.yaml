@@ -1,5 +1,6 @@
 name: test
-
+on:
+ - push
 jobs:
   deploy-cluster:
     runs-on: ubuntu-latest
