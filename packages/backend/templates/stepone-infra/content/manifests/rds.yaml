@@ -8,6 +8,7 @@ spec:
     description: "Subnet group for private RDS"
     subnetIdRefs: 
       - name: private-subnet-${{ values.clusterName }}-a
+      - name: public-subnet-${{ values.clusterName }}-b
   providerConfigRef:
     name: default
 ---

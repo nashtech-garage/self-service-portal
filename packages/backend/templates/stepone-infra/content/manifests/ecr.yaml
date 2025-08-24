@@ -6,6 +6,5 @@ spec:
   forProvider:
     region: ${{ values.region }}
     imageTagMutability: MUTABLE
-    scanOnPush: true
   providerConfigRef:
     name: default
