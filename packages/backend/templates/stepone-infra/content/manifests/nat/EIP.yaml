@@ -9,4 +9,4 @@ spec:
     name: default
   forProvider:
     region: ${{ values.region }}
-    vpc: true
+    domain: vpc
