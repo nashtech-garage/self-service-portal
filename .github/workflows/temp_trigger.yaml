@@ -1,0 +1,48 @@
+name: test
+
+jobs:
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Install kubectl
+      run: |
+        if [[ -n "${{ github.event.inputs.customKyvernoPolicies }}" ]]; then
+          sudo apt-get update
+          sudo apt-get install -y kubectl
+        else
+          echo "No custom Kyverno Policies provided."
+        fi
+
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ github.event.inputs.region }}
+
+    - name: Trigger Azure DevOps pipeline
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        az extension add --name azure-devops
+        az devops configure --defaults \
+          organization=https://dev.azure.com/triphanc \
+          project=DevSecOps
+
+        echo "${{ secrets.PAT_TOKEN }}" | az devops login --organization https://dev.azure.com/triphanc/
+
+        aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text
+        # aws dynamodb list-tables --query "TableNames[?contains(@, '${{ github.event.inputs.clusterName }}')]" --output text
+
+        chmod +x ./trigger_azure_pipeline.sh
+        ./trigger_azure_pipeline.sh
