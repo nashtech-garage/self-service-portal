@@ -8,8 +8,8 @@
 # #Need DynamoDB Name & S3 bucket
 # az pipelines run --name "[__infra-code__] backend-cicd"
 
-awsAccountId='534694522453'
-awsRegion='ap-southeast-1'
+awsAccountId='452506543602'
+awsRegion='ap-southeast-2'
 envName='dev'
 repositoryEndpoint='ecr-test-1'
 # export repositoryEndpoint=$(aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text)
@@ -21,6 +21,12 @@ trigger_cd_pipeline_after_ci() {
     serviceName="${ci_pipeline%__ci}"
 
     echo "Triggering CI pipeline: $CI_PIPELINE_NAME"
+
+    az pipelines run --name "$CI_PIPELINE_NAME" --variables serviceName=$serviceName \
+        --variables awsRegion=$awsRegion \
+        --variables awsAccountId=$awsAccountId \
+        --variables repositoryEndpoint=$repositoryEndpoint \
+        --query 'id' -o tsv
 
     CI_RUN_ID=$(az pipelines run --name "$CI_PIPELINE_NAME" --variables serviceName=$serviceName \
         --variables awsRegion=$awsRegion \
