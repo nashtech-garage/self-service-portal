@@ -15,13 +15,6 @@ envName='dev'
 export repositoryEndpoint=$(aws ecr describe-repositories --query "repositories[?contains(repositoryName, '${{ github.event.inputs.clusterName }}')].repositoryName" --output text)
 
 
-app_code_ci=("[__app-code__] communication-api__ci" "[__app-code__] graph-gateway__ci" "[__app-code__] master-data-api__ci" "[__app-code__] user-management-api__ci" "[__app-code__] web-apigw__ci" "[__app-code__] webnext__ci")
-
-# Loop through each CI pipeline and trigger CD after success
-for ci_pipeline in "${app_code_ci[@]}"; do
-    trigger_cd_pipeline_after_ci "$ci_pipeline"
-done
-
 trigger_cd_pipeline_after_ci() {
     CI_PIPELINE_NAME=$1
     CD_PIPELINE_NAME="${CI_PIPELINE_NAME%_ci}_cd"
@@ -61,3 +54,9 @@ trigger_cd_pipeline_after_ci() {
         fi
     done
 }
+app_code_ci=("[__app-code__] communication-api__ci" "[__app-code__] graph-gateway__ci" "[__app-code__] master-data-api__ci" "[__app-code__] user-management-api__ci" "[__app-code__] web-apigw__ci" "[__app-code__] webnext__ci")
+
+# Loop through each CI pipeline and trigger CD after success
+for ci_pipeline in "${app_code_ci[@]}"; do
+    trigger_cd_pipeline_after_ci "$ci_pipeline"
+done
