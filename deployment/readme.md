@@ -6,13 +6,18 @@ This repository contains everything you need to deploy the **Self Service Portal
 
 ## 📂 Kubernetes Manifests
 
-| File                      | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| `config-map.yaml`         | Stores non-sensitive configuration values using a Kubernetes `ConfigMap`.  |
-| `secret.yaml`             | Stores sensitive data using a Kubernetes `Secret`.                         |
-| `postgres-service.yaml`   | Defines the `Service` for the PostgreSQL database.                         |
-| `postgres-deployment.yaml`| Defines the `Deployment` for the PostgreSQL database.                     |
-| `deployment.yaml`         | Main `Deployment` for the Backstage application.                           |
+| File                          | Description                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| `acr-creds.yaml`              | Docker registry secret for pulling images from Azure Container Registry.   |
+| `backstage-serviceaccount.yaml` | Defines the service account for the Backstage application.               |
+| `config-map.yaml`             | Stores non-sensitive configuration values using a Kubernetes `ConfigMap`.  |
+| `deployment.yaml`             | Main `Deployment` for the Backstage application.                           |
+| `init-backstage-db.yaml`      | Job to initialize the Backstage database schema.                           |
+| `k8s-secret.yaml`             | Additional Kubernetes secrets required by the application.                 |
+| `postgres-deployment.yaml`    | Defines the `Deployment` for the PostgreSQL database.                      |
+| `postgres-secret.yaml`        | Stores PostgreSQL credentials as a Kubernetes `Secret`.                    |
+| `postgres-service.yaml`       | Defines the `Service` for the PostgreSQL database.                         |
+| `secret.yaml`                 | Stores sensitive data using a Kubernetes `Secret`.                         |
 
 ---
 
@@ -27,7 +32,7 @@ az login
 
 ### 2. 📦 Create Resource Group
 ```bash
-az group create --name selfserviceportal-rg --location eastus
+az group create --name selfserviceportal-rg
 ```
 
 ### 3. 🚀 Create AKS Cluster
@@ -64,16 +69,25 @@ kubectl create secret docker-registry acr-creds \
 
 ---
 
+## 📥 Download Kubernetes Manifests from Azure Storage
+
+Before applying the manifests, download the deployment files from Azure Storage:
+
+```bash
+az storage blob download-batch \
+  --account-name selfserviceportaldevops \
+  --destination ./deployment \
+  --source k8s-config
+```
+
+---
+
 ## 🚀 Deploy to Kubernetes
 
 Apply all manifests to your AKS cluster:
 
 ```bash
-kubectl apply -f config-map.yaml
-kubectl apply -f secret.yaml
-kubectl apply -f postgres-service.yaml
-kubectl apply -f postgres-deployment.yaml
-kubectl apply -f deployment.yaml
+kubectl apply -f deployment/
 ```
 
 ---
@@ -91,18 +105,6 @@ Check services:
 ```bash
 kubectl get svc
 ```
-
----
-
-## 📎 Notes
-
-- Ensure your ACR is linked to AKS if you're using private container images.
-- You can update secrets and config maps without restarting pods using:
-  ```bash
-  kubectl apply -f secret.yaml
-  kubectl apply -f config-map.yaml
-  ```
-- If you need to redeploy or update the application, reapply the relevant manifest files.
 
 ---
 
