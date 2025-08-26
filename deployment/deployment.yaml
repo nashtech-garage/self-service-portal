@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+  template:
+    metadata:
+      labels:
+        app: backstage
+    spec:
+      serviceAccountName: backstage-sa
+      volumes:
+        - name: sa-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+                  audience: api
+      containers:
+        - name: backstage
+          image: selfserviceportal.azurecr.io/backstage-app:latest
+          ports:
+            - containerPort: 7007
+          env:
+            - name: K8S_URL
+              value: "https://$(KUBERNETES_SERVICE_HOST)"
+            - name: K8S_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-sa-token
+                  key: token
+          envFrom:
+            - configMapRef:
+                name: backstage-config
+            - secretRef:
+                name: backstage-secrets
+          volumeMounts:
+            - name: sa-token
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: acr-creds
