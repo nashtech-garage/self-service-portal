@@ -38,9 +38,9 @@ az group create --name selfserviceportal-rg
 ### 3. 🚀 Create AKS Cluster
 ```bash
 az aks create \
-  --resource-group selfserviceportal-rg \
+  --resource-group selfserviceportal \
   --name selfserviceportal-aks \
-  --node-count 2 \
+  --node-count 1 \
   --enable-addons monitoring \
   --generate-ssh-keys
 ```
