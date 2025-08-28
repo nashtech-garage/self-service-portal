@@ -109,3 +109,50 @@ kubectl get svc
 ---
 
 Happy deploying! 🎉
+
+# 📦 Uploading `app-config.container.yaml` to In-Cluster NFS via Port-Forward (Linux Only)
+
+This script uploads `app-config.container.yaml` to an NFS server running inside a Kubernetes cluster using a short-lived `kubectl port-forward` session. It automatically installs the `ncp` CLI if missing, performs the upload, and cleans up the connection.
+
+## 🧠 Prerequisites
+
+- Kubernetes cluster with an NFS service named `nfs-service`
+- `kubectl` installed and configured
+- Internet access to install `ncp` (NFS Copy CLI)
+
+## 🐧 Upload Script
+
+Save the following as `upload-nfs.sh`:
+
+```bash
+#!/bin/bash
+
+# File to upload
+FILE="./app-config.container.yaml"
+
+# NFS service name and port
+SERVICE="nfs-service"
+PORT="2049"
+
+# Start port-forward in background
+echo "Starting port-forward to NFS service..."
+kubectl port-forward svc/${SERVICE} ${PORT}:${PORT} &
+PF_PID=$!
+
+# Wait for port-forward to stabilize
+sleep 2
+
+# Install NCP if missing
+if ! command -v ncp &> /dev/null; then
+  echo "Installing NCP CLI..."
+  curl -s https://raw.githubusercontent.com/kha7iq/ncp/master/install.sh | sudo sh
+fi
+
+# Upload the file to NFS
+echo "Uploading ${FILE} to NFS export path..."
+ncp to --input "${FILE}" --nfspath / --host localhost
+
+# Kill the port-forward process
+echo "Cleaning up port-forward..."
+kill ${PF_PID}
+```
