@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backstage-lb
+  labels:
+    app: backstage
+spec:
+  type: LoadBalancer
+  selector:
+    app: backstage
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80           # External port exposed by Azure Load Balancer
+      targetPort: 7007   # Port your Backstage app listens on
+  externalTrafficPolicy: Local

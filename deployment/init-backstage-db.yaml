@@ -112,12 +112,6 @@ spec:
             - secretRef:
                 name: backstage-secrets
           imagePullPolicy: Always
-          command: ["sh", "-c"]
-          args:
-            - |
-              echo "⏳ Waiting 1 second for database setup..."
-              sleep 1
-              echo "🚀 Starting Backstage..."
           volumeMounts:
             - name: shared-data
               mountPath: /shared

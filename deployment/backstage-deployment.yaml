@@ -43,6 +43,12 @@ spec:
             - name: sa-token
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7007
+            initialDelaySeconds: 5
+            periodSeconds: 10
           resources:
             requests:
               memory: "512Mi"
