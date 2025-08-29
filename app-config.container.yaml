@@ -1,6 +1,6 @@
 app:
   title: Self Service Portal
-  baseUrl: http://localhost:7007
+  baseUrl: ${APP_BASE_URL}
 
 organization:
   name: NashTech Vietnam
@@ -13,13 +13,14 @@ permission:
     policyFileReload: true
 
 backend:
-  baseUrl: http://localhost:7007
+  baseUrl: ${APP_BASE_URL}
   listen:
     port: 7007
+    host: 0.0.0.0
   csp:
     connect-src: ["'self'", 'http:', 'https:']
   cors:
-    origin: http://localhost:7007
+    origin: ${APP_BASE_URL}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
 
@@ -147,6 +148,7 @@ catalog:
       target: packages/backend/component/monitoring-component.yaml
       rules:
         - allow: [Component]
+
 kubernetes:
   serviceLocatorMethod:
     type: 'multiTenant'
