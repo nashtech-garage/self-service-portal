@@ -4,6 +4,11 @@ g, user:default/le.caothihoang, role:default/admin-rbac
 g, user:default/le.caothihoang, role:default/scaffolder-admin
 g, user:default/le.caothihoang, role:default/plugin-admin
 
+g, user:default/quy.tranxuan, role:default/catalog-admin
+g, user:default/quy.tranxuan, role:default/admin-rbac
+g, user:default/quy.tranxuan, role:default/scaffolder-admin
+g, user:default/quy.tranxuan, role:default/plugin-admin
+
 g, user:default/devplatform225, role:default/catalog-admin
 g, user:default/devplatform225, role:default/scaffolder-admin
 g, user:default/duc.nguyenhoang, role:default/catalog-admin

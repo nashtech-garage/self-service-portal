@@ -134,5 +134,8 @@ backend.add(import('@parfuemerie-douglas/scaffolder-backend-module-azure-pipelin
 // 🔌 Custom Scaffolder Extensions
 backend.add(scaffolderModuleCustomExtensions);
 
+// 📡 SonarQube plugin
+backend.add(import('@backstage-community/plugin-sonarqube-backend'));
+
 // ✅ Start Backend
 backend.start();
