@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-config
+data:
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_USER: "backstage"
+  DB_DATABASE: "backstage"
+
+  ARGOCD_URL: "argo.backstage.avkas.online:443"
+  GRAFANA_URL: "https://locduc.grafana.net/"
+  NEW_RELIC_URL: "https://api.newrelic.com"
+  PROMETHEUS_URL: "https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/"
+
+  AZURE_CLIENT_ID: "c9e58e7a-53a3-4e4d-9b05-b4fd12664290"
+  AZURE_TENANT_ID: "05f647c7-cf4c-486c-b943-6df1a85e622c"
+  GITHUB_CLIENT_ID: "Ov23liWbEUsSXxZ0Wwv5"
+  GOOGLE_CLIENT_ID: "990791071206-rbt9k5oqp8la6pt5t2hpjbepnncujrd3.apps.googleusercontent.com"
+  COGNITO_CLIENT_ID: "2udoi16kp0f2ev78odq7eo3eev"
+  COGNITO_DOMAIN: "https://ap-southeast-27dppoctgo.auth.ap-southeast-2.amazoncognito.com"
+
+  NODE_OPTIONS: "--no-node-snapshot"
+  APP_BASE_URL: "http://localhost:7007"
+# APP_BASE_URL: "http://backstage-lb.default.svc.cluster.local"
