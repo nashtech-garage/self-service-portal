@@ -8,6 +8,7 @@ metadata:
       title: GitHub Actions
   annotations:
     github.com/project-slug: nashtech-garage/how-to-devops
+    sonarqube.org/project-key: sonarqube/github-action
 spec:
   type: github
   owner: user:default/le.caothihoang

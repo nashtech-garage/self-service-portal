@@ -160,3 +160,11 @@ kubernetes:
           authProvider: 'serviceAccount'
           skipTLSVerify: true
           serviceAccountToken: ${K8S_TOKEN}
+
+sonarqube:
+  instances:
+    - name: sonarqube
+      baseUrl: ${SONARQUBE_URL}
+      apiKey: ${SONARQUBE_TOKEN}
+      # If you want to use a different auth type, you can change it here
+      authType: Bearer
