@@ -21,6 +21,9 @@ spec:
                   path: token
                   expirationSeconds: 3600
                   audience: api
+        - name: fb-storage
+          persistentVolumeClaim:
+            claimName: filebrowser-storage-pvc
       containers:
         - name: backstage
           image: selfserviceportal.azurecr.io/backstage-app:latest
@@ -42,6 +45,10 @@ spec:
           volumeMounts:
             - name: sa-token
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+            - name: fb-storage
+              mountPath: /app/app-config.container.yaml
+              subPath: backstage/app-config.container.yaml
               readOnly: true
           readinessProbe:
             httpGet:
