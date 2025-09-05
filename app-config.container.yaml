@@ -168,4 +168,3 @@ sonarqube:
       apiKey: ${SONARQUBE_TOKEN}
       # If you want to use a different auth type, you can change it here
       authType: Bearer
-
